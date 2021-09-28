@@ -1,0 +1,51 @@
+﻿@page "/login";
+
+<div class="container">
+    <div class="centered-window">
+
+        <h4>Login</h4>
+
+        <hr />
+        <form>
+            <p>
+                <label for="email">Email: </label>
+                <input id="email" type="email" />
+            </p>
+
+            <br />
+            <p>
+                <label for="password">Password: </label>
+                <input id="password" type="password" />
+            </p>
+            <button type="submit" @onclick="SubmitLogin"></button>
+        </form>
+        <a href="register">i don't have an account</a>
+
+    </div>
+</div>
+
+
+
+
+@code {
+
+    private void SubmitLogin()
+    {
+
+    }
+
+}
+
+<style>
+    label {
+        display: inline-block;
+        float: left;
+        clear: left;
+        text-align: left;
+    }
+
+    input {
+        display: inline-block;
+        float: left;
+    }
+</style>

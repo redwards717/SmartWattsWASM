@@ -1,7 +1,14 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+:root {
+    --light-color: #fccaa5;
+    --mid-color: #3c8c2f;
+    --dark-color: #142a53;
+    --dark-color-two: #4d648d;
+}
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
 }
 
 a, .btn-link {
@@ -48,3 +55,12 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+
+.centered-window {
+    display: flex;
+    justify-content: center;
+    background-color: var(--light-color);
+    border: solid 2px var(--dark-color);
+    box-shadow: 6px 3px 3px var(--dark-color-two);
+}

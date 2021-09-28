@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWatts.Server", "SmartWatts\Server\SmartWatts.Server.csproj", "{BDA09157-ADD8-4C26-ABA7-D1D0CC3C4297}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWatts.Server", "SmartWatts\Server\SmartWatts.Server.csproj", "{BDA09157-ADD8-4C26-ABA7-D1D0CC3C4297}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWatts.Client", "SmartWatts\Client\SmartWatts.Client.csproj", "{9E79CA61-A6B1-4AAE-B1B7-426772A80EE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWatts.Client", "SmartWatts\Client\SmartWatts.Client.csproj", "{9E79CA61-A6B1-4AAE-B1B7-426772A80EE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWatts.Shared", "SmartWatts\Shared\SmartWatts.Shared.csproj", "{AE6B1F83-E7F2-4888-855A-2F33A3F62F45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWatts.Shared", "SmartWatts\Shared\SmartWatts.Shared.csproj", "{AE6B1F83-E7F2-4888-855A-2F33A3F62F45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SmartWatts.Server.DataAccess;
+using SmartWatts.Server.DataAccess.SmartWattsDB;
 using System.Linq;
 
 namespace SmartWatts.Server
@@ -25,6 +27,9 @@ namespace SmartWatts.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddScoped<IUserAccess, UserAccess>();
+            services.AddScoped<ISqlDataAccess, SqlDataAccess>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

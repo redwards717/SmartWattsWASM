@@ -15,7 +15,6 @@ namespace SmartWatts.Server.Controllers
 
         }
 
-        [HttpGet]
 
     }
 }
