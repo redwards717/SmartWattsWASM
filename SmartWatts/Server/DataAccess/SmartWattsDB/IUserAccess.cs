@@ -5,6 +5,8 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
 {
     public interface IUserAccess
     {
-        Task<User> GetUser(int id);
+        Task<User> GetUser(string email, string password);
+        Task<User> GetUserByEmail(string email);
+        Task InsertUser(User user);
     }
 }

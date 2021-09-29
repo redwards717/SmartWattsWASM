@@ -21,10 +21,30 @@ namespace SmartWatts.Server.Controllers
         }
 
         [HttpGet]
-        public ActionResult<User> GetUser(int id)
+        public async Task<IActionResult> GetUser(string email, string password)
         {
-            var user = _user.GetUser(id);
+            var user = _user.GetUser(email, password);
+            if(user is null)
+            {
+                return NotFound("Incorrect login information");
+            }
+
             return Ok(user);
         }
+
+        [HttpPost]
+        [Route("Register")]
+        public async Task<IActionResult> PostUser(User user)
+        {
+            var existingUser = await _user.GetUserByEmail(user.Email);
+            if(existingUser is null)
+            {
+                await _user.InsertUser(user);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
     }
 }

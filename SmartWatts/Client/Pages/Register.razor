@@ -1,0 +1,73 @@
+﻿@page "/register";
+
+@inject IUserService _userService;
+
+<div class="container">
+    <div class="centered-window">
+
+        <h4>Register</h4>
+
+        <hr />
+        <form>
+            <p>
+                <label for="email">Email: </label>
+                <input id="email" type="email" @bind-value="user.Email" />
+            </p>
+
+            <p>
+                <label for="password">Password: </label>
+                <input id="password" type="password" @bind-value="user.Password" />
+            </p>
+            <button type="submit" @onclick="SubmitRegister">Submit</button>
+        </form>
+        <p>
+            <a href="/">take me to login page</a>
+        </p>
+
+    </div>
+</div>
+
+
+
+
+@code {
+
+    User user = new();
+
+    private async Task SubmitRegister()
+    {
+        await _userService.RegisterUser(user);
+    }
+
+}
+
+<style>
+    input {
+        display: inline-block;
+        float: left;
+    }
+
+    h4 {
+        text-align: center;
+    }
+
+    a {
+        font-size: 9px;
+    }
+
+    form {
+        display: table;
+    }
+
+    p {
+        display: table-row;
+    }
+
+    label {
+        display: table-cell;
+    }
+
+    input {
+        display: table-cell;
+    }
+</style>

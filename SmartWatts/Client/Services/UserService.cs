@@ -16,10 +16,21 @@ namespace SmartWatts.Client.Services
         {
             _http = http;
         }
-        public async Task<User> LoadUser(int id)
+        public async Task<User> LoadUser(string email, string pw)
         {
             var user = await _http.GetFromJsonAsync<User>("api/User");
             return user;
+        }
+
+        public async Task RegisterUser(User user)
+        {
+            using (HttpResponseMessage response = await _http.PostAsJsonAsync("api/User/Register", user))
+            {
+                if(response.IsSuccessStatusCode == false)
+                {
+                    throw new Exception(response.ReasonPhrase);
+                }
+            }
         }
     }
 }

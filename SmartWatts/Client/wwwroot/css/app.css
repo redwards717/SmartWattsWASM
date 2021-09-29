@@ -58,9 +58,13 @@ a, .btn-link {
 
 
 .centered-window {
-    display: flex;
-    justify-content: center;
+    padding: 20px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background-color: var(--light-color);
     border: solid 2px var(--dark-color);
     box-shadow: 6px 3px 3px var(--dark-color-two);
+    border-radius: 10px;
 }
