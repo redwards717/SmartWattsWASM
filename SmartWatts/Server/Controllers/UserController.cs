@@ -21,15 +21,24 @@ namespace SmartWatts.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUser(string email, string password)
+        [Route("All")]
+        public async Task<IActionResult> GetAllUsers()
         {
-            var user = _user.GetUser(email, password);
-            if(user is null)
+            var users = await _user.GetAllUsers();
+            return Ok(users);
+        }
+
+        [HttpGet]
+        [Route("Login")]
+        public async Task<IActionResult> GetUser([FromHeader] string email, [FromHeader] string password)
+        {
+            var matchedUser = await _user.GetUser(email, password);
+            if(matchedUser is null)
             {
                 return NotFound("Incorrect login information");
             }
 
-            return Ok(user);
+            return Ok(matchedUser);
         }
 
         [HttpPost]
@@ -43,7 +52,7 @@ namespace SmartWatts.Server.Controllers
                 return Ok();
             }
 
-            return BadRequest();
+            return BadRequest("That Email address is already registered");
         }
 
     }

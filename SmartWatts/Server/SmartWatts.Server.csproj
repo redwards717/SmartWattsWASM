@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Client\SmartWatts.Client.csproj" />
     <ProjectReference Include="..\Shared\SmartWatts.Shared.csproj" />
   </ItemGroup>
 

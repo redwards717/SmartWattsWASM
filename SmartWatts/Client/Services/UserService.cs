@@ -16,20 +16,34 @@ namespace SmartWatts.Client.Services
         {
             _http = http;
         }
-        public async Task<User> LoadUser(string email, string pw)
+
+        public async Task<List<User>> LoadAllUsers()
         {
-            var user = await _http.GetFromJsonAsync<User>("api/User");
-            return user;
+            return await _http.GetFromJsonAsync<List<User>>("api/User/All");
+        }
+
+        public async Task<User> LoadUser(User user)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, Constants.BASE_URI + "api/User/Login");
+
+            request.Headers.Add("email", user.Email);
+            request.Headers.Add("password", user.Password);
+
+            using HttpResponseMessage response = await _http.SendAsync(request);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+            return await response.Content.ReadFromJsonAsync<User>();
         }
 
         public async Task RegisterUser(User user)
         {
-            using (HttpResponseMessage response = await _http.PostAsJsonAsync("api/User/Register", user))
+            using HttpResponseMessage response = await _http.PostAsJsonAsync("api/User/Register", user);
+            if (response.IsSuccessStatusCode == false)
             {
-                if(response.IsSuccessStatusCode == false)
-                {
-                    throw new Exception(response.ReasonPhrase);
-                }
+                throw new Exception(response.ReasonPhrase);
             }
         }
     }

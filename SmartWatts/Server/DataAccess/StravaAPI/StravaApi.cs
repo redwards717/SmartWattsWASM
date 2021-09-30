@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 
 namespace SmartWatts.Server.DataAccess.StravaAPI
 {
-    public class StravaApi
+    public class StravaApi : IStravaApi
     {
+        public async Task LinkToStrava()
+        {
+
+        }
     }
 }

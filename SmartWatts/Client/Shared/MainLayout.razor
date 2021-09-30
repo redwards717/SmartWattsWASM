@@ -7,11 +7,54 @@
 
     <div class="main">
         <div class="top-row px-4">
-            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+
         </div>
+
+        @if (Toaster.ToastOn)
+        {
+            <div class="toaster">
+                <span class="oi oi-circle-x" @onclick="CloseToast"></span>
+                <p>@Toaster.ToastMsg</p>
+            </div>
+        }
 
         <div class="content px-4">
             @Body
         </div>
     </div>
 </div>
+
+@code
+{
+    private void CloseToast()
+    {
+        Toaster.CloseToast();
+    }
+}
+
+<style>
+    .toaster{
+        padding: 10px;
+        position: fixed;
+        right: 0px;
+        width: 20%;
+        height: 15%;
+        background-color: @Toaster.ToastColor;
+        border-radius: 3px;
+        animation-name: popout;
+        animation-delay: 0s;
+        animation-duration: 2s;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-out;
+    }
+
+    @@keyframes popout {
+        0% {
+            transform: translateX(100%);
+        }
+
+        100% {
+            transform: translateX(0%);
+        }
+    }
+</style>

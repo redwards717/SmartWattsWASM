@@ -1,10 +1,17 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 :root {
-    --light-color: #fccaa5;
-    --mid-color: #3c8c2f;
-    --dark-color: #142a53;
-    --dark-color-two: #4d648d;
+    --primary-color: #fccaa5;
+    --primary-color-light: #fff186;
+    --primary-color-dark: #a76535;
+    --secondary-color: #7386a7;
+    --secondary-color-light: #d2d9e6;
+    --secondary-color-dark: #2b436f;
+    --tertiary-color: #92d088;
+    --tertiary-color-light: #def2db;
+    --tertiary-color-dark: #398a2c;
+
+    --strava-orange: #fc5200;
 }
 
 html, body {
@@ -15,10 +22,10 @@ a, .btn-link {
     color: #0366d6;
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+.btn-confirm {
+    color: var(--tertiary-color-dark);
+    background-color: var(--tertiary-color-light);
+    border-color: var(--tertiary-color);
 }
 
 .content {
@@ -63,8 +70,8 @@ a, .btn-link {
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--light-color);
-    border: solid 2px var(--dark-color);
-    box-shadow: 6px 3px 3px var(--dark-color-two);
+    background-color: var(--primary-color);
+    border: solid 2px var(--secondary-color);
+    box-shadow: 6px 3px 3px var(--secondary-color-light);
     border-radius: 10px;
 }

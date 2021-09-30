@@ -1,4 +1,6 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inject AppState _appState; 
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">SmartWatts</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -22,11 +24,44 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
         </li>
+        @if (_appState.LoggedInUser is null)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="login">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Log In
+                </NavLink>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="profile">
+                    <span class="oi oi-person" aria-hidden="true"></span> @_appState.LoggedInUser.Email
+                </NavLink>
+            </li>
+
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" @onclick="Logout" href="login">
+                    <span class="oi oi-account-logout" aria-hidden="true"></span>Log Out
+                </NavLink>
+            </li>
+        }
     </ul>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+
+    protected override void OnInitialized()
+    {
+        _appState.OnChange += StateHasChanged;
+    }
+
+    private void Logout()
+    {
+        _appState.ClearUser();
+        Toaster.ShowToast("You have been succesfully logged out", "lightgreen");
+    }
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 

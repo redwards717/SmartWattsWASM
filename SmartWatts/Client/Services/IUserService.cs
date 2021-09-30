@@ -1,11 +1,13 @@
 ﻿using SmartWatts.Shared;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SmartWatts.Client.Services
 {
     public interface IUserService
     {
-        Task<User> LoadUser(string email, string password);
+        Task<List<User>> LoadAllUsers();
+        Task<User> LoadUser(User user);
         Task RegisterUser(User user);
     }
 }

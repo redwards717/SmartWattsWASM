@@ -1,6 +1,8 @@
 ﻿@page "/register";
 
 @inject IUserService _userService;
+@inject AppState _appState; 
+@inject NavigationManager _nav;
 
 <div class="container">
     <div class="centered-window">
@@ -18,7 +20,7 @@
                 <label for="password">Password: </label>
                 <input id="password" type="password" @bind-value="user.Password" />
             </p>
-            <button type="submit" @onclick="SubmitRegister">Submit</button>
+            <button type="button" class="btn btn-confirm" @onclick="SubmitRegister">Submit</button>
         </form>
         <p>
             <a href="/">take me to login page</a>
@@ -36,16 +38,27 @@
 
     private async Task SubmitRegister()
     {
-        await _userService.RegisterUser(user);
+        try
+        {
+            await _userService.RegisterUser(user);
+
+            _appState.SetUser(user);
+
+            Toaster.ShowToast($"user created for {user.Email}", "lightgreen");
+
+            _nav.NavigateTo("/");
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
 
 }
 
 <style>
-    input {
-        display: inline-block;
-        float: left;
-    }
 
     h4 {
         text-align: center;

@@ -1,26 +1,29 @@
 ﻿@page "/login";
 
+@inject IUserService _userService;
+@inject AppState _appState; 
+@inject NavigationManager _nav;
+
 <div class="container">
     <div class="centered-window">
 
-        <h4>Login</h4>
+        <h4>Log In</h4>
 
         <hr />
         <form>
             <p>
                 <label for="email">Email: </label>
-                <input id="email" type="email" />
+                <input id="email" type="email" @bind-value="user.Email"/>
             </p>
 
-            <br />
             <p>
                 <label for="password">Password: </label>
-                <input id="password" type="password" />
+                <input id="password" type="password" @bind-value="user.Password"/>
             </p>
-            <button type="submit" @onclick="SubmitLogin"></button>
+            <button type="button" class="btn btn-confirm" @onclick="SubmitLogin">Log In</button>
         </form>
         <a href="register">i don't have an account</a>
-
+        @*<button @onclick="LoadAll">Test</button>*@
     </div>
 </div>
 
@@ -29,23 +32,55 @@
 
 @code {
 
-    private void SubmitLogin()
-    {
+    User user = new();
+    List<User> users;
 
+    private async Task LoadAll()
+    {
+        users = await _userService.LoadAllUsers();
+    }
+
+    private async Task SubmitLogin()
+    {
+        try
+        {
+            user = await _userService.LoadUser(user);
+            _appState.SetUser(user);
+
+            _nav.NavigateTo("/");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
 
 }
 
 <style>
+
+    h4 {
+        text-align: center;
+    }
+
+    a {
+        font-size: 9px;
+    }
+
+    form {
+        display: table;
+    }
+
+    p {
+        display: table-row;
+    }
+
     label {
-        display: inline-block;
-        float: left;
-        clear: left;
-        text-align: left;
+        display: table-cell;
     }
 
     input {
-        display: inline-block;
-        float: left;
+        display: table-cell;
     }
 </style>
