@@ -18,6 +18,11 @@ namespace SmartWatts.Client.Services
             _http = http;
             _appState = appState;
         }
+
+        public async Task Authorize()
+        {
+            var response = await _http.GetAsync($"https://www.strava.com/oauth/authorize?client_id={Constants.STRAVA_CLIENT_ID}&redirect_uri={Constants.BASE_URI}&response_type=code&scope=activity:read");
+        }
         public async Task LinkToStrava()
         {
             using HttpResponseMessage response = await _http.PostAsJsonAsync("api/Strava/LinkToStrava", _appState.LoggedInUser);

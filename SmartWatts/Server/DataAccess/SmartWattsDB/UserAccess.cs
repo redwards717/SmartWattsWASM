@@ -16,11 +16,16 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
             _db = db;
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<User> GetUserById(string id)
         {
-            string sql = @"SELECT * FROM Users";
+            var parameters = new { id };
 
-            return await _db.LoadData<User, dynamic>(sql, new { });
+            string sql = @"SELECT UserID, Email, StravaAccessCode 
+                            FROM Users
+                            WHERE UserID = @id";
+
+            var result = await _db.LoadData<User, dynamic>(sql, parameters);
+            return result.FirstOrDefault();
         }
         public async Task<User> GetUser(string email, string password)
         {
@@ -49,10 +54,19 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
 
         public async Task InsertUser(User user)
         {
-            string sql = @"INSERT INTO Users (Email, Password, StravaID)
-                                        VALUES(@Email, @Password, @StravaID)";
+            string sql = @"INSERT INTO Users (UserID, Email, Password, StravaAccessCode)
+                                        VALUES(@UserId, @Email, @Password, @StravaAccessCode)";
 
             await _db.SaveData(sql, user);                       
+        }
+
+        public async Task UpdateUser(User user)
+        {
+            string sql = @"UPDATE Users
+                            SET Email = @Email, StravaAccessCode = @StravaAccessCode
+                            WHERE UserID = @UserId";
+
+            await _db.SaveData(sql, user);
         }
     }
 }

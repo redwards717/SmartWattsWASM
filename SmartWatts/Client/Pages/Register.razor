@@ -3,6 +3,7 @@
 @inject IUserService _userService;
 @inject AppState _appState; 
 @inject NavigationManager _nav;
+@inject ILocalStorageService _localStorage;
 
 <div class="container">
     <div class="centered-window">
@@ -13,12 +14,12 @@
         <form>
             <p>
                 <label for="email">Email: </label>
-                <input id="email" type="email" @bind-value="user.Email" />
+                <input id="email" type="email" @bind-value="email" />
             </p>
 
             <p>
                 <label for="password">Password: </label>
-                <input id="password" type="password" @bind-value="user.Password" />
+                <input id="password" type="password" @bind-value="password" />
             </p>
             <button type="button" class="btn btn-confirm" @onclick="SubmitRegister">Submit</button>
         </form>
@@ -34,25 +35,31 @@
 
 @code {
 
-    User user = new();
+    string email;
+    string password;
 
     private async Task SubmitRegister()
     {
         try
         {
-            await _userService.RegisterUser(user);
+            User user = new User()
+            {
+                Email = email,
+                Password = password
+            };
 
+            await _userService.RegisterUser(user);
             _appState.SetUser(user);
+            await _localStorage.SetItemAsync("userid", user.UserId);
 
             Toaster.ShowToast($"user created for {user.Email}", "lightgreen");
 
             _nav.NavigateTo("/");
 
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-
-            throw;
+            Toaster.ShowToast($"error registering - {ex.Message}", "red");
         }
     }
 

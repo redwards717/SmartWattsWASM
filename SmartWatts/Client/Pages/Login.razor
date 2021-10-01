@@ -23,7 +23,6 @@
             <button type="button" class="btn btn-confirm" @onclick="SubmitLogin">Log In</button>
         </form>
         <a href="register">i don't have an account</a>
-        @*<button @onclick="LoadAll">Test</button>*@
     </div>
 </div>
 
@@ -35,11 +34,6 @@
     User user = new();
     List<User> users;
 
-    private async Task LoadAll()
-    {
-        users = await _userService.LoadAllUsers();
-    }
-
     private async Task SubmitLogin()
     {
         try
@@ -49,7 +43,7 @@
 
             _nav.NavigateTo("/");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
 
             throw;

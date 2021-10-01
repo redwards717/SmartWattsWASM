@@ -2,18 +2,45 @@
 
 @inject AppState _appState; 
 @inject NavigationManager _nav;
+@inject ILocalStorageService _localStorage;
+@inject IUserService _userService;
 
 <h3>Home</h3>
 
+
 @code{       
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        if (_appState.LoggedInUser is null)
+        var userid = await _localStorage.GetItemAsync<string>("userid");
+
+        if (String.IsNullOrWhiteSpace(userid) && _appState.LoggedInUser is null)
         {
             _nav.NavigateTo("/login");
         }
+        else if (_appState.LoggedInUser is null)
+        {
+            var user = await _userService.GetUserById(userid);
+            _appState.SetUser(user);
+        }
+        else
+        {
+            await CheckForStravaCode();
+        }
     }
+
+    private async Task CheckForStravaCode()
+    {
+        var uri = _nav.ToAbsoluteUri(_nav.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out var _stravaCode))
+        {
+            _appState.LoggedInUser.StravaAccessCode = _stravaCode;
+            await _userService.UpdateUser(_appState.LoggedInUser);
+        }
+    }
+
+
+
 }
 
 

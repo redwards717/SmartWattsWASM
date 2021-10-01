@@ -21,10 +21,10 @@ namespace SmartWatts.Server.Controllers
         }
 
         [HttpGet]
-        [Route("All")]
-        public async Task<IActionResult> GetAllUsers()
+        [Route("{Id}")]
+        public async Task<IActionResult> GetUserById(string id)
         {
-            var users = await _user.GetAllUsers();
+            var users = await _user.GetUserById(id);
             return Ok(users);
         }
 
@@ -53,6 +53,14 @@ namespace SmartWatts.Server.Controllers
             }
 
             return BadRequest("That Email address is already registered");
+        }
+
+        [HttpPut]
+        [Route("Update")]
+        public async Task<IActionResult> PutUser(User user)
+        {
+            await _user.UpdateUser(user);
+            return Ok();
         }
 
     }

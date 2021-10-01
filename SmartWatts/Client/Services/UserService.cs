@@ -1,4 +1,5 @@
-﻿using SmartWatts.Shared;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using SmartWatts.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,9 @@ namespace SmartWatts.Client.Services
             _http = http;
         }
 
-        public async Task<List<User>> LoadAllUsers()
+        public async Task<User> GetUserById(string Id)
         {
-            return await _http.GetFromJsonAsync<List<User>>("api/User/All");
+            return await _http.GetFromJsonAsync<User>($"api/User/{Id}");
         }
 
         public async Task<User> LoadUser(User user)
@@ -45,6 +46,17 @@ namespace SmartWatts.Client.Services
             {
                 throw new Exception(response.ReasonPhrase);
             }
+        }
+
+        public async Task UpdateUser(User user)
+        {
+            using HttpResponseMessage response = await _http.PutAsJsonAsync("api/User/Update", user);
+            if(response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+            
         }
     }
 }
