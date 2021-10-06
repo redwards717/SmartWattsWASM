@@ -1,0 +1,25 @@
+﻿@page "/oauth2";
+
+@inject IUserService _userService;
+@inject ILocalStorageService _localStorage;
+@inject NavigationManager _nav;
+@inject AppState _appState;
+
+
+
+<h3>Strava Connection Confirmed</h3>
+
+<button @onclick="AddCodeToUser">Go To Profile</button>
+
+@code {
+
+    private async Task AddCodeToUser()
+    {
+        var userid = await _localStorage.GetItemAsync<string>("userid");
+        var user = await _userService.GetUserById(userid);
+        _appState.SetUser(user);
+
+        await _userService.AddCodeToUser(_nav.Uri);
+
+    }
+}

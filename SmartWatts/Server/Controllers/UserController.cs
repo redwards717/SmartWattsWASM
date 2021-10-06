@@ -63,5 +63,12 @@ namespace SmartWatts.Server.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [Route("AddCode/{Code}")]
+        public async Task<IActionResult> GetUserByIdTest(string code)
+        {
+            return Ok();
+        }
+
     }
 }

@@ -6,6 +6,7 @@ namespace SmartWatts.Client.Services
 {
     public interface IUserService
     {
+        Task AddCodeToUser(string uri);
         Task<User> GetUserById(string Id);
         Task<User> LoadUser(User user);
         Task RegisterUser(User user);

@@ -54,9 +54,13 @@ namespace SmartWatts.Client.Services
             if(response.IsSuccessStatusCode == false)
             {
                 throw new Exception(response.ReasonPhrase);
-            }
+            }        
+        }
 
-            
+        public async Task AddCodeToUser(string uri)
+        {
+            //write code to parse uri for stravatoken;
+            using HttpResponseMessage reponse = await _http.GetAsync($"api/User/AddCode/{uri}");
         }
     }
 }

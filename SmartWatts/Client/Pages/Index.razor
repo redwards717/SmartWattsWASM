@@ -23,21 +23,9 @@
             var user = await _userService.GetUserById(userid);
             _appState.SetUser(user);
         }
-        else
-        {
-            await CheckForStravaCode();
-        }
     }
 
-    private async Task CheckForStravaCode()
-    {
-        var uri = _nav.ToAbsoluteUri(_nav.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out var _stravaCode))
-        {
-            _appState.LoggedInUser.StravaAccessCode = _stravaCode;
-            await _userService.UpdateUser(_appState.LoggedInUser);
-        }
-    }
+   
 
 
 

@@ -16,12 +16,15 @@ else
 }
 
 
-@code {    
+@code {
+    [Parameter]
+    public string Code { get; set; }
 
+    
 
     private void RedirectToAuth()
     {
-        _nav.NavigateTo($"https://www.strava.com/oauth/authorize?client_id={Constants.STRAVA_CLIENT_ID}&redirect_uri={Constants.BASE_URI}&response_type=code&scope=activity:read_all,profile:read_all");
+        _nav.NavigateTo($"https://www.strava.com/oauth/authorize?client_id={Constants.STRAVA_CLIENT_ID}&redirect_uri={Constants.BASE_URI}/oauth2&response_type=code&scope=activity:read_all,profile:read_all");
     }
 
     private async Task LinkToStrava()
@@ -29,6 +32,8 @@ else
 
         await _stravaService.LinkToStrava();
     }
+
+    
 
 }
 
