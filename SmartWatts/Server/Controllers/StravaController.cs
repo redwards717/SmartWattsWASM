@@ -19,11 +19,11 @@ namespace SmartWatts.Server.Controllers
             _stravaApi = stravaApi;
         }
 
-        [HttpPost]
-        [Route("LinkToStrava")]
-        public async Task<IActionResult> LinkToStrava(User user)
+        [HttpGet]
+        [Route("TokenExchange/{code}")]
+        public async Task<IActionResult> TokenExchange(string code)
         {
-            await _stravaApi.AuthorizeStrava();
+            await _stravaApi.TokenExchange(code);
             return Ok();
         }
 

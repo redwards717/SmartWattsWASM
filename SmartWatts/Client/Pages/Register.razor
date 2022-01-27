@@ -1,9 +1,10 @@
 ﻿@page "/register";
 
-@inject IUserService _userService;
-@inject AppState _appState; 
-@inject NavigationManager _nav;
-@inject ILocalStorageService _localStorage;
+@inject IUserService userService;
+@inject AppState appState; 
+@inject NavigationManager nav;
+@inject ILocalStorageService localStorage;
+@inject IToastService toastService;
 
 <div class="container">
     <div class="centered-window">
@@ -48,18 +49,18 @@
                 Password = password
             };
 
-            await _userService.RegisterUser(user);
-            _appState.SetUser(user);
-            await _localStorage.SetItemAsync("userid", user.UserId);
+            await userService.RegisterUser(user);
+            appState.SetUser(user);
+            await localStorage.SetItemAsync("userid", user.UserId);
 
-            Toaster.ShowToast($"user created for {user.Email}", "lightgreen");
+            toastService.ShowSuccess($"user created for {user.Email}");
 
-            _nav.NavigateTo("/");
+            nav.NavigateTo("/");
 
         }
         catch (Exception ex)
         {
-            Toaster.ShowToast($"error registering - {ex.Message}", "red");
+            toastService.ShowError($"error registering - {ex.Message}");
         }
     }
 

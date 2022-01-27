@@ -59,8 +59,9 @@ namespace SmartWatts.Client.Services
 
         public async Task AddCodeToUser(string uri)
         {
-            //write code to parse uri for stravatoken;
-            using HttpResponseMessage reponse = await _http.GetAsync($"api/User/AddCode/{uri}");
+            string code = uri.Split("code=")[1].Split("&")[0];
+
+            using HttpResponseMessage reponse = await _http.GetAsync($"api/Strava/TokenExchange/{code}");
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿@page "/login";
 
-@inject IUserService _userService;
-@inject AppState _appState; 
-@inject NavigationManager _nav;
+@inject IUserService userService;
+@inject AppState appState; 
+@inject NavigationManager nav;
+@inject IToastService toastService;
+@inject ILocalStorageService localStorage;
 
 <div class="container">
     <div class="centered-window">
@@ -38,15 +40,18 @@
     {
         try
         {
-            user = await _userService.LoadUser(user);
-            _appState.SetUser(user);
+            user = await userService.LoadUser(user);
+            appState.SetUser(user);
 
-            _nav.NavigateTo("/");
+            await localStorage.SetItemAsync("userid", user.UserId);
+
+            toastService.ShowSuccess($"Logged in as {user.Email}");
+
+            nav.NavigateTo("/");
         }
         catch (Exception ex)
         {
-
-            throw;
+            toastService.ShowError(ex.Message);
         }
     }
 

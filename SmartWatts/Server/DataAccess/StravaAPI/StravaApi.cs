@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-
+using System.Web;
 
 namespace SmartWatts.Server.DataAccess.StravaAPI
 {
@@ -17,10 +17,26 @@ namespace SmartWatts.Server.DataAccess.StravaAPI
         {
             _http = http;
         }
-        public async Task AuthorizeStrava()
+
+
+        public async Task TokenExchange(string code)
         {
-            var response = await _http.GetAsync($"https://www.strava.com/oauth/authorize?client_id={Constants.STRAVA_CLIENT_ID}&redirect_uri={Constants.BASE_URI}&response_type=code&scope=activity:read");
-            var result = await response.Content.ReadAsStringAsync();
+            UriBuilder uriBuilder = new()
+            {
+                Scheme = "https",
+                Host = "strava.com",
+                Path = "oauth/token"
+            };
+
+            var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+            paramValues.Add("client_id", Constants.STRAVA_CLIENT_ID);
+            paramValues.Add("client_secret", Constants.STRAVA_CLIENT_SECRET);
+            paramValues.Add("code", code);
+            paramValues.Add("grant_type", "authorization_code");
+
+            uriBuilder.Query = paramValues.ToString();
+            // still doesnt work
+            var response = await _http.PostAsync(uriBuilder.Uri, null);
         }
     }
 }
