@@ -3,7 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -19,24 +22,46 @@ namespace SmartWatts.Server.DataAccess.StravaAPI
         }
 
 
+        //public async Task TokenExchange(string code)
+        //{
+        //    UriBuilder uriBuilder = new()
+        //    {
+        //        Scheme = "https",
+        //        Host = "strava.com",
+        //        Path = "oauth/token"
+        //    };
+
+        //    _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        //    var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+        //    paramValues.Add("client_id", Constants.STRAVA_CLIENT_ID);
+        //    paramValues.Add("client_secret", Constants.STRAVA_CLIENT_SECRET);
+        //    paramValues.Add("code", code);
+        //    paramValues.Add("grant_type", "authorization_code");
+
+        //    uriBuilder.Query = paramValues.ToString();
+
+        //    // still doesnt work
+        //    var response = await _http.PostAsync(uriBuilder.Uri, null);
+        //}
+
         public async Task TokenExchange(string code)
         {
-            UriBuilder uriBuilder = new()
+            using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://www.strava.com/api/v3/oauth/token"))
             {
-                Scheme = "https",
-                Host = "strava.com",
-                Path = "oauth/token"
-            };
+                var contentList = new List<string>();
+                contentList.Add($"client_id={Constants.STRAVA_CLIENT_ID}");
+                contentList.Add($"client_secret={Constants.STRAVA_CLIENT_SECRET}");
+                contentList.Add($"code={code}");
+                contentList.Add("grant_type=authorization_code");
+                request.Content = new StringContent(string.Join("&", contentList));
+                request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
 
-            var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
-            paramValues.Add("client_id", Constants.STRAVA_CLIENT_ID);
-            paramValues.Add("client_secret", Constants.STRAVA_CLIENT_SECRET);
-            paramValues.Add("code", code);
-            paramValues.Add("grant_type", "authorization_code");
+                var response = await _http.SendAsync(request);
 
-            uriBuilder.Query = paramValues.ToString();
-            // still doesnt work
-            var response = await _http.PostAsync(uriBuilder.Uri, null);
+            }
         }
+
+
     }
 }
