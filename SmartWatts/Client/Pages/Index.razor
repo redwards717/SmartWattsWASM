@@ -1,27 +1,32 @@
 ﻿@page "/"
 
-@inject AppState _appState; 
-@inject NavigationManager _nav;
-@inject ILocalStorageService _localStorage;
-@inject IUserService _userService;
+@inject AppState appState; 
+@inject NavigationManager nav;
+@inject ILocalStorageService localStorage;
+@inject IUserService userService;
 
 <h3>Home</h3>
 
 
-@code{       
+@code{
 
     protected override async Task OnInitializedAsync()
     {
-        var userid = await _localStorage.GetItemAsync<string>("userid");
+        var userid = await localStorage.GetItemAsync<string>("userid");
 
-        if (String.IsNullOrWhiteSpace(userid) && _appState.LoggedInUser is null)
+        if (String.IsNullOrWhiteSpace(userid) && appState.LoggedInUser is null)
         {
-            _nav.NavigateTo("/login");
+            nav.NavigateTo("/login");
         }
-        else if (_appState.LoggedInUser is null)
+        else if (appState.LoggedInUser is null)
         {
-            var user = await _userService.GetUserById(userid);
-            _appState.SetUser(user);
+            var user = await userService.GetUserById(userid);
+            appState.SetUser(user);
+
+            if(user.TokenExpiration >= DateTime.Now)
+            {
+                await userService.RefreshUserToken(user);
+            }
         }
     }
 

@@ -6,9 +6,9 @@
 
 <h4>@_appState.LoggedInUser.Email</h4>
 
-@if (String.IsNullOrWhiteSpace(_appState.LoggedInUser.StravaAccessCode) == false)
+@if (String.IsNullOrWhiteSpace(_appState.LoggedInUser.StravaAccessToken) == false)
 {
-    <p>Linked to Strava ID: @_appState.LoggedInUser.StravaAccessCode</p>
+    <p>Linked to Strava ID: @_appState.LoggedInUser.StravaAccessToken</p>
 }
 else
 {
@@ -17,11 +17,6 @@ else
 
 
 @code {
-    [Parameter]
-    public string Code { get; set; }
-
-    
-
     private void RedirectToAuth()
     {
         UriBuilder uriBuilder = new()
@@ -41,7 +36,6 @@ else
 
         nav.NavigateTo(uriBuilder.Uri.AbsoluteUri);
     }
-
 }
 
 <style>

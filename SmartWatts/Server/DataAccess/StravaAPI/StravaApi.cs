@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Web;
@@ -45,21 +46,25 @@ namespace SmartWatts.Server.DataAccess.StravaAPI
         //    var response = await _http.PostAsync(uriBuilder.Uri, null);
         //}
 
-        public async Task TokenExchange(string code)
+        public async Task<StravaUser> TokenExchange(string code)
         {
-            using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://www.strava.com/api/v3/oauth/token"))
+            using HttpRequestMessage request = new(new HttpMethod("POST"), "https://www.strava.com/api/v3/oauth/token");
+            List<string> contentList = new()
             {
-                var contentList = new List<string>();
-                contentList.Add($"client_id={Constants.STRAVA_CLIENT_ID}");
-                contentList.Add($"client_secret={Constants.STRAVA_CLIENT_SECRET}");
-                contentList.Add($"code={code}");
-                contentList.Add("grant_type=authorization_code");
-                request.Content = new StringContent(string.Join("&", contentList));
-                request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+                $"client_id={Constants.STRAVA_CLIENT_ID}",
+                $"client_secret={Constants.STRAVA_CLIENT_SECRET}",
+                $"code={code}",
+                "grant_type=authorization_code"
+            };
+            request.Content = new StringContent(string.Join("&", contentList));
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
 
-                var response = await _http.SendAsync(request);
-
+            using HttpResponseMessage response = await _http.SendAsync(request);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
             }
+            return await response.Content.ReadFromJsonAsync<StravaUser>();
         }
 
 

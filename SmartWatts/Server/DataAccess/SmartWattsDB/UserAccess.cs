@@ -1,11 +1,4 @@
-﻿using SmartWatts.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Threading.Tasks;
-
-namespace SmartWatts.Server.DataAccess.SmartWattsDB
+﻿namespace SmartWatts.Server.DataAccess.SmartWattsDB
 {
     public class UserAccess : IUserAccess
     {
@@ -20,7 +13,7 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
         {
             var parameters = new { id };
 
-            string sql = @"SELECT UserID, Email, StravaAccessCode 
+            string sql = @"SELECT UserID, Email, StravaAccessToken, TokenExpiration, RefreshToken 
                             FROM Users
                             WHERE UserID = @id";
 
@@ -52,21 +45,21 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
             return foundUser.FirstOrDefault();
         }
 
-        public async Task InsertUser(User user)
+        public Task InsertUser(User user)
         {
-            string sql = @"INSERT INTO Users (UserID, Email, Password, StravaAccessCode)
-                                        VALUES(@UserId, @Email, @Password, @StravaAccessCode)";
+            string sql = @"INSERT INTO Users (UserID, Email, Password, StravaAccessToken)
+                                        VALUES(@UserId, @Email, @Password, @StravaAccessToken)";
 
-            await _db.SaveData(sql, user);                       
+            return _db.SaveData(sql, user);                      
         }
 
-        public async Task UpdateUser(User user)
+        public Task UpdateUser(User user)
         {
             string sql = @"UPDATE Users
-                            SET Email = @Email, StravaAccessCode = @StravaAccessCode
+                            SET Email = @Email, StravaAccessToken = @StravaAccessToken, TokenExpiration = @TokenExpiration
                             WHERE UserID = @UserId";
 
-            await _db.SaveData(sql, user);
+            return _db.SaveData(sql, user);
         }
     }
 }

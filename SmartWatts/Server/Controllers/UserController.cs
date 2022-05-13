@@ -62,13 +62,5 @@ namespace SmartWatts.Server.Controllers
             await _user.UpdateUser(user);
             return Ok();
         }
-
-        [HttpGet]
-        [Route("AddCode/{Code}")]
-        public async Task<IActionResult> GetUserByIdTest(string code)
-        {
-            return Ok();
-        }
-
     }
 }

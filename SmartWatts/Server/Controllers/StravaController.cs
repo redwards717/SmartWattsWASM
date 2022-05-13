@@ -23,8 +23,8 @@ namespace SmartWatts.Server.Controllers
         [Route("TokenExchange/{code}")]
         public async Task<IActionResult> TokenExchange(string code)
         {
-            await _stravaApi.TokenExchange(code);
-            return Ok();
+            var stravaUser = await _stravaApi.TokenExchange(code);
+            return Ok(stravaUser);
         }
 
 
