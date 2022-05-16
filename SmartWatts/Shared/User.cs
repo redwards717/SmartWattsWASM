@@ -15,5 +15,6 @@ namespace SmartWatts.Shared
         public DateTime TokenExpiration { get; set; }
         public string RefreshToken { get; set; }
         public DateTime DateCreated { get; set; }
+        public DateTime LastLogin { get; set; }
     }
 }

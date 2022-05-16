@@ -13,7 +13,7 @@
         {
             var parameters = new { id };
 
-            string sql = @"SELECT UserID, Email, StravaAccessToken, TokenExpiration, RefreshToken 
+            const string sql = @"SELECT * 
                             FROM Users
                             WHERE UserID = @id";
 
@@ -22,10 +22,9 @@
         }
         public async Task<User> GetUser(string email, string password)
         {
-
             var parameter = new { email, password };
 
-            string sql = @"SELECT * FROM Users
+            const string sql = @"SELECT * FROM Users
                             WHERE Email = @email AND Password = @password";
 
             var user = await _db.LoadData<User, dynamic>(sql, parameter);
@@ -37,7 +36,7 @@
         {
             var parameter = new { email };
 
-            string sql = @"SELECT * FROM Users
+            const string sql = @"SELECT * FROM Users
                             WHERE Email = @email";
 
             var foundUser = await _db.LoadData<User, dynamic>(sql, parameter);
@@ -47,16 +46,16 @@
 
         public Task InsertUser(User user)
         {
-            string sql = @"INSERT INTO Users (UserID, Email, Password, StravaAccessToken)
-                                        VALUES(@UserId, @Email, @Password, @StravaAccessToken)";
+            const string sql = @"INSERT INTO Users (UserID, Email, Password)
+                                        VALUES(@UserId, @Email, @Password)";
 
-            return _db.SaveData(sql, user);                      
+            return _db.SaveData(sql, user);
         }
 
         public Task UpdateUser(User user)
         {
-            string sql = @"UPDATE Users
-                            SET Email = @Email, StravaAccessToken = @StravaAccessToken, TokenExpiration = @TokenExpiration
+            const string sql = @"UPDATE Users
+                            SET Email = @Email, StravaAccessToken = @StravaAccessToken, TokenExpiration = @TokenExpiration, RefreshToken = @RefreshToken, LastLogin = @LastLogin
                             WHERE UserID = @UserId";
 
             return _db.SaveData(sql, user);

@@ -5,6 +5,6 @@ namespace SmartWatts.Server.DataAccess.StravaAPI
 {
     public interface IStravaApi
     {
-        Task<StravaUser> TokenExchange(string code);
+        Task<StravaModels> TokenExchange(string code);
     }
 }

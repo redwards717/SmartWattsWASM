@@ -34,7 +34,6 @@
 @code {
 
     User user = new();
-    List<User> users;
 
     private async Task SubmitLogin()
     {
@@ -44,6 +43,11 @@
             appState.SetUser(user);
 
             await localStorage.SetItemAsync("userid", user.UserId);
+
+            if(user.TokenExpiration >= DateTime.Now)
+            {
+                await userService.RefreshUserToken(user);
+            }
 
             toastService.ShowSuccess($"Logged in as {user.Email}");
 

@@ -33,7 +33,7 @@ namespace SmartWatts.Server
             services.AddHttpClient();
 
             services.AddScoped<IUserAccess, UserAccess>();
-            services.AddScoped<IStravaApi, StravaApi>();
+            //services.AddScoped<IStravaApi, StravaApi>();
             services.AddScoped<ISqlDataAccess, SqlDataAccess>();
         }
 

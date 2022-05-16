@@ -23,7 +23,7 @@
             var user = await userService.GetUserById(userid);
             appState.SetUser(user);
 
-            if(user.TokenExpiration >= DateTime.Now)
+            if(user.TokenExpiration <= DateTime.Now)
             {
                 await userService.RefreshUserToken(user);
             }

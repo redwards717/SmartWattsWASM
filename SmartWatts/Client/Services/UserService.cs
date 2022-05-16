@@ -26,12 +26,18 @@
             {
                 throw new Exception(response.ReasonPhrase);
             }
+            else
+            {
+                user.LastLogin = DateTime.Now;
+                await UpdateUser(user);
+            }
 
             return await response.Content.ReadFromJsonAsync<User>();
         }
 
         public async Task RegisterUser(User user)
         {
+            user.LastLogin = DateTime.Now;
             using HttpResponseMessage response = await _http.PostAsJsonAsync("api/User/Register", user);
             if (response.IsSuccessStatusCode == false)
             {
@@ -80,7 +86,7 @@
             }
         }
 
-        private async Task<StravaUser> GetStravaUserToken(string code)
+        private async Task<StravaModels> GetStravaUserToken(string code)
         {
             using HttpRequestMessage request = new(new HttpMethod("POST"), "https://www.strava.com/api/v3/oauth/token");
             List<string> contentList = new()
@@ -98,10 +104,10 @@
             {
                 throw new Exception(response.ReasonPhrase);
             }
-            return await response.Content.ReadFromJsonAsync<StravaUser>();
+            return await response.Content.ReadFromJsonAsync<StravaModels>();
         }
 
-        private async Task<StravaUser> GetRefreshToken(User user)
+        private async Task<StravaModels> GetRefreshToken(User user)
         {
             using HttpRequestMessage request = new(new HttpMethod("POST"), "https://www.strava.com/api/v3/oauth/token");
             List<string> contentList = new()
@@ -120,7 +126,7 @@
                 throw new Exception(response.ReasonPhrase);
             }
 
-            return await response.Content.ReadFromJsonAsync<StravaUser>();
+            return await response.Content.ReadFromJsonAsync<StravaModels>();
         }
     }
 }

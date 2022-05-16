@@ -1,14 +1,15 @@
 ﻿@page "/profile";
 
-@inject AppState _appState; 
-@inject IStravaService _stravaService;
+@inject AppState appState; 
+@inject IStravaService stravaService;
 @inject NavigationManager nav;
 
-<h4>@_appState.LoggedInUser.Email</h4>
+<h4>@appState.LoggedInUser.Email</h4>
 
-@if (String.IsNullOrWhiteSpace(_appState.LoggedInUser.StravaAccessToken) == false)
+@if (String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken) == false)
 {
-    <p>Linked to Strava ID: @_appState.LoggedInUser.StravaAccessToken</p>
+    <p>Linked to Strava ID: @appState.LoggedInUser.StravaAccessToken</p>
+    <button @onclick=HandleSync>Sync Activities</button>
 }
 else
 {
@@ -35,6 +36,11 @@ else
         uriBuilder.Query = paramValues.ToString();
 
         nav.NavigateTo(uriBuilder.Uri.AbsoluteUri);
+    }
+
+    private void HandleSync()
+    {
+        stravaService.GetActivitiesForUser(appState.LoggedInUser);
     }
 }
 
