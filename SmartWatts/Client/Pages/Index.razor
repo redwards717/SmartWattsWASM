@@ -21,6 +21,11 @@
         else if (appState.LoggedInUser is null)
         {
             var user = await userService.GetUserById(userid);
+            if(user == null)
+            {
+                await localStorage.RemoveItemAsync("userid");
+                nav.NavigateTo("/login");
+            }
             appState.SetUser(user);
 
             if(user.TokenExpiration <= DateTime.Now)

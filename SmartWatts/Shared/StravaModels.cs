@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable IDE1006 // Naming Styles
+using System;
 
 namespace SmartWatts.Shared
 {
@@ -17,7 +18,7 @@ namespace SmartWatts.Shared
         public int resource_state { get; set; }
         public Athlete athlete { get; set; }
         public string name { get; set; }
-        public float distance { get; set; }
+        public double distance { get; set; }
         public int moving_time { get; set; }
         public int elapsed_time { get; set; }
         public float total_elevation_gain { get; set; }
@@ -45,17 +46,17 @@ namespace SmartWatts.Shared
         public string gear_id { get; set; }
         public float[] start_latlng { get; set; }
         public float[] end_latlng { get; set; }
-        public float average_speed { get; set; }
-        public float max_speed { get; set; }
-        public float average_cadence { get; set; }
-        public float average_watts { get; set; }
+        public double average_speed { get; set; }
+        public double max_speed { get; set; }
+        public double average_cadence { get; set; }
+        public double average_watts { get; set; }
         public int max_watts { get; set; }
         public int weighted_average_watts { get; set; }
-        public float kilojoules { get; set; }
+        public double kilojoules { get; set; }
         public bool device_watts { get; set; }
         public bool has_heartrate { get; set; }
-        public float average_heartrate { get; set; }
-        public float max_heartrate { get; set; }
+        public double average_heartrate { get; set; }
+        public double max_heartrate { get; set; }
         public bool heartrate_opt_out { get; set; }
         public bool display_hide_heartrate_option { get; set; }
         public float elev_high { get; set; }

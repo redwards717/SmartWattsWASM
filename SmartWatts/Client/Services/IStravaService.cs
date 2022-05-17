@@ -5,6 +5,6 @@ namespace SmartWatts.Client.Services
 {
     public interface IStravaService
     {
-        Task GetActivitiesForUser(User user, long? before = null, long? after = null, int? page = null, int? per_page = null);
+        Task<List<Activity>> GetActivitiesForUser(User user, long? before = null, long? after = null, int? page = null, int? per_page = null);
     }
 }

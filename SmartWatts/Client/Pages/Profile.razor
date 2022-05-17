@@ -2,6 +2,7 @@
 
 @inject AppState appState; 
 @inject IStravaService stravaService;
+@inject IActivityService activityService;
 @inject NavigationManager nav;
 
 <h4>@appState.LoggedInUser.Email</h4>
@@ -15,7 +16,6 @@ else
 {
     <button class="btn btn-strava" @onclick="RedirectToAuth">Link to Stava</button>
 }
-
 
 @code {
     private void RedirectToAuth()
@@ -38,9 +38,10 @@ else
         nav.NavigateTo(uriBuilder.Uri.AbsoluteUri);
     }
 
-    private void HandleSync()
+    private async Task HandleSync()
     {
-        stravaService.GetActivitiesForUser(appState.LoggedInUser);
+        var activities = await stravaService.GetActivitiesForUser(appState.LoggedInUser);
+        await activityService.AddActivities(activities);
     }
 }
 

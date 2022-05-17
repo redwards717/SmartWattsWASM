@@ -26,18 +26,12 @@
             {
                 throw new Exception(response.ReasonPhrase);
             }
-            else
-            {
-                user.LastLogin = DateTime.Now;
-                await UpdateUser(user);
-            }
 
             return await response.Content.ReadFromJsonAsync<User>();
         }
 
         public async Task RegisterUser(User user)
         {
-            user.LastLogin = DateTime.Now;
             using HttpResponseMessage response = await _http.PostAsJsonAsync("api/User/Register", user);
             if (response.IsSuccessStatusCode == false)
             {
@@ -51,7 +45,7 @@
             if(response.IsSuccessStatusCode == false)
             {
                 throw new Exception(response.ReasonPhrase);
-            }        
+            }
         }
 
         public async Task AddTokenToUser(string uri, User user)
@@ -63,6 +57,7 @@
             user.StravaAccessToken = stravaUser.access_token;
             user.TokenExpiration = DateTimeUtilities.UnixToDateTime(stravaUser.expires_at);
             user.RefreshToken = stravaUser.refresh_token;
+            user.StravaUserID = stravaUser.athlete.id;
 
             using HttpResponseMessage response = await _http.PutAsJsonAsync("api/User/Update", user);
             if (response.IsSuccessStatusCode == false)

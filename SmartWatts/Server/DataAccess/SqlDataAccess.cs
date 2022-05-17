@@ -22,21 +22,17 @@ namespace SmartWatts.Server.DataAccess
         {
             string connectionString = _configuration.GetConnectionString("SmartWatts");
 
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                var data = await connection.QueryAsync<T>(sql, parameters);
-                return data.ToList();
-            }
+            using IDbConnection connection = new SqlConnection(connectionString);
+            var data = await connection.QueryAsync<T>(sql, parameters);
+            return data.ToList();
         }
 
         public async Task SaveData<T>(string sql, T parameters)
         {
             string connectionString = _configuration.GetConnectionString("SmartWatts");
 
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                await connection.ExecuteAsync(sql, parameters);
-            }
+            using IDbConnection connection = new SqlConnection(connectionString);
+            await connection.ExecuteAsync(sql, parameters);
         }
     }
 }

@@ -46,8 +46,8 @@
 
         public Task InsertUser(User user)
         {
-            const string sql = @"INSERT INTO Users (UserID, Email, Password)
-                                        VALUES(@UserId, @Email, @Password)";
+            const string sql = @"INSERT INTO Users (UserID, Email, Password, StravaUserID)
+                                        VALUES(@UserId, @Email, @Password, @StravaUserID)";
 
             return _db.SaveData(sql, user);
         }
@@ -55,7 +55,7 @@
         public Task UpdateUser(User user)
         {
             const string sql = @"UPDATE Users
-                            SET Email = @Email, StravaAccessToken = @StravaAccessToken, TokenExpiration = @TokenExpiration, RefreshToken = @RefreshToken, LastLogin = @LastLogin
+                            SET Email = @Email, StravaUserID = @StravaUserID, StravaAccessToken = @StravaAccessToken, TokenExpiration = @TokenExpiration, RefreshToken = @RefreshToken
                             WHERE UserID = @UserId";
 
             return _db.SaveData(sql, user);

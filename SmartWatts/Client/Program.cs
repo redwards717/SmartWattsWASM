@@ -1,15 +1,5 @@
-using Blazored.LocalStorage;
-using Blazored.Toast;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using SmartWatts.Client.Services;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+#pragma warning disable AsyncFixer01 // Unnecessary async/await usage
+#pragma warning disable RCS1102 // Make class static.
 
 namespace SmartWatts.Client
 {
@@ -28,6 +18,7 @@ namespace SmartWatts.Client
 
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IStravaService, StravaService>();
+            builder.Services.AddScoped<IActivityService, ActivityService>();
 
             builder.Services.AddSingleton<AppState>();
 
