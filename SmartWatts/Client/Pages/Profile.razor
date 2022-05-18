@@ -40,8 +40,21 @@ else
 
     private async Task HandleSync()
     {
-        var activities = await stravaService.GetActivitiesForUser(appState.LoggedInUser);
-        await activityService.AddActivities(activities);
+        try
+        {
+            appState.LoaderOn();
+
+            var activities = await stravaService.GetActivitiesForUser();
+            await activityService.AddActivities(activities);
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+            appState.LoaderOff();
+        }
     }
 }
 

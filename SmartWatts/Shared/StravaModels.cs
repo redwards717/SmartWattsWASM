@@ -71,6 +71,15 @@ namespace SmartWatts.Shared
         public float suffer_score { get; set; }
     }
 
+    public class StravaDataStream
+    {
+        public string type { get; set; }
+        public float[] data { get; set; }
+        public string series_type { get; set; }
+        public int original_size { get; set; }
+        public string resolution { get; set; }
+    }
+
     public class Athlete
     {
         public int id { get; set; }

@@ -1,12 +1,22 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject AppState appState
+@inject IToastService toastService
 
-<BlazoredToasts></BlazoredToasts>
+<BlazoredToasts Timeout="10"
+                    ShowProgressBar="true"
+                    RemoveToastsOnNavigation="false"
+                    Position="ToastPosition.TopRight"></BlazoredToasts>
+
+@if (appState.Loading)
+{
+    <Loader></Loader>
+}
 
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
-
 
     <div class="main">
 
@@ -18,5 +28,13 @@
 
 @code
 {
-    
+    protected override void OnInitialized()
+    {
+        appState.OnChange += StateHasChanged;
+    }
+
+    void IDisposable.Dispose()
+    {
+        appState.OnChange -= StateHasChanged;
+    }
 }

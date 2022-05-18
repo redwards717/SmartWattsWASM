@@ -9,10 +9,22 @@ namespace SmartWatts.Client
     public class AppState
     {
         public User LoggedInUser { get; set; }
+        public bool Loading { get; set; }
         public event Action OnChange;
         public void SetUser(User user)
         {
             LoggedInUser = user;
+            NotifyStateChanged();
+        }
+
+        public void LoaderOn()
+        {
+            Loading = true;
+            NotifyStateChanged();
+        }
+        public void LoaderOff()
+        {
+            Loading = false;
             NotifyStateChanged();
         }
 
