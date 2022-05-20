@@ -11,6 +11,8 @@
 {
     <p>Linked to Strava ID: @appState.LoggedInUser.StravaAccessToken</p>
     <button @onclick=HandleSync>Sync Activities</button>
+
+    <button @onclick=ParseRide>Test Ride</button>
 }
 else
 {
@@ -55,6 +57,12 @@ else
         {
             appState.LoaderOff();
         }
+    }
+
+    private async Task ParseRide()
+    {
+        var activities = await activityService.GetAllActivitiesByUser(appState.LoggedInUser);
+        var data = await stravaService.GetDataStreamForActivity(activities[0], "watts");
     }
 }
 

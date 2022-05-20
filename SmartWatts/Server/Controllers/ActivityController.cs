@@ -20,5 +20,13 @@ namespace SmartWatts.Server.Controllers
             await _activity.InsertActivities(activities);
             return Ok();
         }
+
+        [HttpGet]
+        [Route("GetAllByUser")]
+        public async Task<IActionResult> GetAllActivitiesByUser([FromHeader] string id)
+        {
+            var activities = await _activity.GetActivitiesByUser(id);
+            return Ok(activities);
+        }
     }
 }

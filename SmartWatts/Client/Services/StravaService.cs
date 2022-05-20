@@ -64,19 +64,17 @@ namespace SmartWatts.Client.Services
         {
             try
             {
-                UriBuilder uriBuilder = new()
-                {
-                    Scheme = "https",
-                    Host = "strava.com",
-                    Path = $"api/v3/athlete/activities/{activity.StravaRideID}/streams"
-                };
+                UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/athlete/activities/{activity.StravaRideID}/streams");
+                uriBuilder.Port = -1;
 
                 var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
-                paramValues.Add("keys", $"time,{data}"); // always grabs distance as well. other options [time,distance,latlng,altitude,velocity_smooth,heartrate,cadance,watts,temp,moving,grade_smooth]
+                paramValues.Add("keys", data); // other options [time,distance,latlng,altitude,velocity_smooth,heartrate,cadance,watts,temp,moving,grade_smooth]
+                paramValues.Add("series_type", "time");
 
                 uriBuilder.Query = paramValues.ToString();
-
-                using HttpRequestMessage request = new(new HttpMethod("GET"), uriBuilder.ToString());
+                var test = uriBuilder.ToString();
+                //figure out why only string literal works right now;
+                using HttpRequestMessage request = new(new HttpMethod("GET"), "https://www.strava.com/api/v3/activities/7154532992/streams?keys=watts&series_type=time");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _appState.LoggedInUser.StravaAccessToken);
 
                 using HttpResponseMessage response = await _http.SendAsync(request);

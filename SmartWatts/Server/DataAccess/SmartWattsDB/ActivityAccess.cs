@@ -9,11 +9,14 @@
             _db = db;
         }
 
-        public Task<List<StravaActivity>> GetActivitiesByUser(User user)
+        public Task<List<Activity>> GetActivitiesByUser(string id)
         {
-            const string sql = "SELECT * FROM Activities";
+            var parameters = new { id };
 
-            return _db.LoadData<StravaActivity, User>(sql, user);
+            const string sql = @"SELECT * FROM Activities
+                                    WHERE StravaUserID = @id";
+
+            return _db.LoadData<Activity, dynamic>(sql, parameters);
         }
 
         public Task InsertActivities(List<Activity> activities)
