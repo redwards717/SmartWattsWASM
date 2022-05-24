@@ -63,6 +63,7 @@ else
     {
         var activities = await activityService.GetAllActivitiesByUser(appState.LoggedInUser);
         var data = await stravaService.GetDataStreamForActivity(activities[0], "watts");
+        await activityService.AddPowerDataToActivity(activities[0], data[0]);
     }
 }
 

@@ -22,5 +22,7 @@ namespace SmartWatts.Shared
         public double Kilojoules { get; set; }
         public double AvgHeartrate { get; set; }
         public double MaxHeartrate { get; set; }
+        public int PowerDataID { get; set; }
+        public PowerData PowerData { get; set; }
     }
 }

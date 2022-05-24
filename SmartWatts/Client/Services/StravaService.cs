@@ -64,7 +64,7 @@ namespace SmartWatts.Client.Services
         {
             try
             {
-                UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/athlete/activities/{activity.StravaRideID}/streams");
+                UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/activities/{activity.StravaRideID}/streams");
                 uriBuilder.Port = -1;
 
                 var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -72,9 +72,8 @@ namespace SmartWatts.Client.Services
                 paramValues.Add("series_type", "time");
 
                 uriBuilder.Query = paramValues.ToString();
-                var test = uriBuilder.ToString();
-                //figure out why only string literal works right now;
-                using HttpRequestMessage request = new(new HttpMethod("GET"), "https://www.strava.com/api/v3/activities/7154532992/streams?keys=watts&series_type=time");
+
+                using HttpRequestMessage request = new(new HttpMethod("GET"), uriBuilder.ToString());
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _appState.LoggedInUser.StravaAccessToken);
 
                 using HttpResponseMessage response = await _http.SendAsync(request);
@@ -84,8 +83,7 @@ namespace SmartWatts.Client.Services
                 }
 
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var dataStream = JsonConvert.DeserializeObject<List<StravaDataStream>>(jsonString);
-                return dataStream;
+                return JsonConvert.DeserializeObject<List<StravaDataStream>>(jsonString);
             }
             catch(Exception ex)
             {

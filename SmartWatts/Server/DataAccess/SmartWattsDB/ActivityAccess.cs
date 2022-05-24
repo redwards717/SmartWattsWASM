@@ -9,7 +9,7 @@
             _db = db;
         }
 
-        public Task<List<Activity>> GetActivitiesByUser(string id)
+        public Task<List<Activity>> GetActivitiesByStravaUserID(string id)
         {
             var parameters = new { id };
 
@@ -17,6 +17,16 @@
                                     WHERE StravaUserID = @id";
 
             return _db.LoadData<Activity, dynamic>(sql, parameters);
+        }
+
+        public async Task<Activity> GetActivityByStravaRideID(string id)
+        {
+            var parameters = new { id };
+
+            const string sql = @"SELECT * FROM Actvities
+                                    WHERE StravaRideID = @id";
+
+            return (await _db.LoadData<Activity, dynamic>(sql, parameters)).FirstOrDefault();
         }
 
         public Task InsertActivities(List<Activity> activities)

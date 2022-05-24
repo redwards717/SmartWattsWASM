@@ -13,5 +13,9 @@ namespace SmartWatts.Shared
         public const string STRAVA_CLIENT_SECRET = "648cca9f2c7df78a291f777faad2e371212c5848";
         public const string STRAVA_CLIENT_ID = "41884";
         public const string STRAVA_REFRESH_TOKEN = "72658f4b83ce4c476518e53e11ce50c807bd540d ";
+
+        public static List<int> PowerPoints { get; } = new List<int>(){
+            5, 15, 30, 45, 60, 90, 60 * 2, 60 * 3, 60 * 5, (60 * 7) + 30, 60 * 10, 60 * 15, 60 * 20, 60 * 30, 60 * 45, 60 * 60, 60 * 90, 60 * 60 * 2, 60 * 60 * 3, 60 * 60 * 4, 60 * 60 * 5, 60 * 60 * 8
+        };
     }
 }

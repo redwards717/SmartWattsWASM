@@ -35,5 +35,14 @@ namespace SmartWatts.Client.Services
             var test = await response.Content.ReadFromJsonAsync<List<Activity>>();
             return test;
         }
+
+        public async Task AddPowerDataToActivity(Activity activity, StravaDataStream sds)
+        {
+            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/{activity.StravaRideID}/AddPower", sds);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
     }
 }

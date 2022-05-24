@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartWatts.Server.DataAccess;
 using SmartWatts.Server.DataAccess.SmartWattsDB;
-using SmartWatts.Server.DataAccess.StravaAPI;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -33,7 +32,7 @@ namespace SmartWatts.Server
 
             services.AddScoped<IUserAccess, UserAccess>();
             services.AddScoped<IActivityAccess, ActivityAccess>();
-            //services.AddScoped<IStravaApi, StravaApi>();
+            services.AddScoped<IPowerDataAccess, PowerDataAccess>();
             services.AddScoped<ISqlDataAccess, SqlDataAccess>();
         }
 

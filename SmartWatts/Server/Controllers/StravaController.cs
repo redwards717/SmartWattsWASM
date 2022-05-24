@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SmartWatts.Server.DataAccess.StravaAPI;
 using SmartWatts.Shared;
 using System;
 using System.Collections.Generic;
@@ -12,12 +11,6 @@ using System.Threading.Tasks;
 //    [ApiController]
 //    public class StravaController : ControllerBase
 //    {
-//        private readonly IStravaApi _stravaApi;
-
-//        public StravaController(IStravaApi stravaApi)
-//        {
-//            _stravaApi = stravaApi;
-//        }
 
 //        [HttpGet]
 //        [Route("TokenExchange/{code}")]
@@ -26,7 +19,5 @@ using System.Threading.Tasks;
 //            var stravaUser = await _stravaApi.TokenExchange(code);
 //            return Ok(stravaUser);
 //        }
-
-
 //    }
 //}
