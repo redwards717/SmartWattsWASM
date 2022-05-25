@@ -3,6 +3,7 @@
 @inject AppState appState; 
 @inject IStravaService stravaService;
 @inject IActivityService activityService;
+@inject IToastService toastService;
 @inject NavigationManager nav;
 
 <h4>@appState.LoggedInUser.Email</h4>
@@ -11,8 +12,6 @@
 {
     <p>Linked to Strava ID: @appState.LoggedInUser.StravaAccessToken</p>
     <button @onclick=HandleSync>Sync Activities</button>
-
-    <button @onclick=ParseRide>Test Ride</button>
 }
 else
 {
@@ -44,26 +43,28 @@ else
     {
         try
         {
-            appState.LoaderOn();
+            appState.LoaderOn("Loading Rides...");
 
             var activities = await stravaService.GetActivitiesForUser();
             await activityService.AddActivities(activities);
+
+            int rideNo = 1;
+            foreach(Activity activity in activities)
+            {
+                appState.SetLoadingMsg($"Calculating data for {activity.Name} - ( {rideNo} / {activities.Count} )");
+                var data = await stravaService.GetDataStreamForActivity(activity, "watts");
+                await activityService.AddPowerDataToActivity(activity, data.Find(d => d.type == "watts"));
+                rideNo++;
+            }
         }
         catch (Exception ex)
         {
-
+            toastService.ShowError($"There was an error syncing data from Strava - {ex.Message}");
         }
         finally
         {
             appState.LoaderOff();
         }
-    }
-
-    private async Task ParseRide()
-    {
-        var activities = await activityService.GetAllActivitiesByUser(appState.LoggedInUser);
-        var data = await stravaService.GetDataStreamForActivity(activities[0], "watts");
-        await activityService.AddPowerDataToActivity(activities[0], data[0]);
     }
 }
 

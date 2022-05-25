@@ -1,23 +1,56 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SmartWatts.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace SmartWatts.Server.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class StravaController : ControllerBase
+    {
+        private readonly IUserAccess _userAccess;
+        private readonly IStravaAccess _stravaAcess;
 
-//namespace SmartWatts.Server.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class StravaController : ControllerBase
-//    {
+        public StravaController(IUserAccess userAccess, IStravaAccess stravaAcess)
+        {
+            _userAccess = userAccess;
+            _stravaAcess = stravaAcess;
+        }
 
-//        [HttpGet]
-//        [Route("TokenExchange/{code}")]
-//        public async Task<IActionResult> TokenExchange(string code)
-//        {
-//            var stravaUser = await _stravaApi.TokenExchange(code);
-//            return Ok(stravaUser);
-//        }
-//    }
-//}
+        [HttpGet]
+        [Route("Activities/{id}")]
+        public async Task<IActionResult> GetActivitiesFromStrava(string id, [FromHeader] long? before = null, [FromHeader] long? after = null, [FromHeader] int? page = null, [FromHeader] int? per_page = null)
+        {
+            var user = await _userAccess.GetUserById(id);
+            var stravaActivities = await _stravaAcess.GetActivities(user.StravaAccessToken, before, after, page, per_page);
+            var activities = ConvertStravaActivity(stravaActivities);
+
+            return Ok(activities);
+        }
+
+        private static List<Activity> ConvertStravaActivity(List<StravaActivity> stravaActivities)
+        {
+            List<Activity> activities = new();
+            foreach (StravaActivity sa in stravaActivities)
+            {
+                activities.Add(new Activity()
+                {
+                    StravaRideID = sa.id,
+                    StravaUserID = sa.athlete.id,
+                    Name = sa.name,
+                    Date = sa.start_date_local,
+                    Type = sa.type,
+                    HasWatts = sa.device_watts,
+                    Distance = sa.distance,
+                    AvgSpeed = sa.average_speed,
+                    MaxSpeed = sa.max_speed,
+                    AvgCadence = sa.average_cadence,
+                    AvgWatts = sa.average_watts,
+                    MaxWatts = sa.max_watts,
+                    WeightedAvgWatts = sa.weighted_average_watts,
+                    Kilojoules = sa.kilojoules,
+                    AvgHeartrate = sa.average_heartrate,
+                    MaxHeartrate = sa.max_heartrate
+                });
+            }
+
+            return activities;
+        }
+    }
+}

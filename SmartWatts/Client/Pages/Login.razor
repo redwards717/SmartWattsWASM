@@ -1,6 +1,8 @@
 ﻿@page "/login";
 
 @inject IUserService userService;
+@inject IActivityService activityService;
+@inject IStravaService stravaService;
 @inject AppState appState; 
 @inject NavigationManager nav;
 @inject IToastService toastService;
@@ -49,6 +51,16 @@
                 await userService.RefreshUserToken(user);
             }
 
+            if(user.StravaUserID > 0)
+            {
+                appState.LoaderOn("Scanning for new activities...");
+
+                var activities = await activityService.GetAllActivitiesByUser(user);
+                appState.SetUsersActivities(activities);
+
+                await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
+            }
+
             toastService.ShowSuccess($"Logged in as {user.Email}");
 
             nav.NavigateTo("/");
@@ -56,6 +68,10 @@
         catch (Exception ex)
         {
             toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            appState.LoaderOff();
         }
     }
 

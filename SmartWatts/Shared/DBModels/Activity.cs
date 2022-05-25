@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartWatts.Shared
+namespace SmartWatts.Shared.DBModels
 {
     public class Activity
     {
@@ -12,6 +12,9 @@ namespace SmartWatts.Shared
         public long StravaRideID { get; set; }
         public int StravaUserID { get; set; }
         public string Name { get; set; }
+        public DateTime Date { get; set; }
+        public string Type { get; set; }
+        public bool HasWatts { get; set; }
         public double Distance { get; set; }
         public double AvgSpeed { get; set; }   // comes from strava in meters/second....lol ?!
         public double MaxSpeed { get; set; }  // samsies

@@ -1,4 +1,4 @@
-﻿using SmartWatts.Shared;
+﻿using SmartWatts.Shared.DBModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartWatts.Shared
+namespace SmartWatts.Shared.DBModels
 {
     public class User
     {

@@ -1,5 +1,4 @@
-﻿using SmartWatts.Shared;
-using System.Diagnostics.Metrics;
+﻿using SmartWatts.Shared.DBModels;
 
 namespace SmartWatts.Client.Services
 {
@@ -16,48 +15,20 @@ namespace SmartWatts.Client.Services
 
         public async Task<List<Activity>> GetActivitiesForUser(long? before = null, long? after = null, int? page = null, int? per_page = null)
         {
-            try
+            var request = new HttpRequestMessage(HttpMethod.Get, Constants.BASE_URI + $"api/Strava/Activities/{_appState.LoggedInUser.UserId}");
+
+            request.Headers.Add("befor", before.ToString());
+            request.Headers.Add("after", after.ToString());
+            request.Headers.Add("page", page.ToString());
+            request.Headers.Add("per_page", per_page.ToString());
+
+            using HttpResponseMessage response = await _http.SendAsync(request);
+            if (response.IsSuccessStatusCode == false)
             {
-                UriBuilder uriBuilder = new("https://www.strava.com/api/v3/athlete/activities");
-                uriBuilder.Port = -1;
-
-                var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
-                if(before is not null)
-                {
-                    paramValues.Add("before", before.ToString());
-                }
-                if(after is not null)
-                {
-                    paramValues.Add("after", after.ToString());
-                }
-                if(page is not null)
-                {
-                    paramValues.Add("page", page.ToString());
-                }
-                if(per_page is not null)
-                {
-                    paramValues.Add("per_page", per_page.ToString());
-                }
-
-                uriBuilder.Query = paramValues.ToString();
-
-                using HttpRequestMessage request = new(new HttpMethod("GET"), uriBuilder.ToString());
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _appState.LoggedInUser.StravaAccessToken);
-
-                using HttpResponseMessage response = await _http.SendAsync(request);
-                if (response.IsSuccessStatusCode == false)
-                {
-                    throw new Exception(response.ReasonPhrase);
-                }
-
-                var jsonString = await response.Content.ReadAsStringAsync();
-                var sa = JsonConvert.DeserializeObject<List<StravaActivity>>(jsonString);
-                return ConvertStravaActivity(sa);
+                throw new Exception(response.ReasonPhrase);
             }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+
+            return await response.Content.ReadFromJsonAsync<List<Activity>>();
         }
 
         public async Task<List<StravaDataStream>> GetDataStreamForActivity(Activity activity, string data)
@@ -83,38 +54,13 @@ namespace SmartWatts.Client.Services
                 }
 
                 var jsonString = await response.Content.ReadAsStringAsync();
+                jsonString = jsonString.Replace("null", "0");
                 return JsonConvert.DeserializeObject<List<StravaDataStream>>(jsonString);
             }
             catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-        }
-
-        private static List<Activity> ConvertStravaActivity(List<StravaActivity> stravaActivities)
-        {
-            List<Activity> activities = new();
-            foreach(StravaActivity sa in stravaActivities)
-            {
-                activities.Add(new Activity()
-                {
-                    StravaRideID = sa.id,
-                    StravaUserID = sa.athlete.id,
-                    Name = sa.name,
-                    Distance = sa.distance,
-                    AvgSpeed = sa.average_speed,
-                    MaxSpeed = sa.max_speed,
-                    AvgCadence = sa.average_cadence,
-                    AvgWatts = sa.average_watts,
-                    MaxWatts = sa.max_watts,
-                    WeightedAvgWatts = sa.weighted_average_watts,
-                    Kilojoules = sa.kilojoules,
-                    AvgHeartrate = sa.average_heartrate,
-                    MaxHeartrate = sa.max_heartrate
-                });
-            }
-
-            return activities;
         }
     }
 }

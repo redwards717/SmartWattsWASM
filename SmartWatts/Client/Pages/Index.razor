@@ -4,6 +4,8 @@
 @inject NavigationManager nav;
 @inject ILocalStorageService localStorage;
 @inject IUserService userService;
+@inject IActivityService activityService;
+@inject IToastService toastService;
 
 <h3>Home</h3>
 
@@ -12,34 +14,61 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var userid = await localStorage.GetItemAsync<string>("userid");
+        try
+        {
 
-        if (String.IsNullOrWhiteSpace(userid) && appState.LoggedInUser is null)
-        {
-            nav.NavigateTo("/login");
-        }
-        else if (appState.LoggedInUser is null)
-        {
-            var user = await userService.GetUserById(userid);
-            if(user == null)
+            var userid = await localStorage.GetItemAsync<string>("userid");
+
+            if (String.IsNullOrWhiteSpace(userid) && appState.LoggedInUser is null)
             {
-                await localStorage.RemoveItemAsync("userid");
                 nav.NavigateTo("/login");
             }
-            appState.SetUser(user);
-
-            if(user.TokenExpiration <= DateTime.Now)
+            else if (appState.LoggedInUser is null)
             {
-                await userService.RefreshUserToken(user);
+                var user = await userService.GetUserById(userid);
+                if(user == null)
+                {
+                    await localStorage.RemoveItemAsync("userid");
+                    nav.NavigateTo("/login");
+                    return;
+                }
+
+                if(user.TokenExpiration <= DateTime.Now)
+                {
+                    await userService.RefreshUserToken(user);
+                }
+
+                appState.SetUser(user);
+
+                appState.LoaderOn("Scanning for new activities...");
+
+                var activities = await activityService.GetAllActivitiesByUser(user);
+                appState.SetUsersActivities(activities);
+
+                var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
+
+                if(newCount > 0)
+                {
+                    toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
+                }
             }
         }
+        catch (Exception ex)
+        {
+            toastService.ShowError($"error initilizing user - {ex.Message}");
+        }
+        finally
+        {
+            appState.LoaderOff();
+        }
     }
+}
 
    
 
 
 
-}
+
 
 
 

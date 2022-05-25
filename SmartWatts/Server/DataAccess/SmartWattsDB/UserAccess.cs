@@ -1,4 +1,6 @@
-﻿namespace SmartWatts.Server.DataAccess.SmartWattsDB
+﻿using SmartWatts.Shared.DBModels;
+
+namespace SmartWatts.Server.DataAccess.SmartWattsDB
 {
     public class UserAccess : IUserAccess
     {

@@ -1,15 +1,11 @@
-﻿using SmartWatts.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SmartWatts.Client
+﻿namespace SmartWatts.Client
 {
     public class AppState
     {
         public User LoggedInUser { get; set; }
+        public List<Activity> UsersActivities { get; set; }
         public bool Loading { get; set; }
+        public string LoadingMsg { get; set; } = "Loading...";
         public event Action OnChange;
         public void SetUser(User user)
         {
@@ -17,14 +13,28 @@ namespace SmartWatts.Client
             NotifyStateChanged();
         }
 
-        public void LoaderOn()
+        public void SetUsersActivities(List<Activity> activities)
+        {
+            UsersActivities = activities;
+            NotifyStateChanged();
+        }
+
+        public void LoaderOn(string msg)
         {
             Loading = true;
+            LoadingMsg = msg;
+            NotifyStateChanged();
+        }
+
+        public void SetLoadingMsg(string msg)
+        {
+            LoadingMsg = msg;
             NotifyStateChanged();
         }
         public void LoaderOff()
         {
             Loading = false;
+            LoadingMsg = null;
             NotifyStateChanged();
         }
 

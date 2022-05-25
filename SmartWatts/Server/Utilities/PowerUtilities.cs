@@ -1,4 +1,6 @@
-﻿namespace SmartWatts.Server.Utilities
+﻿using SmartWatts.Shared.DBModels;
+
+namespace SmartWatts.Server.Utilities
 {
     public static class PowerUtilities
     {
