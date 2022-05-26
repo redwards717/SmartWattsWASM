@@ -1,0 +1,16 @@
+﻿table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 5px;
+    width: 65px;
+}
+
+th, td {
+    text-align: center;
+}
+
+.row-title {
+    width: 100px;
+}

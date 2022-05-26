@@ -1,0 +1,33 @@
+﻿
+h5 {
+    overflow: hidden;
+    text-align: center;
+}
+
+h5:before,h5:after {
+    background-color: #000;
+    content: "";
+    display: inline-block;
+    height: 2px;
+    position: relative;
+    vertical-align: middle;
+    width: 50%;
+}
+
+h5:before {
+    right: 0.5em;
+    margin-left: -90%;
+}
+
+h5:after {
+    left: 0.5em;
+    margin-right: -10%;
+}
+
+.brief-wrapper{
+    border: solid 1px black;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+    width: fit-content;
+}

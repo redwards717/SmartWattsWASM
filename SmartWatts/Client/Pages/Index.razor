@@ -7,16 +7,34 @@
 @inject IActivityService activityService;
 @inject IToastService toastService;
 
-<h3>Home</h3>
+<div class="container-fluid">
+@if(appState.UsersActivities is null)
+{
+    <h3>No Rides to Display</h3>
+}
+else
+{
+    
+    @foreach(int year in years)
+    {
+        <button class="btn btn-confirm">@year</button>
+    }
 
+
+    <RideLog End="displayEnd" Start="displayStart"></RideLog>
+}
+</div>
 
 @code{
+    List<int> years = new();
+    int selectedYear = DateTime.Today.Year;
+    DateTime displayStart;
+    DateTime displayEnd;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-
             var userid = await localStorage.GetItemAsync<string>("userid");
 
             if (String.IsNullOrWhiteSpace(userid) && appState.LoggedInUser is null)
@@ -51,6 +69,8 @@
                 {
                     toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
                 }
+
+                LoadData();
             }
         }
         catch (Exception ex)
@@ -61,6 +81,14 @@
         {
             appState.LoaderOff();
         }
+    }
+
+    public void LoadData()
+    {
+        years = DateTimeUtilities.GetActiveYears(appState.UsersActivities);
+
+        displayEnd = DateTime.Now;
+        displayStart = DateTime.Now.AddDays(-30);
     }
 }
 

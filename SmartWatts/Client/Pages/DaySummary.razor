@@ -1,0 +1,39 @@
+﻿@inject AppState appState
+
+
+<h5>@Day.ToString("dddd, dd MMMM")</h5>
+<h4>@DateTimeUtilities.ConvertSecToReadable(activites.Sum(a => a.MovingTime), false)</h4>
+@foreach(Activity activity in activites)
+{
+    @if(activites.Count >= 1 && activity.WeightedAvgWatts < (highestAvgWeightedWatts * .7))
+    {
+        <div class="brief-wrapper">
+            <h6> @activity.Name</h6>
+            <hr>
+            <span>@DateTimeUtilities.ConvertSecToReadable(activity.MovingTime) | Avg Watts: @(Convert.ToInt32(activity.AvgWatts)) | Weighted: @(Convert.ToInt32(activity.WeightedAvgWatts))</span>
+        </div>
+    }
+    else
+    {
+        <h6> @activity.Name</h6>
+        <RidePowerTable Activity="activity"></RidePowerTable>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public DateTime Day { get; set; }
+
+    List<Activity> activites = new();
+    double highestAvgWeightedWatts;
+
+    protected override void OnParametersSet()
+    {
+        activites = appState.UsersActivities.Where(ua => ua.Date.DayOfYear == Day.DayOfYear && ua.Date.Year == Day.Year).OrderBy(ua => ua.Date).ToList();
+        if(activites is not null && activites.Count > 0)
+        {
+            highestAvgWeightedWatts = activites.Max(a => a.WeightedAvgWatts);
+        }
+    }
+}

@@ -17,5 +17,32 @@ namespace SmartWatts.Shared
         public static List<int> PowerPoints { get; } = new List<int>(){
             5, 15, 30, 45, 60, 90, 60 * 2, 60 * 3, 60 * 5, (60 * 7) + 30, 60 * 10, 60 * 15, 60 * 20, 60 * 30, 60 * 45, 60 * 60, 60 * 90, 60 * 60 * 2, 60 * 60 * 3, 60 * 60 * 4, 60 * 60 * 5, 60 * 60 * 8
         };
+
+        public enum Weeks
+        {
+            Monday = 1,
+            Tuesday,
+            Wednesday,
+            Thursday,
+            Friday,
+            Saturday,
+            Sunday,
+        }
+
+        public enum Months
+        {
+            January = 1,
+            February,
+            March,
+            April,
+            May,
+            June,
+            July,
+            August,
+            September,
+            October,
+            November,
+            December
+        }
     }
 }

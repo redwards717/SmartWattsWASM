@@ -32,26 +32,17 @@ namespace SmartWatts.Server.Controllers
         public async Task<IActionResult> GetAllActivitiesByUser([FromHeader] string id)
         {
             var activities = await _activityAccess.GetActivitiesByStravaUserID(id);
+            foreach(Activity activity in activities)
+            {
+                activity.PowerData = await _powerDataAccess.GetPowerDataForActivity(activity);
+                activity.PowerData.PowerPoints = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonPowerPoints);
+            }
             return Ok(activities);
         }
 
-        //[HttpGet]
-        //[Route("FindNew")]
-        //public async Task<IActionResult> FindNewActivities([FromHeader] string userid, [FromHeader] string count)
-        //{
-        //    var user = await _userAccess.GetUserById(userid);
-        //    var activityIds = await _activityAccess.GetRecentActivityIDsForUser(user.StravaUserID.ToString(), count);
-
-        //    var stravaActivities = await _stravaAccess.GetActivities(user.StravaAccessToken, per_page: 30);
-
-        //    var newActivities = stravaActivities.Where(sa => !activityIds.Contains(sa.id));
-
-        //    return Ok(newActivities);
-        //}
-
         [HttpPost]
         [Route("{id}/AddPower")]
-        public async Task<IActionResult> AddPowerDataToActivity(string id, [FromBody]StravaDataStream sds)
+        public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody]StravaDataStream sds)
         {
             var powerData = PowerUtilities.CalculatePowerFromDataStream(sds);
             powerData.StravaRideID = (await _activityAccess.GetActivityByStravaRideID(id)).StravaRideID;

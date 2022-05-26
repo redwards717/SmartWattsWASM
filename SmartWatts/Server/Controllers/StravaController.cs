@@ -37,6 +37,7 @@
                     Date = sa.start_date_local,
                     Type = sa.type,
                     HasWatts = sa.device_watts,
+                    MovingTime = sa.moving_time,
                     Distance = sa.distance,
                     AvgSpeed = sa.average_speed,
                     MaxSpeed = sa.max_speed,

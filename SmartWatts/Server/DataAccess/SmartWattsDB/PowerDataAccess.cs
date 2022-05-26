@@ -13,15 +13,15 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
 
         public async Task<PowerData> GetPowerDataForActivity(Activity activity)
         {
-            string sql = @"SELECT * FROM Activities
-                            WHERE ActivityID = @ActivityID";
+            const string sql = @"SELECT * FROM PowerData
+                            WHERE StravaRideID = @StravaRideID";
 
             return (await _db.LoadData<PowerData, Activity>(sql, activity)).FirstOrDefault();
         }
 
         public Task InsertPowerData(PowerData powerData)
         {
-            string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints)
+            const string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints)
                             VALUES(@StravaRideID, @JsonPowerPoints)";
 
             return _db.SaveData(sql, powerData);

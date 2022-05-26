@@ -15,6 +15,7 @@ namespace SmartWatts.Shared.DBModels
         public DateTime Date { get; set; }
         public string Type { get; set; }
         public bool HasWatts { get; set; }
+        public int MovingTime { get; set; }  //seconds
         public double Distance { get; set; }
         public double AvgSpeed { get; set; }   // comes from strava in meters/second....lol ?!
         public double MaxSpeed { get; set; }  // samsies

@@ -1,0 +1,22 @@
+﻿<table class="table table-sm">
+    	<tr>
+			<th></th>
+			@foreach (var pp in Activity.PowerData.PowerPoints)
+			{
+				<th>@DateTimeUtilities.ConvertSecToReadable(pp.Key)</th>
+			}
+		</tr>
+		<tr>
+			<td class="row-title">This Ride</td>
+			@foreach (var pc in Activity.PowerData.PowerPoints)
+			{
+
+				<td>@pc.Value</td>
+			}
+		</tr>
+</table>
+
+@code {
+    [Parameter]
+    public Activity Activity { get; set; }
+}
