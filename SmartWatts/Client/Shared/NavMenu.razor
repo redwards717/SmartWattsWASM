@@ -1,5 +1,6 @@
 ﻿@inject AppState appState; 
 @inject IToastService toastService;
+@inject ILocalStorageService localStorage;
 
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">Smart Watts</a>
@@ -49,8 +50,9 @@
         appState.OnChange += StateHasChanged;
     }
 
-    private void Logout()
+    private async Task Logout()
     {
+        await localStorage.RemoveItemAsync("userid");
         appState.ClearUser();
         toastService.ShowSuccess("You have been succesfully logged out");
     }

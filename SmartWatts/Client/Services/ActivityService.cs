@@ -31,6 +31,8 @@ namespace SmartWatts.Client.Services
                 rideNo++;
             }
 
+            _appState.AddUsersActivities(newActivities);
+
             return newActivities?.Count ?? 0;
         }
 
@@ -55,10 +57,23 @@ namespace SmartWatts.Client.Services
                 throw new Exception(response.ReasonPhrase);
             }
 
-            return await response.Content.ReadFromJsonAsync<List<Activity>>();
+            var activities = await response.Content.ReadFromJsonAsync<List<Activity>>();
+
+            _appState.SetUsersActivities(activities);
+
+            return activities;
         }
 
-        public async Task<List<Activity>> GetActivitiesFromStrava(long? before = null, long? after = null, int? page = null, int? per_page = null)
+        public async Task AddPowerDataToActivity(Activity activity, StravaDataStream sds)
+        {
+            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/{activity.StravaRideID}/AddPower", sds);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        private async Task<List<Activity>> GetActivitiesFromStrava(long? before = null, long? after = null, int? page = null, int? per_page = null)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, Constants.BASE_URI + $"api/Strava/Activities/{_appState.LoggedInUser.UserId}");
 
@@ -74,15 +89,6 @@ namespace SmartWatts.Client.Services
             }
 
             return await response.Content.ReadFromJsonAsync<List<Activity>>();
-        }
-
-        public async Task AddPowerDataToActivity(Activity activity, StravaDataStream sds)
-        {
-            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/{activity.StravaRideID}/AddPower", sds);
-            if (response.IsSuccessStatusCode == false)
-            {
-                throw new Exception(response.ReasonPhrase);
-            }
         }
 
         private async Task<List<StravaDataStream>> GetDataStreamForActivity(Activity activity, string data)

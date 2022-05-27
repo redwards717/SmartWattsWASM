@@ -14,6 +14,7 @@ namespace SmartWatts.Shared.DBModels
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public string Type { get; set; }
+        public bool IsRace { get; set; }
         public bool HasWatts { get; set; }
         public int MovingTime { get; set; }  //seconds
         public double Distance { get; set; }

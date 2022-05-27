@@ -11,7 +11,7 @@
 @if (String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken) == false)
 {
     <p>Linked to Strava ID: @appState.LoggedInUser.StravaAccessToken</p>
-    <button @onclick=HandleSync>Sync Activities</button>
+    <button class="btn btn-strava" @onclick=HandleSync>Sync Activities From Strava</button>
 }
 else
 {
@@ -43,19 +43,9 @@ else
     {
         try
         {
-            appState.LoaderOn("Loading Rides...");
-
-            var activities = await stravaService.GetActivitiesForUser();
-            await activityService.AddActivities(activities);
-
-            int rideNo = 1;
-            foreach(Activity activity in activities)
-            {
-                appState.SetLoadingMsg($"Calculating data for {activity.Name} - ( {rideNo} / {activities.Count} )");
-                var data = await stravaService.GetDataStreamForActivity(activity, "watts");
-                await activityService.AddPowerDataToActivity(activity, data.Find(d => d.type == "watts"));
-                rideNo++;
-            }
+            appState.LoaderOn("Loading Rides from Strava...");
+             // still need to test if i get rate limited. 
+            await activityService.FindAndAddNewActivities(appState.LoggedInUser, 10000);
         }
         catch (Exception ex)
         {
@@ -67,10 +57,3 @@ else
         }
     }
 }
-
-<style>
-    .btn-strava {
-        color: white;
-        background-color: var(--strava-orange);
-    }
-</style>

@@ -55,8 +55,7 @@
             {
                 appState.LoaderOn("Scanning for new activities...");
 
-                var activities = await activityService.GetAllActivitiesByUser(user);
-                appState.SetUsersActivities(activities);
+                await activityService.GetAllActivitiesByUser(user);
 
                 await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
             }

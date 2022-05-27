@@ -23,6 +23,7 @@ namespace SmartWatts.Shared
         public int elapsed_time { get; set; }
         public float total_elevation_gain { get; set; }
         public string type { get; set; }
+        public int workout_type { get; set; }
         public long id { get; set; }
         public DateTime start_date { get; set; }
         public DateTime start_date_local { get; set; }

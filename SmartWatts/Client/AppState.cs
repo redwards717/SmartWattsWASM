@@ -19,6 +19,18 @@
             NotifyStateChanged();
         }
 
+        public void AddUsersActivities(List<Activity> activities)
+        {
+            UsersActivities.AddRange(activities);
+            NotifyStateChanged();
+        }
+
+        public void AddUsersActivities(Activity activity)
+        {
+            UsersActivities.Add(activity);
+            NotifyStateChanged();
+        }
+
         public void LoaderOn(string msg)
         {
             Loading = true;

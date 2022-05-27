@@ -40,6 +40,7 @@ else
             if (String.IsNullOrWhiteSpace(userid) && appState.LoggedInUser is null)
             {
                 nav.NavigateTo("/login");
+                return;
             }
             else if (appState.LoggedInUser is null)
             {
@@ -60,8 +61,7 @@ else
 
                 appState.LoaderOn("Scanning for new activities...");
 
-                var activities = await activityService.GetAllActivitiesByUser(user);
-                appState.SetUsersActivities(activities);
+                await activityService.GetAllActivitiesByUser(user);
 
                 var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
 
@@ -70,8 +70,8 @@ else
                     toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
                 }
 
-                LoadData();
             }
+            LoadData();
         }
         catch (Exception ex)
         {

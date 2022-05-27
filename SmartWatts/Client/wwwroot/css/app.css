@@ -28,6 +28,11 @@ a, .btn-link {
     border-color: var(--tertiary-color);
 }
 
+.btn-strava {
+    color: white;
+    background-color: var(--strava-orange);
+}
+
 .content {
     padding-top: 1.1rem;
 }
