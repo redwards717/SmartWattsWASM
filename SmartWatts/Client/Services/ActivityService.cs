@@ -71,6 +71,8 @@ namespace SmartWatts.Client.Services
             {
                 throw new Exception(response.ReasonPhrase);
             }
+
+            activity.PowerData = await response.Content.ReadFromJsonAsync<PowerData>();
         }
 
         private async Task<List<Activity>> GetActivitiesFromStrava(long? before = null, long? after = null, int? page = null, int? per_page = null)

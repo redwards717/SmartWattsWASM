@@ -22,8 +22,8 @@
             var minutes = (int)(secsLeftInHour / 60);
             var seconds = secsLeftInHour % 60;
 
-            var strHours = hours >= 1 ? $"{hours}h" : "";
-            var strMins = minutes >= 1 ? $"{minutes}m" : "";
+            var strHours = hours >= 1 ? $"{hours}h" : " ";
+            var strMins = minutes >= 1 ? $" {minutes}m " : " ";
             var strSecs = seconds >= 1 ? $"{seconds}s" : "";
 
             if (includeSeconds)

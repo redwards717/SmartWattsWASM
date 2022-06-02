@@ -47,7 +47,7 @@ namespace SmartWatts.Server.Controllers
             var powerData = PowerUtilities.CalculatePowerFromDataStream(sds);
             powerData.StravaRideID = (await _activityAccess.GetActivityByStravaRideID(id)).StravaRideID;
             await _powerDataAccess.InsertPowerData(powerData);
-            return Ok();
+            return Ok(powerData);
         }
     }
 }

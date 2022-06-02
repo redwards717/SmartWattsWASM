@@ -1,0 +1,71 @@
+﻿@inject AppState appState
+
+<div class="row">
+    <div class="col-4">
+        <div class="rolling-wrapper">
+        <h4>Rolling Week</h4>
+        @{int periodWeek = 7;}
+        <ul>
+            @for(int i = 0; i <= periodWeek * 5; i += periodWeek)
+            {
+                <li>
+                    @if(i == 0)
+                    {
+                        <span>@now.AddDays(-periodWeek).ToString("dd MMMM") to Current:</span><span> @PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-periodWeek), now)</span>
+                    }
+                    else
+                    {
+                        <span>@now.AddDays(-(i+periodWeek)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</span><span> @PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-(i+periodWeek)), now.AddDays(-i))</span>
+                    }
+                </li>
+            }
+        </ul>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="rolling-wrapper">
+            <h4>Rolling Month</h4>
+            @{int periodMonth = 30;}
+            <ul>
+                @for(int i = 0; i <= periodMonth * 5; i += periodMonth)
+                {
+                    <li>
+                        @if(i == 0)
+                        {
+                            <span>@now.AddDays(-periodMonth).ToString("dd MMMM") to Current:</span><span> @PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-periodMonth), now)</span>
+                        }
+                        else
+                        {
+                            <span>@now.AddDays(-(i+periodMonth)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</span><span> @PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-(i+periodMonth)), now.AddDays(-i))</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="rolling-wrapper">
+            <h4>Rolling Year</h4>
+            @{int periodYear = 365;}
+            <ul>
+                @for(int i = 0; i <= periodYear * 5; i += periodYear)
+                {
+                    <li>
+                        @if(i == 0)
+                        {
+                            <span>@now.AddDays(-periodYear).ToString("dd MMMM yyyy") to Current:</span><span> @PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-periodYear), now)</span>
+                        }
+                        else
+                        {
+                            <span>@now.AddDays(-(i+periodYear)).ToString("dd MMMM yyyy") to @now.AddDays(-i).ToString("dd MMMM yyyy"):</span><span> @PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-(i+periodYear)), now.AddDays(-i))</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    DateTime now = DateTime.Now;
+}
