@@ -15,7 +15,7 @@ namespace SmartWatts.Server.DataAccess.StravaApi
             _http = http;
         }
 
-        public async Task<List<StravaActivity>> GetActivities(string token, long? before = null, long? after = null, int? page = null, int? per_page = null)
+        public async Task<IEnumerable<StravaActivity>> GetActivities(string token, long? before = null, long? after = null, int? page = null, int? per_page = null)
         {
             UriBuilder uriBuilder = new("https://www.strava.com/api/v3/athlete/activities");
             uriBuilder.Port = -1;
@@ -49,7 +49,7 @@ namespace SmartWatts.Server.DataAccess.StravaApi
             }
 
             var jsonString = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<StravaActivity>>(jsonString);
+            return JsonConvert.DeserializeObject<IEnumerable<StravaActivity>>(jsonString);
         }
     }
 }

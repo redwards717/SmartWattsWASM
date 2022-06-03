@@ -7,6 +7,7 @@ global using SmartWatts.Client.Services;
 global using SmartWatts.Client.Utilities;
 global using SmartWatts.Shared;
 global using SmartWatts.Shared.DBModels;
+global using SmartWatts.Shared.ViewModels;
 global using System;
 global using System.Linq;
 global using System.Collections.Generic;

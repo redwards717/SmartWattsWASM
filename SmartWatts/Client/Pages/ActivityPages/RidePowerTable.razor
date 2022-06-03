@@ -1,4 +1,4 @@
-﻿<table class="table table-sm">
+﻿<table>
     	<tr>
 			<th></th>
 			@foreach (var pp in Activity.PowerData.PowerPoints)
@@ -8,15 +8,29 @@
 		</tr>
 		<tr>
 			<td class="row-title">This Ride</td>
-			@foreach (var pc in Activity.PowerData.PowerPoints)
+			@foreach (var pp in Activity.PowerData.PowerPoints)
+			{
+				Intensity intensity = PowerUtlities.GetEffortIntensity(pp, PowerHistory);
+				<td style="background-color:@intensity.Color">
+					<span style="color:@(intensity.Color == "purple" ? "white" : "black")">@pp.Value</span>
+				</td>
+			}
+		</tr>
+		<tr>
+			<td class="row-title">30 Day</td>
+			@foreach (var pp in PowerHistory.PowerPoints)
 			{
 
-				<td>@pc.Value</td>
+				<td>@pp.Value</td>
 			}
 		</tr>
 </table>
 
 @code {
-    [Parameter]
-    public Activity Activity { get; set; }
+	[Parameter]
+	public Activity Activity { get; set; }
+
+	[Parameter]
+	public PowerHistory PowerHistory { get; set; }
 }
+

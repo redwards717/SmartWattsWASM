@@ -19,12 +19,13 @@
         {
             var user = await _userAccess.GetUserById(id);
             var stravaActivities = await _stravaAcess.GetActivities(user.StravaAccessToken, before, after, page, per_page);
+            stravaActivities = stravaActivities.Where(sa => sa.device_watts);
             var activities = ConvertStravaActivity(stravaActivities);
 
             return Ok(activities);
         }
 
-        private static List<Activity> ConvertStravaActivity(List<StravaActivity> stravaActivities)
+        private static List<Activity> ConvertStravaActivity(IEnumerable<StravaActivity> stravaActivities)
         {
             List<Activity> activities = new();
             foreach (StravaActivity sa in stravaActivities)
