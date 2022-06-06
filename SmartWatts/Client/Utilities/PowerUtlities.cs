@@ -10,7 +10,7 @@
 
         public static Intensity GetRideIntensity(Activity activity, PowerHistory powerHistory)
         {
-            Intensity topIntensity = new();
+            Intensity topIntensity = Constants.Intensities.Find(i => i.EffortIndex == 0);
 
             foreach(var powerPoint in activity.PowerData.PowerPoints)
             {
@@ -28,8 +28,13 @@
             int bestEffortIntensity = topIntensity.EffortIndex;
 
             int fullRideEffort = GetFullRideIntensity(activity, powerHistory).EffortIndex;
-
             int avgEffort = (bestEffortIntensity + fullRideEffort) / 2;
+
+            if((bestEffortIntensity == 1 && fullRideEffort == 0) || (bestEffortIntensity == 0 && fullRideEffort == 1))
+            {
+                // cant be a recovery ride if any effort takes it out of the green
+                avgEffort = 1;
+            }
 
             return Constants.Intensities.Find(i => i.EffortIndex == avgEffort);
         }
@@ -39,7 +44,7 @@
             int historicalEffort = powerHistory.PowerPoints.FirstOrDefault(pp => powerPoint.Key == pp.Key).Value;
             if(historicalEffort == 0)
             {
-                return Constants.Intensities[0];
+                return Constants.Intensities.Find(i => i.EffortIndex == 0);
             }
 
             double comp = (double)powerPoint.Value / historicalEffort;
@@ -52,13 +57,13 @@
             DateTime endDate = activity.Date.AddMinutes(-10);
             DateTime startDate = endDate.AddDays(-lookbackDays);
 
-            int longestInterval = activity.PowerData.PowerPoints.Keys.Max();
+            var intervals = Constants.PowerPoints.Take(activity.PowerData.PowerPoints.Count + 1);
 
             var ridesInRange = activites.Where(a => a.Date >= startDate && a.Date <= endDate);
 
             Dictionary<int, List<int>> bestPower = new();
 
-            foreach(int pp in Constants.PowerPoints.Where(pp => pp <= longestInterval))
+            foreach(int pp in intervals)
             {
                 bestPower.Add(pp, new List<int>() { 0, 0, 0 });
             }
@@ -104,14 +109,20 @@
                 {
                     highInterval = Constants.PowerPoints[i];
                     lowInterval = Constants.PowerPoints[i - 1];
+                    break;
                 }
             }
 
             int lowIntervalPower = powerHistory.PowerPoints[lowInterval];
             int highIntervalPower = powerHistory.PowerPoints[highInterval];
 
+            if(lowIntervalPower == 0)
+            {
+                return Constants.Intensities.Find(i => i.EffortIndex == Constants.Intensities.Max(i => i.EffortIndex));
+            }
+
             int timeDiff = highInterval - lowInterval;
-            double percentIntoInterval = (double)time / timeDiff;
+            double percentIntoInterval = (double)(time - lowInterval) / timeDiff;
 
             int powerIntervalDiff = Math.Abs(highIntervalPower - lowIntervalPower);
             double powerAdj = percentIntoInterval * powerIntervalDiff;

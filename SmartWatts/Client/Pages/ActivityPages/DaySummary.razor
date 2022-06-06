@@ -1,24 +1,30 @@
 ﻿@inject AppState appState
 
 <h5>@Day.ToString("dddd, dd MMMM")</h5>
-<h4>@DateTimeUtilities.ConvertSecToReadable(activites.Sum(a => a.MovingTime), false)</h4>
-@foreach(Activity activity in activites)
-{
-    PowerHistory powerHistory = PowerUtlities.GetPowerHistory(activity, 30, appState.UsersActivities);
-    @if(activites.Count >= 1 && activity.WeightedAvgWatts < (highestAvgWeightedWatts * .7))
-    {
-        Intensity intensity = PowerUtlities.GetRideIntensity(activity, powerHistory);
-        <div class="brief-wrapper" style="background-color:@intensity.Color">
-            <h6> @activity.Name</h6>
-            <hr>
-            <span>@DateTimeUtilities.ConvertSecToReadable(activity.MovingTime) | Avg Watts: @(Convert.ToInt32(activity.AvgWatts)) | Weighted: @(Convert.ToInt32(activity.WeightedAvgWatts))</span>
-        </div>
-    }
-    else
-    {
-        <h6> @activity.Name</h6>
-        <RidePowerTable Activity="activity" PowerHistory="powerHistory"></RidePowerTable>
-    }
+@if(highestIntensity is not null)
+{   
+    <div class="day-wrapper" style="border: 2px solid @highestIntensity.Color; box-shadow: 5px 10px 10px @highestIntensity.Color;">
+        <h4>@DateTimeUtilities.ConvertSecToReadable(Activites.Sum(a => a.MovingTime), false)</h4>
+        @foreach(Activity activity in Activites)
+        {
+            @if(Activites.Count >= 1 && (activity.WeightedAvgWatts < (highestAvgWeightedWatts * .7) || activity.Intensity.EffortIndex <= 1))
+            {
+                <div class="brief-wrapper" style="background-color:@activity.Intensity.Color">
+                    <h6> @activity.Name</h6>
+                    <hr>
+                    <span>@DateTimeUtilities.ConvertSecToReadable(activity.MovingTime) | Avg Watts: @(Convert.ToInt32(activity.AvgWatts)) | Weighted: @(Convert.ToInt32(activity.WeightedAvgWatts))</span>
+                </div>
+            }
+            else
+            {
+                <div class="detailed-wrapper" style="border: 1px solid @highestIntensity.Color;">
+                    <h4> @activity.Name</h4>
+                    <span>@DateTimeUtilities.ConvertSecToReadable(activity.MovingTime) | Avg Watts: @(Convert.ToInt32(activity.AvgWatts)) | Weighted: @(Convert.ToInt32(activity.WeightedAvgWatts))</span>
+                    <RidePowerTable Activity="activity"></RidePowerTable>
+                </div>
+            }
+        }
+    </div>
 }
 
 
@@ -26,15 +32,20 @@
     [Parameter]
     public DateTime Day { get; set; }
 
-    List<Activity> activites = new();
+    [Parameter]
+    public List<Activity> Activites { get; set; }
+
     double highestAvgWeightedWatts;
+    Intensity highestIntensity;
 
     protected override void OnParametersSet()
     {
-        activites = appState.UsersActivities.Where(ua => ua.Date.DayOfYear == Day.DayOfYear && ua.Date.Year == Day.Year).OrderBy(ua => ua.Date).ToList();
-        if(activites is not null && activites.Count > 0)
+        if(Activites is not null && Activites.Count > 0)
         {
-            highestAvgWeightedWatts = activites.Max(a => a.WeightedAvgWatts);
+            highestAvgWeightedWatts = Activites.Max(a => a.WeightedAvgWatts);
+            var highestEffort = Activites.Max(a => a.Intensity.EffortIndex);
+            highestIntensity = Activites.Find(a => highestEffort == a.Intensity.EffortIndex).Intensity;
         }
     }
 }
+

@@ -2,7 +2,8 @@
 
 @foreach(DateTime date in dates)
 {
-    <DaySummary Day="date"></DaySummary>
+    var activities = GetActivitesForDay(date);
+    <DaySummary Day="date" Activites="activities"></DaySummary>
 }
 
 
@@ -25,5 +26,16 @@
         }
 
         dates.Sort((x, y) => y.CompareTo(x));
+    }
+
+    private List<Activity> GetActivitesForDay(DateTime day)
+    {
+        var activities = appState.UsersActivities.Where(ua => ua.Date.DayOfYear == day.DayOfYear && ua.Date.Year == day.Year).OrderBy(ua => ua.Date).ToList();
+        foreach(Activity activity in activities)
+        {
+            activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, 30, appState.UsersActivities);
+            activity.Intensity = PowerUtlities.GetRideIntensity(activity, activity.PowerHistory);
+        }
+        return activities;
     }
 }

@@ -31,3 +31,16 @@ h5:after {
     margin: 5px;
     width: fit-content;
 }
+
+.detailed-wrapper {
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+    width: fit-content;
+}
+
+.day-wrapper {
+    width: fit-content;
+    margin: 10px 10px 15px 10px;
+    padding: 10px;
+}

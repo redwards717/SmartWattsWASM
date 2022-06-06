@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartWatts.Shared.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,5 +30,7 @@ namespace SmartWatts.Shared.DBModels
         public double MaxHeartrate { get; set; }
         public int PowerDataID { get; set; }
         public PowerData PowerData { get; set; }
+        public Intensity Intensity { get; set; }
+        public PowerHistory PowerHistory { get; set; }
     }
 }
