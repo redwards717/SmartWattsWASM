@@ -12,6 +12,8 @@
 {
     <p>Linked to Strava ID: @appState.LoggedInUser.StravaAccessToken</p>
     <button class="btn btn-strava" @onclick=HandleSync>Sync Activities From Strava</button>
+
+    <button @onclick="NormalizePelotonData">Normalize Peloton Data</button>
 }
 else
 {
@@ -43,13 +45,44 @@ else
     {
         try
         {
-            appState.LoaderOn("Loading Rides from Strava...");
-             // still need to test if i get rate limited. 
-            await activityService.FindAndAddNewActivities(appState.LoggedInUser, 10000);
+            appState.LoaderOn("Looking for Strava activities...");
+            // still need to test if i get rate limited. 
+            var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 100);
+
+            if(newCount == 0)
+            {
+                toastService.ShowInfo("No new activities found");
+            }
+            else
+            {
+                toastService.ShowSuccess($"{newCount} Activity(s) loaded in from Strava");
+            }
         }
         catch (Exception ex)
         {
             toastService.ShowError($"There was an error syncing data from Strava - {ex.Message}");
+        }
+        finally
+        {
+            appState.LoaderOff();
+        }
+    }
+
+    private async Task NormalizePelotonData()
+    {
+        try
+        {
+            appState.LoaderOn("Making Peloton data more accurate...");
+
+            DateTime dateDataWasFixed = new DateTime(2022, 3, 18); // march 18, 2022 is when the peloton was fixed
+
+            await activityService.NormalizePelotonData(dateDataWasFixed, -30, appState.UsersActivities); // old peloton read about 30% too high
+
+            toastService.ShowInfo("Peloton data has been fixed");
+        }
+        catch(Exception ex)
+        {
+            toastService.ShowError($"There was an error fixing Peloton data - {ex.Message}");
         }
         finally
         {

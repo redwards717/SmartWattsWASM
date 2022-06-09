@@ -75,6 +75,22 @@ namespace SmartWatts.Client.Services
             activity.PowerData = await response.Content.ReadFromJsonAsync<PowerData>();
         }
 
+        public async Task NormalizePelotonData(DateTime before, int percentAdj, List<Activity> activities)
+        {
+
+            var activitiesToNormalize = activities.Where(a => (a.Name.Contains("Ride with") && a.Name.Contains("min"))
+                                                                || (a.Name.Contains("Just Ride") && a.Name.Contains("min"))
+                                                                || (a.Name.Contains("Scenic Ride") && a.Name.Contains("min"))).ToList();
+
+            using HttpResponseMessage response = await _http.PutAsJsonAsync($"api/Activity/NormalizePower/{percentAdj}", activities);
+
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+        }
+
         private async Task<List<Activity>> GetActivitiesFromStrava(long? before = null, long? after = null, int? page = null, int? per_page = null)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, Constants.BASE_URI + $"api/Strava/Activities/{_appState.LoggedInUser.UserId}");

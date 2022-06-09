@@ -9,5 +9,6 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
         Task<Activity> GetActivityByStravaRideID(string id);
         Task<List<long>> GetRecentActivityIDsForUser(string id, string count);
         Task InsertActivities(List<Activity> activities);
+        Task UpdatePower(List<Activity> activities);
     }
 }

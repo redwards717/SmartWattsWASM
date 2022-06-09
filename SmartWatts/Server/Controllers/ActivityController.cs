@@ -32,7 +32,7 @@ namespace SmartWatts.Server.Controllers
         public async Task<IActionResult> GetAllActivitiesByUser([FromHeader] string id)
         {
             var activities = await _activityAccess.GetActivitiesByStravaUserID(id);
-            foreach(Activity activity in activities)
+            foreach (Activity activity in activities)
             {
                 activity.PowerData = await _powerDataAccess.GetPowerDataForActivity(activity);
                 activity.PowerData.PowerPoints = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonPowerPoints);
@@ -42,12 +42,40 @@ namespace SmartWatts.Server.Controllers
 
         [HttpPost]
         [Route("{id}/AddPower")]
-        public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody]StravaDataStream sds)
+        public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody] StravaDataStream sds)
         {
-            var powerData = PowerUtilities.CalculatePowerFromDataStream(sds);
+            PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(sds);
             powerData.StravaRideID = (await _activityAccess.GetActivityByStravaRideID(id)).StravaRideID;
             await _powerDataAccess.InsertPowerData(powerData);
             return Ok(powerData);
+        }
+
+        [HttpPut]
+        [Route("NormalizePower/{percentadj}")]
+        public async Task<IActionResult> NormalizePower(string percentAdj, [FromBody] List<Activity> activities)
+        {
+            double multiplier = (double)(Int32.Parse(percentAdj) + 100) / 100;
+            foreach(Activity activity in activities)
+            {
+                activity.Kilojoules *= multiplier;
+                activity.WeightedAvgWatts *= multiplier;
+                activity.AvgWatts *= multiplier;
+                activity.MaxWatts *= multiplier;
+
+                foreach(KeyValuePair<int,int> pp in activity.PowerData.PowerPoints)
+                {
+                    activity.PowerData.PowerPoints[pp.Key] = (int)(pp.Value * multiplier);
+                }
+
+                activity.PowerData.JsonPowerPoints = JsonSerializer.Serialize(activity.PowerData.PowerPoints);
+            }
+
+            var allPowerData = activities.ConvertAll(a => a.PowerData);
+
+            await _activityAccess.UpdatePower(activities);
+            await _powerDataAccess.UpdatePowerData(allPowerData);
+
+            return Ok();
         }
     }
 }

@@ -26,5 +26,14 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
 
             return _db.SaveData(sql, powerData);
         }
+
+        public Task UpdatePowerData(List<PowerData> powerData)
+        {
+            const string sql = @"UPDATE PowerData
+                                    SET JsonPowerPoints = @JsonPowerPoints
+                                    WHERE StravaRideID = @StravaRideID";
+
+            return _db.SaveData(sql, powerData);
+        }
     }
 }

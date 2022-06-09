@@ -50,5 +50,14 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
 
             return _db.SaveData(sql, activities);
         }
+
+        public Task UpdatePower(List<Activity> activities)
+        {
+            const string sql = @"UPDATE Activities
+                                    SET AvgWatts = @AvgWatts, WeightedAvgWatts = @WeightedAvgWatts, MaxWatts = @MaxWatts, Kilojoules = @Kilojoules
+                                    WHERE StravaRideID = @StravaRideID";
+
+            return _db.SaveData(sql, activities);
+        }
     }
 }
