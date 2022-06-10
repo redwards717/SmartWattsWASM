@@ -1,0 +1,26 @@
+﻿@inject AppState appState
+
+<div class="power-zones-wrapper">
+    <h4 class="text-center">Power Zones</h4>
+    <hr />
+    <p>This represents the minimum time spent at power for improvement</p>
+    <table class="table table-sm">
+        <tr>
+            <th></th>
+            <th>Time Needed</th>
+            <th>Watts Required</th>
+        </tr>
+        @foreach(var zone in Constants.PowerZones)
+        {
+            <tr style="background-color:@zone.Color">
+                <th>@zone.EffortType</th>
+                <td class="text-center">@DateTimeUtilities.ConvertSecToReadable(zone.Time)</td>
+                <td class="text-center">@(zone.PercentOfFTP * appState.LoggedInUser.FTP)</td>
+            </tr>
+        }
+    </table>
+</div>
+
+@code {
+
+}

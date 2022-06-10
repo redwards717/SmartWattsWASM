@@ -59,9 +59,12 @@ else
 
                 appState.SetUser(user);
 
+
                 appState.LoaderOn("Scanning for new activities...");
 
                 await activityService.GetAllActivitiesByUser(user);
+
+                //dont want all the data pulls while i work on other things
 
                 var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
 

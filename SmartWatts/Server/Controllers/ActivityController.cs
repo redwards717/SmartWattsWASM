@@ -42,10 +42,13 @@ namespace SmartWatts.Server.Controllers
 
         [HttpPost]
         [Route("{id}/AddPower")]
-        public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody] StravaDataStream sds)
+        public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody] List<StravaDataStream> sdss)
         {
-            PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(sds);
-            powerData.StravaRideID = (await _activityAccess.GetActivityByStravaRideID(id)).StravaRideID;
+            var activity = await _activityAccess.GetActivityByStravaRideID(id);
+
+            PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(sdss);
+
+            powerData.StravaRideID = activity.StravaRideID;
             await _powerDataAccess.InsertPowerData(powerData);
             return Ok(powerData);
         }

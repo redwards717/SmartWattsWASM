@@ -17,7 +17,7 @@
             }
             else
             {
-                <div class="detailed-wrapper" style="border: 1px solid @highestIntensity.Color;">
+                <div class="detailed-wrapper" style="border: 2px solid @highestIntensity.Color;">
                     <h4> @activity.Name</h4>
                     <span>@DateTimeUtilities.ConvertSecToReadable(activity.MovingTime) | Avg Watts: @(Convert.ToInt32(activity.AvgWatts)) | Weighted: @(Convert.ToInt32(activity.WeightedAvgWatts))</span>
                     <RidePowerTable Activity="activity"></RidePowerTable>

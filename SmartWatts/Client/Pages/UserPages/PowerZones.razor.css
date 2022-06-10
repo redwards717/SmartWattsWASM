@@ -1,0 +1,7 @@
+﻿.power-zones-wrapper {
+    border: solid 1px orange;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+    width: fit-content;
+}

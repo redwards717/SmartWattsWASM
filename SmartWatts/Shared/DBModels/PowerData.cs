@@ -12,5 +12,7 @@ namespace SmartWatts.Shared.DBModels
         public long StravaRideID { get; set; }
         public Dictionary<int, int> PowerPoints { get; set; }
         public string JsonPowerPoints { get; set; }
+        public Dictionary<int, int> SustainedEfforts { get; set; }
+        public string JsonSustainedEfforts { get; set; }
     }
 }

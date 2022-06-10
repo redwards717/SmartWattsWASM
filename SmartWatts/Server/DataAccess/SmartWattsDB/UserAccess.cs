@@ -57,7 +57,7 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
         public Task UpdateUser(User user)
         {
             const string sql = @"UPDATE Users
-                            SET Email = @Email, StravaUserID = @StravaUserID, StravaAccessToken = @StravaAccessToken, TokenExpiration = @TokenExpiration, RefreshToken = @RefreshToken
+                            SET Email = @Email, FTP = @FTP, StravaUserID = @StravaUserID, StravaAccessToken = @StravaAccessToken, TokenExpiration = @TokenExpiration, RefreshToken = @RefreshToken
                             WHERE UserID = @UserId";
 
             return _db.SaveData(sql, user);

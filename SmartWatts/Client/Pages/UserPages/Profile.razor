@@ -3,24 +3,63 @@
 @inject AppState appState; 
 @inject IStravaService stravaService;
 @inject IActivityService activityService;
+@inject IUserService userService;
 @inject IToastService toastService;
 @inject NavigationManager nav;
 
-<h4>@appState.LoggedInUser.Email</h4>
+<div class="container-fluid">
 
-@if (String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken) == false)
-{
-    <p>Linked to Strava ID: @appState.LoggedInUser.StravaAccessToken</p>
-    <button class="btn btn-strava" @onclick=HandleSync>Sync Activities From Strava</button>
+    <h4>@appState.LoggedInUser.Email</h4>
+    <hr />
+    
+    <div class="ftp-wrapper">
+        <p>
+            <label for="ftp">FTP: </label>
+            <input id="ftp" type="number" maxlength="3" @bind-value=FTP/>
+        </p>
+        <div class="text-center">
+            <button class="btn btn-outline-primary" @onclick=SetFTP>Set FTP</button>
+        </div>
+    </div>
 
-    <button @onclick="NormalizePelotonData">Normalize Peloton Data</button>
-}
-else
-{
-    <button class="btn btn-strava" @onclick="RedirectToAuth">Link to Stava</button>
-}
+    @if(FTP > 0)
+    {
+        <PowerZones></PowerZones>
+    }
+
+
+    @if (String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken) == false && FTP > 0)
+    {
+        <h4 class="text-danger">You are Linked to Strava ID: @appState.LoggedInUser.StravaAccessToken</h4>
+        <p>
+            <button class="btn btn-strava" @onclick=HandleSync>Sync Activities From Strava</button>
+        </p>
+        <p>
+            <button @onclick="NormalizePelotonData">Normalize Peloton Data</button>
+        </p>
+    }
+    else if(FTP == 0)
+    {
+        <p class="text-danger font-italic">*please add your FTP before continuing</p>
+        <button class="btn btn-strava" disabled>Link to Stava</button>
+    }else
+    {
+        <button class="btn btn-strava" disabled @onclick="RedirectToAuth">Link to Stava</button>
+    }
+
+
+</div>
+
 
 @code {
+    bool settingFTP;
+    int FTP;
+
+    protected override void OnInitialized()
+    {
+        FTP = appState.LoggedInUser.FTP;
+    }
+
     private void RedirectToAuth()
     {
         UriBuilder uriBuilder = new()
@@ -87,6 +126,25 @@ else
         finally
         {
             appState.LoaderOff();
+        }
+    }
+
+    private async Task SetFTP()
+    {
+        try
+        {   
+            appState.LoggedInUser.FTP = FTP;
+            await userService.UpdateUser(appState.LoggedInUser);
+
+            toastService.ShowSuccess($"FTP updated to {FTP}");
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError($"Failed to update FTP - {ex.Message}");
+        }
+        finally
+        {
+            
         }
     }
 }

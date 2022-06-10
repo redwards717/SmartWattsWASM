@@ -27,7 +27,7 @@ namespace SmartWatts.Client.Services
             {
                 _appState.SetLoadingMsg($"Loading ride {activity.Name} - ( {rideNo} / {newActivities.Count} )");
                 var data = await GetDataStreamForActivity(activity, "watts");
-                await AddPowerDataToActivity(activity, data.Find(d => d.type == "watts"));
+                await AddPowerDataToActivity(activity, data);
                 rideNo++;
             }
 
@@ -64,7 +64,7 @@ namespace SmartWatts.Client.Services
             return activities;
         }
 
-        public async Task AddPowerDataToActivity(Activity activity, StravaDataStream sds)
+        public async Task AddPowerDataToActivity(Activity activity, List<StravaDataStream> sds)
         {
             using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/{activity.StravaRideID}/AddPower", sds);
             if (response.IsSuccessStatusCode == false)

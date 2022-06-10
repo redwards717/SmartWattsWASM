@@ -18,7 +18,32 @@ namespace SmartWatts.Shared
             5, 15, 30, 45, 60, 90, 60 * 2, 60 * 3, 60 * 5, (60 * 7) + 30, 60 * 10, 60 * 15, 60 * 20, 60 * 30, 60 * 45, 60 * 60, 60 * 90, 60 * 60 * 2, 60 * 60 * 3, 60 * 60 * 4, 60 * 60 * 5, 60 * 60 * 8, 60 * 60 * 24
         };
 
-        public static List<Intensity> Intensities { get; } = new List<Intensity>()
+        public static readonly List<PowerZone> PowerZones = new()
+        {
+            new PowerZone()
+            {
+                EffortType = "Anaerobic",
+                Time = 30,
+                PercentOfFTP = 1.50,
+                Color = "red"
+            },
+            new PowerZone()
+            {
+                EffortType = "VO2",
+                Time = 60 * 3,
+                PercentOfFTP = 1.20,
+                Color = "orange"
+            },
+            new PowerZone()
+            {
+                EffortType = "Threshold",
+                Time = 60 * 15,
+                PercentOfFTP = 1.00,
+                Color = "yellow"
+            }
+        };
+
+        public static readonly List<Intensity> Intensities = new List<Intensity>()
         {
             new Intensity()
             {
