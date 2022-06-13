@@ -66,12 +66,12 @@ else
 
                 //dont want all the data pulls while i work on other things
 
-                var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
+                //var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
 
-                if(newCount > 0)
-                {
-                    toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
-                }
+                //if(newCount > 0)
+                //{
+                //    toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
+                //}
 
             }
             LoadData();

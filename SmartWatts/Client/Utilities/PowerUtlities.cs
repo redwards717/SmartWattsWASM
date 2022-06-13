@@ -5,21 +5,38 @@
         public static string GetVolumeInTime(List<Activity> activities, DateTime start, DateTime end)
         {
             int time = activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
-            return DateTimeUtilities.ConvertSecToReadable(time);
+            return DateTimeUtilities.ConvertSecToReadable(time, false);
         }
 
-        public static Intensity GetRideIntensity(Activity activity, PowerHistory powerHistory)
+        public static string GetAvgVolume(List<Activity> activities, DateTime start, DateTime end, int periods)
+        {
+            int time = activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
+            return DateTimeUtilities.ConvertSecToReadable(time / periods, false);
+        }
+
+        public static int GetIntensityForTimeframe(List<Activity> activities, DateTime start, DateTime end)
+        {
+            return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.Intensity.EffortIndex);
+        }
+
+        public static int GetAvgIntensity(List<Activity> activities, DateTime start, DateTime end, int periods)
+        {
+            return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.Intensity.EffortIndex) / periods;
+        }
+
+        public static Intensity GetRideIntensity(Activity activity)
         {
             Intensity topIntensity = Constants.Intensities.Find(i => i.EffortIndex == 0);
 
             foreach(var powerPoint in activity.PowerData.PowerPoints)
             {
-                var intensity = GetEffortIntensity(powerPoint, powerHistory);
+                var intensity = GetEffortIntensity(powerPoint, activity.PowerHistory);
                 if(intensity.EffortIndex > topIntensity.EffortIndex)
                 {
                     topIntensity = intensity;
                 }
-                if(topIntensity.EffortIndex >= 6)
+
+                if(topIntensity.EffortIndex >= DefaultToMaxIntensity().EffortIndex)
                 {
                     break;
                 }
@@ -27,7 +44,14 @@
 
             int bestEffortIntensity = topIntensity.EffortIndex;
 
-            int fullRideEffort = GetFullRideIntensity(activity, powerHistory).EffortIndex;
+            var weightedAvgBenchmark = GetWeightedAvgBenchmark(activity);
+
+            activity.WeightedAvgBenchmark = weightedAvgBenchmark == 0 ? 1 : weightedAvgBenchmark;
+
+            var compRatio = activity.WeightedAvgWatts / activity.WeightedAvgBenchmark;
+
+            int fullRideEffort = Constants.Intensities.Find(i => compRatio >= i.LowBand && compRatio <= i.HighBand).EffortIndex;
+
             int avgEffort = (bestEffortIntensity + fullRideEffort) / 2;
 
             if((bestEffortIntensity == 1 && fullRideEffort == 0) || (bestEffortIntensity == 0 && fullRideEffort == 1))
@@ -37,6 +61,13 @@
             }
 
             return Constants.Intensities.Find(i => i.EffortIndex == avgEffort);
+        }
+
+        public static Intensity GetIntensityFromEffortPercent(int percent)
+        {
+            var compRatio = (double)percent / 100;
+
+            return Constants.Intensities.Find(i => compRatio >= i.LowBand && compRatio <= i.HighBand);
         }
 
         public static Intensity GetEffortIntensity(KeyValuePair<int,int> powerPoint, PowerHistory powerHistory)
@@ -52,7 +83,7 @@
             return Constants.Intensities.Find(i => comp >= i.LowBand && comp <= i.HighBand);
         }
 
-        public static PowerHistory GetPowerHistory(Activity activity, int lookbackDays, List<Activity> activites)
+        public static PowerHistory GetPowerHistory(Activity activity, List<Activity> activites, int lookbackDays = Constants.POWER_HISTORY_PERIOD)
         {
             DateTime endDate = activity.Date.AddMinutes(-10);
             DateTime startDate = endDate.AddDays(-lookbackDays);
@@ -96,14 +127,14 @@
             };
         }
 
-        private static Intensity GetFullRideIntensity(Activity activity, PowerHistory powerHistory)
+        private static int GetWeightedAvgBenchmark(Activity activity)
         {
             var time = activity.MovingTime;
 
             int lowInterval = 0;
             int highInterval = 0;
 
-            for(int i = 0; i <= powerHistory.PowerPoints.Count; i++)
+            for(int i = 0; i <= activity.PowerHistory.PowerPoints.Count; i++)
             {
                 if (Constants.PowerPoints[i] >= time)
                 {
@@ -113,12 +144,12 @@
                 }
             }
 
-            int lowIntervalPower = powerHistory.PowerPoints[lowInterval];
-            int highIntervalPower = powerHistory.PowerPoints[highInterval];
+            int lowIntervalPower = activity.PowerHistory.PowerPoints[lowInterval];
+            int highIntervalPower = activity.PowerHistory.PowerPoints[highInterval];
 
             if(lowIntervalPower == 0)
             {
-                return Constants.Intensities.Find(i => i.EffortIndex == Constants.Intensities.Max(i => i.EffortIndex));
+                return 0;
             }
 
             int timeDiff = highInterval - lowInterval;
@@ -128,10 +159,13 @@
             double powerAdj = percentIntoInterval * powerIntervalDiff;
 
             double powerCompForExactTime = lowIntervalPower - powerAdj;
+            return (int)powerCompForExactTime;
+        }
 
-            var compRatio = activity.WeightedAvgWatts / powerCompForExactTime;
-
-            return Constants.Intensities.Find(i => compRatio >= i.LowBand && compRatio <= i.HighBand);
+        private static Intensity DefaultToMaxIntensity()
+        {
+            var max = Constants.Intensities.Max(i => i.EffortIndex);
+            return Constants.Intensities.Find(i => i.EffortIndex == max);
         }
     }
 }

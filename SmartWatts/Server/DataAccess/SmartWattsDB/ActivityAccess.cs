@@ -45,8 +45,8 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
 
         public Task InsertActivities(List<Activity> activities)
         {
-            const string sql = @"INSERT INTO Activities(StravaRideID, StravaUserID, Name, Date, Type, IsRace, HasWatts, MovingTime, Distance, AvgSpeed, MaxSpeed, AvgCadence, AvgWatts, WeightedAvgWatts, MaxWatts, Kilojoules, AvgHeartrate, MaxHeartrate)
-                                    VALUES(@StravaRideID, @StravaUserID, @Name, @Date, @Type, @IsRace, @HasWatts, @MovingTime, @Distance, @AvgSpeed, @MaxSpeed, @AvgCadence, @AvgWatts, @WeightedAvgWatts, @MaxWatts, @Kilojoules, @AvgHeartrate, @MaxHeartrate)";
+            const string sql = @"INSERT INTO Activities(StravaRideID, StravaUserID, Name, Date, Type, IsRace, HasWatts, IsPeloton, MovingTime, Distance, AvgSpeed, MaxSpeed, AvgCadence, AvgWatts, WeightedAvgWatts, MaxWatts, Kilojoules, AvgHeartrate, MaxHeartrate)
+                                    VALUES(@StravaRideID, @StravaUserID, @Name, @Date, @Type, @IsRace, @HasWatts, @IsPeloton, @MovingTime, @Distance, @AvgSpeed, @MaxSpeed, @AvgCadence, @AvgWatts, @WeightedAvgWatts, @MaxWatts, @Kilojoules, @AvgHeartrate, @MaxHeartrate)";
 
             return _db.SaveData(sql, activities);
         }

@@ -10,6 +10,7 @@ namespace SmartWatts.Shared.ViewModels
     {
         public string Description { get; set; }
         public string Color { get; set; }
+        public string FontColor { get; set; } = "black";
         public float LowBand { get; set; }
         public float HighBand { get; set; }
         public int EffortIndex { get; set; }

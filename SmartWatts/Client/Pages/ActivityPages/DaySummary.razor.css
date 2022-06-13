@@ -44,3 +44,7 @@ h5:after {
     margin: 10px 10px 15px 10px;
     padding: 10px;
 }
+
+.intensity-perc{
+    border-radius: 5px;
+}

@@ -18,6 +18,8 @@ namespace SmartWatts.Shared
             5, 15, 30, 45, 60, 90, 60 * 2, 60 * 3, 60 * 5, (60 * 7) + 30, 60 * 10, 60 * 15, 60 * 20, 60 * 30, 60 * 45, 60 * 60, 60 * 90, 60 * 60 * 2, 60 * 60 * 3, 60 * 60 * 4, 60 * 60 * 5, 60 * 60 * 8, 60 * 60 * 24
         };
 
+        public const int POWER_HISTORY_PERIOD = 42;
+
         public static readonly List<PowerZone> PowerZones = new()
         {
             new PowerZone()
@@ -49,6 +51,7 @@ namespace SmartWatts.Shared
             {
                 Description = "Well Above Target Intensity, Phenomenal Effort!",
                 Color = "purple",
+                FontColor = "white",
                 LowBand = 1.1F,
                 HighBand = 10000F,
                 EffortIndex = 5
@@ -72,7 +75,7 @@ namespace SmartWatts.Shared
             new Intensity()
             {
                 Description = "Just Below Target Intensity (Maintaining)",
-                Color = "yellow",
+                Color = "#F1F100",
                 LowBand = .92F,
                 HighBand = 1.00F,
                 EffortIndex = 2
@@ -88,7 +91,7 @@ namespace SmartWatts.Shared
             new Intensity()
             {
                 Description = "Easy Effort (Recovery)",
-                Color = "green",
+                Color = "lightgreen",
                 LowBand = 0.00F,
                 HighBand = .60F,
                 EffortIndex = 0

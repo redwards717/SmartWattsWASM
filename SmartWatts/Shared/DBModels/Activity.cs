@@ -17,6 +17,7 @@ namespace SmartWatts.Shared.DBModels
         public string Type { get; set; }
         public bool IsRace { get; set; }
         public bool HasWatts { get; set; }
+        public bool IsPeloton { get; set; }
         public int MovingTime { get; set; }  //seconds
         public double Distance { get; set; }
         public double AvgSpeed { get; set; }   // comes from strava in meters/second....lol ?!
@@ -31,6 +32,7 @@ namespace SmartWatts.Shared.DBModels
         public int PowerDataID { get; set; }
         public PowerData PowerData { get; set; }
         public Intensity Intensity { get; set; }
+        public int WeightedAvgBenchmark { get; set; }
         public PowerHistory PowerHistory { get; set; }
     }
 }

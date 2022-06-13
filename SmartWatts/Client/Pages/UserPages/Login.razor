@@ -57,7 +57,12 @@
 
                 await activityService.GetAllActivitiesByUser(user);
 
-                await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
+                var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
+
+                if(newCount > 0)
+                {
+                    toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
+                }
             }
 
             toastService.ShowSuccess($"Logged in as {user.Email}");

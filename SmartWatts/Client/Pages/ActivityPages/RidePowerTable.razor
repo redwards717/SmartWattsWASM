@@ -12,12 +12,12 @@
 			{
 				Intensity intensity = PowerUtlities.GetEffortIntensity(pp, Activity.PowerHistory);
 				<td style="background-color:@intensity.Color">
-					<span style="color:@(intensity.Color == "purple" ? "white" : "black")">@pp.Value</span>
+					<span style="color:@intensity.FontColor">@pp.Value</span>
 				</td>
 			}
 		</tr>
 		<tr>
-			<td class="row-title">30 Day</td>
+			<td class="row-title">@Constants.POWER_HISTORY_PERIOD Day</td>
 			@foreach (var pp in Activity.PowerHistory.PowerPoints.SkipLast(1))
 			{
 				<td>@pp.Value</td>

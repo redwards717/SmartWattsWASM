@@ -37,7 +37,10 @@
                     Name = sa.name,
                     Date = sa.start_date_local,
                     Type = sa.type,
-                    IsRace = sa.workout_type == 11 ? true : false,
+                    IsRace = sa.workout_type == 11,
+                    IsPeloton = (sa.name.Contains("Ride with") && sa.name.Contains(" min "))
+                            || (sa.name.Contains("Just Ride") && sa.name.Contains(" min "))
+                            || (sa.name.Contains("Scenic Ride") && sa.name.Contains(" min ")),
                     HasWatts = sa.device_watts,
                     MovingTime = sa.moving_time,
                     Distance = sa.distance,

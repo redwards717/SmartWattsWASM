@@ -28,21 +28,12 @@ namespace SmartWatts.Client.Services
                 _appState.SetLoadingMsg($"Loading ride {activity.Name} - ( {rideNo} / {newActivities.Count} )");
                 var data = await GetDataStreamForActivity(activity, "watts");
                 await AddPowerDataToActivity(activity, data);
+                AttachObjects(activity, _appState.UsersActivities);
+                _appState.AddUsersActivities(activity);
                 rideNo++;
             }
 
-            _appState.AddUsersActivities(newActivities);
-
             return newActivities?.Count ?? 0;
-        }
-
-        public async Task AddActivities(List<Activity> activities)
-        {
-            using HttpResponseMessage response = await _http.PostAsJsonAsync("api/Activity/Add", activities);
-            if (response.IsSuccessStatusCode == false)
-            {
-                throw new Exception(response.ReasonPhrase);
-            }
         }
 
         public async Task<List<Activity>> GetAllActivitiesByUser(User user)
@@ -61,6 +52,8 @@ namespace SmartWatts.Client.Services
 
             _appState.SetUsersActivities(activities);
 
+            AttachObjects(activities, activities); // if this gets slow consider only attaching history as far back as it required.  365 days + 45 maybe.
+
             return activities;
         }
 
@@ -77,10 +70,7 @@ namespace SmartWatts.Client.Services
 
         public async Task NormalizePelotonData(DateTime before, int percentAdj, List<Activity> activities)
         {
-
-            var activitiesToNormalize = activities.Where(a => (a.Name.Contains("Ride with") && a.Name.Contains("min"))
-                                                                || (a.Name.Contains("Just Ride") && a.Name.Contains("min"))
-                                                                || (a.Name.Contains("Scenic Ride") && a.Name.Contains("min"))).ToList();
+            var activitiesToNormalize = activities.Where(a => a.IsPeloton && a.Date <= before).ToList();
 
             using HttpResponseMessage response = await _http.PutAsJsonAsync($"api/Activity/NormalizePower/{percentAdj}", activities);
 
@@ -88,7 +78,14 @@ namespace SmartWatts.Client.Services
             {
                 throw new Exception(response.ReasonPhrase);
             }
-
+        }
+        private async Task AddActivities(List<Activity> activities)
+        {
+            using HttpResponseMessage response = await _http.PostAsJsonAsync("api/Activity/Add", activities);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
         }
 
         private async Task<List<Activity>> GetActivitiesFromStrava(long? before = null, long? after = null, int? page = null, int? per_page = null)
@@ -138,6 +135,20 @@ namespace SmartWatts.Client.Services
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        private void AttachObjects(Activity activity, List<Activity> activitiesForComp)
+        {
+            activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, activitiesForComp);
+            activity.Intensity = PowerUtlities.GetRideIntensity(activity);
+        }
+
+        private void AttachObjects(List<Activity> activities, List<Activity> activitiesForComp)
+        {
+            foreach(Activity activity in activities)
+            {
+                AttachObjects(activity, activitiesForComp);
             }
         }
     }
