@@ -16,10 +16,6 @@
             //    throw new Exception("DataStream sizes are not compatible");
             //}
 
-            EffortCalculations anEffort = new(Constants.AnaerobicPZ, ftp);
-            EffortCalculations vo2Effort = new(Constants.VO2PZ, ftp);
-            EffortCalculations thEffort = new(Constants.ThresholdPZ, ftp);
-
             var powerPointsInRide = Constants.PowerPoints.Where(pp => pp <= powerStream.data.Length);
 
             foreach(int pp in powerPointsInRide)
@@ -28,11 +24,23 @@
                 powerPoints.Add(pp, 0);
             }
 
+            Dictionary<int, int> sustainedEfforts = new();
+            EffortCalculations anEffort = new(Constants.AnaerobicPZ, ftp);
+            EffortCalculations vo2Effort = new(Constants.VO2PZ, ftp);
+            EffortCalculations thEffort = new(Constants.ThresholdPZ, ftp);
+
             for(int i = 0; i < powerStream.data.Length; i++)
             {
                 //finding sustained efforts
                 anEffort.RollingValues.Add(powerStream.data[i]);
-                TrackSustainedEfforts(anEffort);
+                vo2Effort.RollingValues.Add(powerStream.data[i]);
+                thEffort.RollingValues.Add(powerStream.data[i]);
+                if(i % 5 == 0)  // potentially do this to the power curve portion to speed that up
+                {
+                    TrackSustainedEfforts(anEffort);
+                    TrackSustainedEfforts(vo2Effort);
+                    TrackSustainedEfforts(thEffort);
+                }
 
                 // calculating power curve
                 foreach(int pp in powerPointsInRide)
@@ -50,6 +58,16 @@
                 }
             }
 
+            ScanForFinalEfforts(anEffort);
+            ScanForFinalEfforts(vo2Effort);
+            ScanForFinalEfforts(thEffort);
+
+            sustainedEfforts.Add(anEffort.MinTime, anEffort.TotalTime);
+            sustainedEfforts.Add(vo2Effort.MinTime, vo2Effort.TotalTime);
+            sustainedEfforts.Add(thEffort.MinTime, thEffort.TotalTime);
+
+            powerData.SustainedEfforts = sustainedEfforts;
+            powerData.JsonSustainedEfforts = JsonSerializer.Serialize(sustainedEfforts);
             powerData.PowerPoints = powerPoints;
             powerData.JsonPowerPoints = JsonSerializer.Serialize(powerPoints);
 
@@ -58,25 +76,41 @@
 
         private static void TrackSustainedEfforts(EffortCalculations e)
         {
-            if (e.InEffort)
+            try
             {
-                if (e.RollingValues.Sum() < (e.Target * .99))
+                if (e.InEffort)
                 {
-                    e.TotalTime += e.RollingValues.Count;
-                    e.InEffort = false;
-                    e.RollingValues = new List<float>();
+                    if (e.RollingValues.Average() < (e.Target * .99))
+                    {
+                        if(e.RollingValues.Count - 5 >= e.MinTime)
+                        {
+                            e.TotalTime += e.RollingValues.Count;
+                        }
+                        e.InEffort = false;
+                        e.RollingValues.Clear();
+                    }
                 }
-            }
-            else if (e.RollingValues.Count >= Constants.AnaerobicPZ.Time)
-            {
-                if (e.RollingValues.Sum() >= e.Target)
+                else if (e.RollingValues.Average() >= e.Target)
                 {
                     e.InEffort = true;
                 }
                 else
                 {
-                    e.RollingValues.RemoveAt(0);
+                    e.RollingValues.Clear();
                 }
+            }
+            catch(Exception ex)
+            {
+                var test = ex;
+                throw;
+            }
+        }
+
+        private static void ScanForFinalEfforts(EffortCalculations e)
+        {
+            if (e.InEffort)
+            {
+                e.TotalTime += (e.RollingValues.Count >= e.MinTime && e.RollingValues.Average() >= e.Target) ? e.RollingValues.Count : 0;
             }
         }
     }

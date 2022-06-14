@@ -36,6 +36,7 @@ namespace SmartWatts.Server.Controllers
             {
                 activity.PowerData = await _powerDataAccess.GetPowerDataForActivity(activity);
                 activity.PowerData.PowerPoints = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonPowerPoints);
+                activity.PowerData.SustainedEfforts = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonSustainedEfforts);
             }
             return Ok(activities);
         }
@@ -45,7 +46,7 @@ namespace SmartWatts.Server.Controllers
         public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody] List<StravaDataStream> sdss)
         {
             var activity = await _activityAccess.GetActivityByStravaRideID(id);
-            var user = await _userAccess.GetUserById(activity.StravaUserID.ToString());
+            var user = await _userAccess.GetUserByStravaId(activity.StravaUserID.ToString());
 
             PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(sdss, user.FTP);
 

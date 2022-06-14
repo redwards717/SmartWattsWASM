@@ -86,7 +86,7 @@
         {
             appState.LoaderOn("Looking for Strava activities...");
             // still need to test if i get rate limited. 
-            var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 100);
+            var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 5);
 
             if(newCount == 0)
             {

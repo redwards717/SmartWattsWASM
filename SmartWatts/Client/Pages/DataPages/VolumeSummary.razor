@@ -9,6 +9,9 @@
                 <th>Time Frame</th>
                 <th>Volume</th>
                 <th>Intensity</th>
+                <th>@Constants.ANAEROBIC Efforts</th>
+                <th>@Constants.VO2 Efforts</th>
+                <th>@Constants.THRESHOLD Efforts</th>
             </tr>
             @for(int i = 0; i <= period * 5; i += period)
             {
@@ -24,12 +27,18 @@
                     <td>@PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
                 }
                     <td>@PowerUtlities.GetIntensityForTimeframe(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
+                    <td>@PowerUtlities.GetSustainedEfforts(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.AnaerobicPZ.Time)</td>
+                    <td>@PowerUtlities.GetSustainedEfforts(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.VO2PZ.Time)</td>
+                    <td>@PowerUtlities.GetSustainedEfforts(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.ThresholdPZ.Time)</td>
                 </tr>
             }
             <tr>
                 <th>Avg over past 365 days</th>
                 <td>@PowerUtlities.GetAvgVolume(appState.UsersActivities, now.AddDays(-365), now, 365/period)</td>
                 <td>@PowerUtlities.GetAvgIntensity(appState.UsersActivities, now.AddDays(-365), now, 365/period)</td>
+                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.UsersActivities, now.AddDays(-365), now, @Constants.AnaerobicPZ.Time, 365/period)</td>
+                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.UsersActivities, now.AddDays(-365), now, @Constants.VO2PZ.Time, 365/period)</td>
+                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.UsersActivities, now.AddDays(-365), now, @Constants.ThresholdPZ.Time, 365/period)</td>
             </tr>
         </table>
     </div>

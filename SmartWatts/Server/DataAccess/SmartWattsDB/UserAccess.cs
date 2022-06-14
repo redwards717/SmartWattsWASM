@@ -22,6 +22,19 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
             var result = await _db.LoadData<User, dynamic>(sql, parameters);
             return result.FirstOrDefault();
         }
+
+        public async Task<User> GetUserByStravaId(string id)
+        {
+            var parameters = new { id };
+
+            const string sql = @"SELECT * 
+                            FROM Users
+                            WHERE StravaUserID = @id";
+
+            var result = await _db.LoadData<User, dynamic>(sql, parameters);
+            return result.FirstOrDefault();
+        }
+
         public async Task<User> GetUser(string email, string password)
         {
             var parameter = new { email, password };

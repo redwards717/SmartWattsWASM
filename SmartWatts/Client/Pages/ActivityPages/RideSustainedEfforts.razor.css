@@ -1,0 +1,12 @@
+﻿.effort-container{
+    border: 1px solid black;
+    padding-top: 10px;
+}
+
+.effort-indicator {
+    height: 100%;
+}
+
+.table th, .table td{
+    border: none !important;
+}

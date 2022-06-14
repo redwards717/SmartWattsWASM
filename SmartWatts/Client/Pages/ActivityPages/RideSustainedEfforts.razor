@@ -1,0 +1,28 @@
+﻿<div class="effort-container">
+    <table class="table table-sm">
+        @foreach(var effort in Activity.PowerData.SustainedEfforts)
+        {
+            <tr class="effort-indicator" style="background: linear-gradient(90deg, @GetBackground(effort.Key) @GetPercent(effort), white 0);">
+                <th>@Constants.PowerZones.Find(pz => pz.Time == effort.Key).EffortType</th>
+                <th>@(effort.Value > 1 ? DateTimeUtilities.ConvertSecToReadable(effort.Value) : "None")</th>
+            </tr>
+        }
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public Activity Activity { get; set; }
+
+    private string GetBackground(int effortTime )
+    {
+        return Constants.PowerZones.Find(pz => pz.Time == effortTime).Color;
+    }
+
+    private string GetPercent(KeyValuePair<int, int> effort)
+    {
+        var pz = Constants.PowerZones.Find(pz => pz.Time == effort.Key);
+        var perc = (Math.Pow(pz.PercentOfFTP, 3) * effort.Value) / Activity.MovingTime;
+        return (perc + perc) > 1 ? $"100%" : $"{(perc + perc) * 100}%";
+    }
+}

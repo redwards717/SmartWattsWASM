@@ -36,7 +36,7 @@ namespace SmartWatts.Shared
         {
             EffortType = VO2,
             Time = 60 * 3,
-            PercentOfFTP = 1.20,
+            PercentOfFTP = 1.10,
             Color = "orange"
         };
 

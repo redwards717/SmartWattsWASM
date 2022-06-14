@@ -24,6 +24,32 @@
             return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.Intensity.EffortIndex) / periods;
         }
 
+        public static string GetSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime)
+        {
+            var efforts = activities.Where(a => a.Date >= start && a.Date <= end).Select(a => a.PowerData.SustainedEfforts);
+            int time = 0;
+
+            foreach(var effort in efforts)
+            {
+                time += effort[effortTime];
+            }
+
+            return DateTimeUtilities.ConvertSecToReadable(time);
+        }
+
+        public static string GetAvgSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime, int periods)
+        {
+            var efforts = activities.Where(a => a.Date >= start && a.Date <= end).Select(a => a.PowerData.SustainedEfforts);
+            int time = 0;
+
+            foreach (var effort in efforts)
+            {
+                time += effort[effortTime];
+            }
+
+            return DateTimeUtilities.ConvertSecToReadable(time / periods);
+        }
+
         public static Intensity GetRideIntensity(Activity activity)
         {
             Intensity topIntensity = Constants.Intensities.Find(i => i.EffortIndex == 0);

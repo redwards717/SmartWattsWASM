@@ -21,8 +21,8 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
 
         public Task InsertPowerData(PowerData powerData)
         {
-            const string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints)
-                            VALUES(@StravaRideID, @JsonPowerPoints)";
+            const string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints, JsonSustainedEfforts, FTPAtTimeOfRide)
+                            VALUES(@StravaRideID, @JsonPowerPoints, @JsonSustainedEfforts, @FTPAtTimeOfRide)";
 
             return _db.SaveData(sql, powerData);
         }

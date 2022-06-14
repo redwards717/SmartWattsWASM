@@ -50,3 +50,17 @@ h5:after {
     padding: 2px 2px 2px 4px;
     margin: 2px;
 }
+
+.data-container{
+    display: flex;
+}
+
+.power-table{
+    flex: 5;
+}
+
+.sustained-efforts{
+    flex: 1;
+    margin-left: 10px;
+    max-width: 175px;
+}

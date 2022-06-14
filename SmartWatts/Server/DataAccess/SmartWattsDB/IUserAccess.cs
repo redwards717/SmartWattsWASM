@@ -11,5 +11,6 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
         Task<User> GetUserByEmail(string email);
         Task InsertUser(User user);
         Task UpdateUser(User user);
+        Task<User> GetUserByStravaId(string id);
     }
 }
