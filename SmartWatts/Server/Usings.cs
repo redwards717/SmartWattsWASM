@@ -1,6 +1,7 @@
 ﻿global using SmartWatts.Shared;
 global using SmartWatts.Shared.DBModels;
 global using SmartWatts.Shared.ViewModels;
+global using SmartWatts.Shared.UtilityModels;
 global using System;
 global using System.Collections.Generic;
 global using System.Linq;

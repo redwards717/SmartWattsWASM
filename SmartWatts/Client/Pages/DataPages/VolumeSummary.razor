@@ -51,7 +51,7 @@
                     <th>@now.AddDays(-(i+period)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</th>
                     <td>@PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
                 }
-                    <td>@PowerUtlities.GetIntensityForTimeframe(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i)))</td>
+                    <td>@PowerUtlities.GetIntensityForTimeframe(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
                 </tr>                       
             }
         </table>

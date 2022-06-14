@@ -2,7 +2,7 @@
 {
     public static class PowerUtilities
     {
-        public static PowerData CalculatePowerFromDataStream(List<StravaDataStream> sdss)
+        public static PowerData CalculatePowerFromDataStream(List<StravaDataStream> sdss, int ftp)
         {
             PowerData powerData = new();
             Dictionary<int, int> powerPoints = new();
@@ -16,10 +16,9 @@
             //    throw new Exception("DataStream sizes are not compatible");
             //}
 
-
-            KeyValuePair<int, int> susTH = new(60 * 15, 0);
-            KeyValuePair<int, int> susVO2 = new(60 * 3, 0);
-            KeyValuePair<int, int> susAn = new(30, 0);
+            EffortCalculations anEffort = new(Constants.AnaerobicPZ, ftp);
+            EffortCalculations vo2Effort = new(Constants.VO2PZ, ftp);
+            EffortCalculations thEffort = new(Constants.ThresholdPZ, ftp);
 
             var powerPointsInRide = Constants.PowerPoints.Where(pp => pp <= powerStream.data.Length);
 
@@ -31,6 +30,11 @@
 
             for(int i = 0; i < powerStream.data.Length; i++)
             {
+                //finding sustained efforts
+                anEffort.RollingValues.Add(powerStream.data[i]);
+                TrackSustainedEfforts(anEffort);
+
+                // calculating power curve
                 foreach(int pp in powerPointsInRide)
                 {
                     rollingWatts[pp].Add(powerStream.data[i]);
@@ -50,6 +54,30 @@
             powerData.JsonPowerPoints = JsonSerializer.Serialize(powerPoints);
 
             return powerData;
+        }
+
+        private static void TrackSustainedEfforts(EffortCalculations e)
+        {
+            if (e.InEffort)
+            {
+                if (e.RollingValues.Sum() < (e.Target * .99))
+                {
+                    e.TotalTime += e.RollingValues.Count;
+                    e.InEffort = false;
+                    e.RollingValues = new List<float>();
+                }
+            }
+            else if (e.RollingValues.Count >= Constants.AnaerobicPZ.Time)
+            {
+                if (e.RollingValues.Sum() >= e.Target)
+                {
+                    e.InEffort = true;
+                }
+                else
+                {
+                    e.RollingValues.RemoveAt(0);
+                }
+            }
         }
     }
 }
