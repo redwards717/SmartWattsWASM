@@ -30,7 +30,7 @@
 
     private List<Activity> GetActivitesForDay(DateTime day)
     {
-        var activities = appState.UsersActivities.Where(ua => ua.Date.DayOfYear == day.DayOfYear && ua.Date.Year == day.Year).OrderBy(ua => ua.Date).ToList();
+        var activities = appState.LoggedInUser.Activities.Where(ua => ua.Date.DayOfYear == day.DayOfYear && ua.Date.Year == day.Year).OrderBy(ua => ua.Date).ToList();
         //foreach(Activity activity in activities)   // moved this to initial data grab
         //{
         //    activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, appState.UsersActivities);

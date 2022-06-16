@@ -1,6 +1,4 @@
-﻿using SmartWatts.Shared.DBModels;
-
-namespace SmartWatts.Server.DataAccess.SmartWattsDB
+﻿namespace SmartWatts.Server.DataAccess.SmartWattsDB
 {
     public class PowerDataAccess : IPowerDataAccess
     {
@@ -20,6 +18,14 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
         }
 
         public Task InsertPowerData(PowerData powerData)
+        {
+            const string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints, JsonSustainedEfforts, FTPAtTimeOfRide)
+                            VALUES(@StravaRideID, @JsonPowerPoints, @JsonSustainedEfforts, @FTPAtTimeOfRide)";
+
+            return _db.SaveData(sql, powerData);
+        }
+
+        public Task InsertPowerData(List<PowerData> powerData)
         {
             const string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints, JsonSustainedEfforts, FTPAtTimeOfRide)
                             VALUES(@StravaRideID, @JsonPowerPoints, @JsonSustainedEfforts, @FTPAtTimeOfRide)";

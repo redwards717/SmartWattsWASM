@@ -16,7 +16,7 @@ namespace SmartWatts.Client.Services
         public async Task<int> FindAndAddNewActivities(User user, int count)
         {
             var stravaActivities = await GetActivitiesFromStrava(per_page: count);
-            var existingStravaRideIDs = _appState.UsersActivities.Select(ua => ua.StravaRideID);
+            var existingStravaRideIDs = _appState.LoggedInUser.Activities.Select(ua => ua.StravaRideID);
 
             var newActivities = stravaActivities.Where(sa => !existingStravaRideIDs.Contains(sa.StravaRideID)).ToList();
 
@@ -26,14 +26,67 @@ namespace SmartWatts.Client.Services
             foreach (Activity activity in newActivities)
             {
                 _appState.SetLoadingMsg($"Loading ride {activity.Name} - ( {rideNo} / {newActivities.Count} )");
+
                 var data = await GetDataStreamForActivity(activity, "watts");
                 await AddPowerDataToActivity(activity, data);
-                AttachObjects(activity, _appState.UsersActivities);
+                AttachObjects(activity, _appState.LoggedInUser.Activities);
                 _appState.AddUsersActivities(activity);
+
                 rideNo++;
             }
 
             return newActivities?.Count ?? 0;
+        }
+
+        public async Task<int> SyncAllRidesFromStrava()
+        {
+            var count = await GetStravaRideCount();
+            var extraMsg = count >= 100 ? "this may take a few minutes" : "";
+
+            _appState.SetLoadingMsg($"Found {count} rides on Strava...{extraMsg}");
+
+            int countLoaded = 0;
+            
+            for(int i = 1; i <= (count/100) + 1; i++)
+            {
+                countLoaded += await FindAndAddNewStravaActivities(100, i);
+
+                _appState.SetLoadingMsg($"{countLoaded} / {count} rides loaded...");
+            }
+
+            return count;
+        }
+
+        public async Task<int> FindAndAddNewStravaActivities(int count, int? page = null)
+        {
+            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/FindAndAddNew/{count}/{page}", _appState.LoggedInUser);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+            var activities = await response.Content.ReadFromJsonAsync<List<Activity>>();
+
+            _appState.AddUsersActivities(activities);
+
+            return activities.Count;
+        }
+
+        public async Task<int> GetStravaRideCount()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, Constants.BASE_URI + "api/Activity/StravaRideCount");
+
+            request.Headers.Add("stravaUserID", _appState.LoggedInUser.StravaUserID.ToString());
+            request.Headers.Add("token", _appState.LoggedInUser.StravaAccessToken);
+
+            using HttpResponseMessage response = await _http.SendAsync(request);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+            var count = await response.Content.ReadAsStringAsync();
+            return Int32.Parse(count);
         }
 
         public async Task<List<Activity>> GetAllActivitiesByUser(User user)
@@ -52,7 +105,7 @@ namespace SmartWatts.Client.Services
 
             _appState.SetUsersActivities(activities);
 
-            AttachObjects(activities, activities); // if this gets slow consider only attaching history as far back as it required.  365 days + 45 maybe.
+            //AttachObjects(activities, activities); // if this gets slow consider only attaching history as far back as it required.  365 days + 45 maybe.
 
             return activities;
         }
@@ -68,17 +121,6 @@ namespace SmartWatts.Client.Services
             activity.PowerData = await response.Content.ReadFromJsonAsync<PowerData>();
         }
 
-        public async Task NormalizePelotonData(DateTime before, int percentAdj, List<Activity> activities)
-        {
-            var activitiesToNormalize = activities.Where(a => a.IsPeloton && a.Date <= before).ToList();
-
-            using HttpResponseMessage response = await _http.PutAsJsonAsync($"api/Activity/NormalizePower/{percentAdj}", activities);
-
-            if (response.IsSuccessStatusCode == false)
-            {
-                throw new Exception(response.ReasonPhrase);
-            }
-        }
         private async Task AddActivities(List<Activity> activities)
         {
             using HttpResponseMessage response = await _http.PostAsJsonAsync("api/Activity/Add", activities);

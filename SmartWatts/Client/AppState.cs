@@ -3,7 +3,6 @@
     public class AppState
     {
         public User LoggedInUser { get; set; }
-        public List<Activity> UsersActivities { get; set; }
         public bool Loading { get; set; }
         public string LoadingMsg { get; set; } = "Loading...";
         public event Action OnChange;
@@ -15,19 +14,19 @@
 
         public void SetUsersActivities(List<Activity> activities)
         {
-            UsersActivities = activities;
+            LoggedInUser.Activities = activities;
             NotifyStateChanged();
         }
 
         public void AddUsersActivities(List<Activity> activities)
         {
-            UsersActivities.AddRange(activities);
+            LoggedInUser.Activities.AddRange(activities);
             NotifyStateChanged();
         }
 
         public void AddUsersActivities(Activity activity)
         {
-            UsersActivities.Add(activity);
+            LoggedInUser.Activities.Add(activity);
             NotifyStateChanged();
         }
 

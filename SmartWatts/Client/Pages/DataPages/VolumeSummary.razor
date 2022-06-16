@@ -19,26 +19,26 @@
                 @if(i == 0)
                 {
                     <th>@now.AddDays(-period).ToString("dd MMMM") to Current:</th>
-                    <td>@PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-period), now)</td>
+                    <td>@PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-period), now)</td>
                 }
                 else
                 {
                     <th>@now.AddDays(-(i+period)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</th>
-                    <td>@PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
+                    <td>@PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
                 }
-                    <td>@PowerUtlities.GetIntensityForTimeframe(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
-                    <td>@PowerUtlities.GetSustainedEfforts(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.AnaerobicPZ.Time)</td>
-                    <td>@PowerUtlities.GetSustainedEfforts(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.VO2PZ.Time)</td>
-                    <td>@PowerUtlities.GetSustainedEfforts(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.ThresholdPZ.Time)</td>
+                    <td>@PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
+                    <td>@PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.AnaerobicPZ.Time)</td>
+                    <td>@PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.VO2PZ.Time)</td>
+                    <td>@PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i+period)), now.AddDays(-i), @Constants.ThresholdPZ.Time)</td>
                 </tr>
             }
             <tr>
                 <th>Avg over past 365 days</th>
-                <td>@PowerUtlities.GetAvgVolume(appState.UsersActivities, now.AddDays(-365), now, 365/period)</td>
-                <td>@PowerUtlities.GetAvgIntensity(appState.UsersActivities, now.AddDays(-365), now, 365/period)</td>
-                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.UsersActivities, now.AddDays(-365), now, @Constants.AnaerobicPZ.Time, 365/period)</td>
-                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.UsersActivities, now.AddDays(-365), now, @Constants.VO2PZ.Time, 365/period)</td>
-                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.UsersActivities, now.AddDays(-365), now, @Constants.ThresholdPZ.Time, 365/period)</td>
+                <td>@PowerUtlities.GetAvgVolume(appState.LoggedInUser.Activities, now.AddDays(-365), now, 365/period)</td>
+                <td>@PowerUtlities.GetAvgIntensity(appState.LoggedInUser.Activities, now.AddDays(-365), now, 365/period)</td>
+                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-365), now, @Constants.AnaerobicPZ.Time, 365/period)</td>
+                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-365), now, @Constants.VO2PZ.Time, 365/period)</td>
+                <td>@PowerUtlities.GetAvgSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-365), now, @Constants.ThresholdPZ.Time, 365/period)</td>
             </tr>
         </table>
     </div>
@@ -53,14 +53,14 @@
                 @if(i == 0)
                 {
                     <th>@now.AddDays(-period).ToString("dd MMMM") to Current:</th>
-                    <td>@PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-period), now)</td>
+                    <td>@PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-period), now)</td>
                 }
                 else
                 {
                     <th>@now.AddDays(-(i+period)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</th>
-                    <td>@PowerUtlities.GetVolumeInTime(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
+                    <td>@PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
                 }
-                    <td>@PowerUtlities.GetIntensityForTimeframe(appState.UsersActivities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
+                    <td>@PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, now.AddDays(-(i+period)), now.AddDays(-i))</td>
                 </tr>                       
             }
         </table>

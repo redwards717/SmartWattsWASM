@@ -8,6 +8,8 @@ namespace SmartWatts.Client.Services
         Task AddPowerDataToActivity(Activity activity, List<StravaDataStream> sds);
         Task<int> FindAndAddNewActivities(User user, int count);
         Task<List<Activity>> GetAllActivitiesByUser(User user);
-        Task NormalizePelotonData(DateTime before, int percentAdj, List<Activity> activities);
+        Task<int> SyncAllRidesFromStrava();
+        Task<int> GetStravaRideCount();
+        Task<int> FindAndAddNewStravaActivities(int count, int? page = null);
     }
 }

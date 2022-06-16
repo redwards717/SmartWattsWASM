@@ -8,18 +8,16 @@
 @inject IToastService toastService;
 
 <div class="container-fluid">
-@if(appState.UsersActivities is null)
+@if(appState.LoggedInUser is null || appState.LoggedInUser.Activities is null)
 {
     <h3>No Rides to Display</h3>
 }
 else
 {
-    
     @foreach(int year in years)
     {
         <button class="btn btn-confirm">@year</button>
     }
-
 
     <RideLog End="displayEnd" Start="displayStart"></RideLog>
 }
@@ -88,7 +86,7 @@ else
 
     public void LoadData()
     {
-        years = DateTimeUtilities.GetActiveYears(appState.UsersActivities);
+        years = DateTimeUtilities.GetActiveYears(appState.LoggedInUser.Activities);
 
         displayEnd = DateTime.Now;
         displayStart = DateTime.Now.AddDays(-30);

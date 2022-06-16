@@ -34,9 +34,6 @@
         <p>
             <button class="btn btn-strava" @onclick=HandleSync>Sync Activities From Strava</button>
         </p>
-        <p>
-            <button @onclick="NormalizePelotonData">Normalize Peloton Data</button>
-        </p>
     }
     else if(FTP == 0)
     {
@@ -86,42 +83,23 @@
         {
             appState.LoaderOn("Looking for Strava activities...");
             // still need to test if i get rate limited. 
-            var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 5);
+            //var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 5);
+            var countLoaded = await activityService.SyncAllRidesFromStrava();
 
-            if(newCount == 0)
+            //var newCount = await activityService.FindAndAddNewActivities2(15);
+
+            if(countLoaded == 0)
             {
-                toastService.ShowInfo("No new activities found");
+                toastService.ShowInfo("No new activities found to load");
             }
             else
             {
-                toastService.ShowSuccess($"{newCount} Activity(s) loaded in from Strava");
+                toastService.ShowSuccess($"done loading in {countLoaded} Activity(s) from Strava");
             }
         }
         catch (Exception ex)
         {
             toastService.ShowError($"There was an error syncing data from Strava - {ex.Message}");
-        }
-        finally
-        {
-            appState.LoaderOff();
-        }
-    }
-
-    private async Task NormalizePelotonData()
-    {
-        try
-        {
-            appState.LoaderOn("Making Peloton data more accurate...");
-
-            DateTime dateDataWasFixed = new DateTime(2022, 3, 18); // march 18, 2022 is when the peloton was fixed
-
-            await activityService.NormalizePelotonData(dateDataWasFixed, -30, appState.UsersActivities); // old peloton read about 30% too high
-
-            toastService.ShowInfo("Peloton data has been fixed");
-        }
-        catch(Exception ex)
-        {
-            toastService.ShowError($"There was an error fixing Peloton data - {ex.Message}");
         }
         finally
         {

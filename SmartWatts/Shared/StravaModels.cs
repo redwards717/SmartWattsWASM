@@ -62,7 +62,7 @@ namespace SmartWatts.Shared
         public bool display_hide_heartrate_option { get; set; }
         public float elev_high { get; set; }
         public float elev_low { get; set; }
-        public long upload_id { get; set; }
+        public long? upload_id { get; set; }
         public string upload_id_str { get; set; }
         public string external_id { get; set; }
         public bool from_accepted_tag { get; set; }
@@ -111,4 +111,105 @@ namespace SmartWatts.Shared
         public string summary_polyline { get; set; }
         public int resource_state { get; set; }
     }
+
+
+    public class AthleteStats
+    {
+        public float biggest_ride_distance { get; set; }
+        public float biggest_climb_elevation_gain { get; set; }
+        public Recent_Ride_Totals recent_ride_totals { get; set; }
+        public All_Ride_Totals all_ride_totals { get; set; }
+        public Recent_Run_Totals recent_run_totals { get; set; }
+        public All_Run_Totals all_run_totals { get; set; }
+        public Recent_Swim_Totals recent_swim_totals { get; set; }
+        public All_Swim_Totals all_swim_totals { get; set; }
+        public Ytd_Ride_Totals ytd_ride_totals { get; set; }
+        public Ytd_Run_Totals ytd_run_totals { get; set; }
+        public Ytd_Swim_Totals ytd_swim_totals { get; set; }
+    }
+
+    public class Recent_Ride_Totals
+    {
+        public int count { get; set; }
+        public float distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public float elevation_gain { get; set; }
+        public int achievement_count { get; set; }
+    }
+
+    public class All_Ride_Totals
+    {
+        public int count { get; set; }
+        public int distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public int elevation_gain { get; set; }
+    }
+
+    public class Recent_Run_Totals
+    {
+        public int count { get; set; }
+        public float distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public float elevation_gain { get; set; }
+        public int achievement_count { get; set; }
+    }
+
+    public class All_Run_Totals
+    {
+        public int count { get; set; }
+        public int distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public int elevation_gain { get; set; }
+    }
+
+    public class Recent_Swim_Totals
+    {
+        public int count { get; set; }
+        public float distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public float elevation_gain { get; set; }
+        public int achievement_count { get; set; }
+    }
+
+    public class All_Swim_Totals
+    {
+        public int count { get; set; }
+        public int distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public int elevation_gain { get; set; }
+    }
+
+    public class Ytd_Ride_Totals
+    {
+        public int count { get; set; }
+        public int distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public int elevation_gain { get; set; }
+    }
+
+    public class Ytd_Run_Totals
+    {
+        public int count { get; set; }
+        public int distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public int elevation_gain { get; set; }
+    }
+
+    public class Ytd_Swim_Totals
+    {
+        public int count { get; set; }
+        public int distance { get; set; }
+        public int moving_time { get; set; }
+        public int elapsed_time { get; set; }
+        public int elevation_gain { get; set; }
+    }
+
 }

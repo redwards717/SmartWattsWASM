@@ -1,4 +1,5 @@
-﻿using SmartWatts.Shared.DBModels;
+﻿using SmartWatts.Client.Utilities;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SmartWatts.Server.Controllers
 {
@@ -37,6 +38,13 @@ namespace SmartWatts.Server.Controllers
                 activity.PowerData = await _powerDataAccess.GetPowerDataForActivity(activity);
                 activity.PowerData.PowerPoints = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonPowerPoints);
                 activity.PowerData.SustainedEfforts = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonSustainedEfforts);
+
+                // only attach extra data for year and a bit.  will grab more if user views historical data
+                if(DateTime.Compare(activity.Date, DateTime.Now.AddDays(-365 + 50)) > 0)
+                {
+                    activity.PowerHistory = PowerUtilities.GetPowerHistory(activity, activities);
+                    activity.Intensity = PowerUtilities.GetRideIntensity(activity);
+                }
             }
             return Ok(activities);
         }
@@ -57,32 +65,58 @@ namespace SmartWatts.Server.Controllers
             return Ok(powerData);
         }
 
-        [HttpPut]
-        [Route("NormalizePower/{percentadj}")]
-        public async Task<IActionResult> NormalizePower(string percentAdj, [FromBody] List<Activity> activities)
+        [HttpPost]
+        [Route("FindAndAddNew/{count}/{page}")]
+        public async Task<IActionResult> FindAndAddNew(int count, int? page, User user)
         {
-            double multiplier = (double)(Int32.Parse(percentAdj) + 100) / 100;
+            int? after = page > 0 ? 1 : null;
+            var existingIDs = user.Activities.Select(a => a.StravaRideID);
+            var stravaActivities = (await _stravaAccess.GetActivities(user.StravaAccessToken, per_page:count, page:page, after:after))
+                .Where(sa => sa.device_watts && !existingIDs.Contains(sa.id));
+
+            var activities = ConverstionUtilities.ConvertStravaActivity(stravaActivities);
+            List<PowerData> newPowerData = new();
+
             foreach(Activity activity in activities)
             {
-                activity.Kilojoules *= multiplier;
-                activity.WeightedAvgWatts *= multiplier;
-                activity.AvgWatts *= multiplier;
-                activity.MaxWatts *= multiplier;
-
-                foreach(KeyValuePair<int,int> pp in activity.PowerData.PowerPoints)
+                var stravaDataStreams = await _stravaAccess.GetDataStreamForActivity(activity, user, "watts");
+                if (activity.IsPeloton && DateTime.Compare(activity.Date, new DateTime(2022, 3, 18)) < 0)
                 {
-                    activity.PowerData.PowerPoints[pp.Key] = (int)(pp.Value * multiplier);
+                    PelotonUtilities.AddMissingDataPointsWithCorrection(stravaDataStreams, -30);
+                    PelotonUtilities.NormalizePowerMetaData(activity, -30);
                 }
+                else if(activity.IsPeloton)
+                {
+                    PelotonUtilities.AddMissingDataPoints(stravaDataStreams);
+                }
+                PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(stravaDataStreams, user.FTP);
 
-                activity.PowerData.JsonPowerPoints = JsonSerializer.Serialize(activity.PowerData.PowerPoints);
+                powerData.StravaRideID = activity.StravaRideID;
+                powerData.FTPAtTimeOfRide = user.FTP;
+
+                newPowerData.Add(powerData);
+
+                activity.PowerData = powerData;
+                if (DateTime.Compare(activity.Date, DateTime.Now.AddDays(-365 + 50)) > 0)
+                {
+                    activity.PowerHistory = PowerUtilities.GetPowerHistory(activity, activities);
+                    activity.Intensity = PowerUtilities.GetRideIntensity(activity);
+                }
+                user.Activities.Add(activity);
             }
 
-            var allPowerData = activities.ConvertAll(a => a.PowerData);
+            await _powerDataAccess.InsertPowerData(newPowerData);
+            await _activityAccess.InsertActivities(activities);
 
-            await _activityAccess.UpdatePower(activities);
-            await _powerDataAccess.UpdatePowerData(allPowerData);
+            return Ok(activities);
+        }
 
-            return Ok();
+        [HttpGet]
+        [Route("StravaRideCount")]
+        public async Task<IActionResult> GetStravaRideCount([FromHeader] string token, [FromHeader]string stravaUserID)
+        {
+            var athleteStats = await _stravaAccess.GetAthleteStats(token, stravaUserID);
+            return Ok(athleteStats.all_ride_totals.count);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
     {
         Task<PowerData> GetPowerDataForActivity(Activity activity);
         Task InsertPowerData(PowerData powerData);
+        Task InsertPowerData(List<PowerData> powerData);
         Task UpdatePowerData(List<PowerData> powerData);
     }
 }

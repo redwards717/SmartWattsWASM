@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SmartWatts.Shared.DBModels
 {
@@ -13,6 +14,7 @@ namespace SmartWatts.Shared.DBModels
         public DateTime TokenExpiration { get; set; }
         public string RefreshToken { get; set; }
         public DateTime DateCreated { get; set; }
+        public List<Activity> Activities { get; set; }
 
     }
 }

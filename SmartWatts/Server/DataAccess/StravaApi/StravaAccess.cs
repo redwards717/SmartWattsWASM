@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json;
-using static System.Net.WebRequestMethods;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Web;
+﻿global using Newtonsoft.Json;
+global using System.Net.Http.Headers;
+global using System.Web;
 
 namespace SmartWatts.Server.DataAccess.StravaApi
 {
@@ -50,6 +48,49 @@ namespace SmartWatts.Server.DataAccess.StravaApi
 
             var jsonString = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<StravaActivity>>(jsonString);
+        }
+
+        public async Task<List<StravaDataStream>> GetDataStreamForActivity(Activity activity, User user, string data)
+        {
+            UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/activities/{activity.StravaRideID}/streams");
+            uriBuilder.Port = -1;
+
+            var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+            paramValues.Add("keys", data); // other options [time,distance,latlng,altitude,velocity_smooth,heartrate,cadance,watts,temp,moving,grade_smooth]
+            paramValues.Add("series_type", "time");
+
+            uriBuilder.Query = paramValues.ToString();
+
+            using HttpRequestMessage request = new(new HttpMethod("GET"), uriBuilder.ToString());
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.StravaAccessToken);
+
+            using HttpResponseMessage response = await _http.SendAsync(request);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            jsonString = jsonString.Replace("null", "0");
+            return JsonConvert.DeserializeObject<List<StravaDataStream>>(jsonString);
+        }
+
+        public async Task<AthleteStats> GetAthleteStats(string token, string stravaUserId)
+        {
+            UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/athletes/{stravaUserId}/stats");
+            uriBuilder.Port = -1;
+
+            using HttpRequestMessage request = new(new HttpMethod("GET"), uriBuilder.ToString());
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            using HttpResponseMessage response = await _http.SendAsync(request);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<AthleteStats>(jsonString);
         }
     }
 }

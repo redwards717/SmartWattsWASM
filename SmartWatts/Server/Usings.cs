@@ -13,3 +13,4 @@ global using SmartWatts.Server.DataAccess.SmartWattsDB;
 global using SmartWatts.Server.DataAccess.StravaApi;
 global using SmartWatts.Server.Utilities;
 global using System.Net.Http;
+
