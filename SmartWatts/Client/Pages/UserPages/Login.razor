@@ -57,7 +57,15 @@
 
                 await activityService.GetAllActivitiesByUser(user);
 
-                var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
+                ActivityParams activityParams = new()
+                {
+                    User = user,
+                    PerPage = 100,
+                    Page = 1,
+                    After = DateTime.Now.AddDays(-30).ToUnixSeconds()
+                };
+
+                var newCount = await activityService.SyncRidesFromStrava(activityParams, false);
 
                 if(newCount > 0)
                 {

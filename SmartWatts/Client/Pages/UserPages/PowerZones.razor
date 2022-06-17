@@ -15,12 +15,14 @@
             <tr style="background-color:@zone.Color">
                 <th>@zone.EffortType</th>
                 <td class="text-center">@DateTimeUtilities.ConvertSecToReadable(zone.Time)</td>
-                <td class="text-center">@(zone.PercentOfFTP * appState.LoggedInUser.FTP)</td>
+                <td class="text-center">@((int)(zone.PercentOfFTP * FTP))</td>
             </tr>
         }
     </table>
 </div>
 
 @code {
+    [Parameter]
+    public int FTP { get; set; }
 
 }

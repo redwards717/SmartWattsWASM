@@ -34,7 +34,7 @@
                 time += effort[effortTime];
             }
 
-            return DateTimeUtilities.ConvertSecToReadable(time);
+            return time > 0 ? DateTimeUtilities.ConvertSecToReadable(time) : "0s";
         }
 
         public static string GetAvgSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime, int periods)
@@ -47,7 +47,7 @@
                 time += effort[effortTime];
             }
 
-            return DateTimeUtilities.ConvertSecToReadable(time / periods);
+            return time > 0 ? DateTimeUtilities.ConvertSecToReadable(time / periods) : "0s";
         }
 
         public static Intensity GetRideIntensity(Activity activity)

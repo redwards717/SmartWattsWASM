@@ -9,31 +9,43 @@
 
 <div class="container-fluid">
 
-    <h4>@appState.LoggedInUser.Email</h4>
-    <hr />
+    <h4>Account: @appState.LoggedInUser.Email</h4>
     
+    <h3>Power Settings</h3>
+
     <div class="ftp-wrapper">
         <p>
             <label for="ftp">FTP: </label>
             <input id="ftp" type="number" maxlength="3" @bind-value=FTP/>
-        </p>
-        <div class="text-center">
             <button class="btn btn-outline-primary" @onclick=SetFTP>Set FTP</button>
-        </div>
+        </p>
+        <p>
+            FTP will be calculated after enough data has been loaded
+            <br />it can always be manually set here as well.
+        </p>
     </div>
 
     @if(FTP > 0)
     {
-        <PowerZones></PowerZones>
+        <PowerZones FTP="FTP"></PowerZones>
     }
 
-
+    <h3 class="strava-title">Strava Intigration</h3>
     @if (String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken) == false && FTP > 0)
     {
-        <h4 class="text-danger">You are Linked to Strava ID: @appState.LoggedInUser.StravaAccessToken</h4>
-        <p>
-            <button class="btn btn-strava" @onclick=HandleSync>Sync Activities From Strava</button>
-        </p>
+        <h4 class="text-danger">You are Linked to Strava!</h4>
+        @if(appState.LoggedInUser.Activities is not null && appState.LoggedInUser.Activities.Count() > 0)
+        {            
+            <div class="sync-container">
+                <p>Looks for strava rides from the last ride synced, in this case anything beyond @mostRecentActivity.ToShortDateString()</p>
+                <button class="btn btn-strava" @onclick=HandleSyncNew>Sync New Rides</button>
+            </div>
+        }
+        <div class="sync-container">
+            <p>Use this to initially pull in all your rides from Strava or to pull in missing rides, its a long process.</p>
+            <p>If the sync cuts off use the button above to resume from where the last ride was loaded in</p>
+            <button class="btn btn-strava" @onclick=HandleSyncAll>Sync All Rides</button>
+        </div>
     }
     else if(FTP == 0)
     {
@@ -49,12 +61,13 @@
 
 
 @code {
-    bool settingFTP;
     int FTP;
+    DateTime mostRecentActivity = new();
 
     protected override void OnInitialized()
     {
         FTP = appState.LoggedInUser.FTP;
+        mostRecentActivity = appState.LoggedInUser.Activities.Max(a => a.Date);
     }
 
     private void RedirectToAuth()
@@ -77,16 +90,56 @@
         nav.NavigateTo(uriBuilder.Uri.AbsoluteUri);
     }
 
-    private async Task HandleSync()
+    private async Task HandleSyncAll()
     {
         try
         {
             appState.LoaderOn("Looking for Strava activities...");
-            // still need to test if i get rate limited. 
-            //var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 5);
-            var countLoaded = await activityService.SyncAllRidesFromStrava();
 
-            //var newCount = await activityService.FindAndAddNewActivities2(15);
+            ActivityParams activityParams = new ActivityParams()
+            {
+                User = appState.LoggedInUser,
+                PerPage = 50,
+                Page = 1,
+                After = 1,
+            };
+
+            var countLoaded = await activityService.SyncRidesFromStrava(activityParams);
+
+            if(countLoaded == 0)
+            {
+                toastService.ShowInfo("No new activities found to load");
+            }
+            else
+            {
+                toastService.ShowSuccess($"done loading in {countLoaded} Activity(s) from Strava");
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError($"There was an error syncing data from Strava - {ex.Message}");
+        }
+        finally
+        {
+            appState.LoaderOff();
+        }
+    }
+
+    private async Task HandleSyncNew()
+    {
+        try
+        {
+            appState.LoaderOn($"Looking for Strava activities since {mostRecentActivity.ToShortDateString()}...");
+
+            ActivityParams activityParams = new ActivityParams()
+            {
+                User = appState.LoggedInUser,
+                PerPage = 50,
+                Page = 1,
+                After = mostRecentActivity.ToUnixSeconds(),
+            };
+
+            var countLoaded = await activityService.SyncRidesFromStrava(activityParams);
 
             if(countLoaded == 0)
             {

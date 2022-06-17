@@ -5,11 +5,9 @@ namespace SmartWatts.Client.Services
 {
     public interface IActivityService
     {
-        Task AddPowerDataToActivity(Activity activity, List<StravaDataStream> sds);
-        Task<int> FindAndAddNewActivities(User user, int count);
         Task<List<Activity>> GetAllActivitiesByUser(User user);
-        Task<int> SyncAllRidesFromStrava();
+        Task<int> SyncRidesFromStrava(ActivityParams activityParams, bool multiplePages = true);
         Task<int> GetStravaRideCount();
-        Task<List<Activity>> FindAndAddNewStravaActivities(int count, int? page = null);
+        Task<List<Activity>> FindAndAddNewStravaActivities(ActivityParams activityParams);
     }
 }

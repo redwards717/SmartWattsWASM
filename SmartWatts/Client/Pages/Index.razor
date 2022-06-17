@@ -60,16 +60,22 @@ else
 
                 appState.LoaderOn("Scanning for new activities...");
 
-                await activityService.GetAllActivitiesByUser(user);
+                var allActivities = await activityService.GetAllActivitiesByUser(user);
 
-                //dont want all the data pulls while i work on other things
+                ActivityParams activityParams = new()
+                {
+                    User = user,
+                    PerPage = 100,
+                    Page = 1,
+                    After = DateTime.Now.AddDays(-30).ToUnixSeconds()
+                };
 
-                //var newCount = await activityService.FindAndAddNewActivities(appState.LoggedInUser, 30);
+                var newCount = await activityService.SyncRidesFromStrava(activityParams, false);
 
-                //if(newCount > 0)
-                //{
-                //    toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
-                //}
+                if(newCount > 0)
+                {
+                    toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
+                }
 
             }
             LoadData();

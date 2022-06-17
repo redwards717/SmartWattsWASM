@@ -66,12 +66,11 @@ namespace SmartWatts.Server.Controllers
         }
 
         [HttpPost]
-        [Route("FindAndAddNew/{count}/{page}")]
-        public async Task<IActionResult> FindAndAddNew(int count, int? page, User user)
+        [Route("FindAndAddNew")]
+        public async Task<IActionResult> FindAndAddNew(ActivityParams activityParams)
         {
-            int? after = page > 0 ? 1 : null;
-            var existingIDs = user.Activities.Select(a => a.StravaRideID);
-            var allActivities = await _stravaAccess.GetActivities(user.StravaAccessToken, per_page: count, page: page, after: after);
+            var existingIDs = activityParams.User.Activities.Select(a => a.StravaRideID);
+            var allActivities = await _stravaAccess.GetActivities(activityParams.User.StravaAccessToken, per_page: activityParams.PerPage, page: activityParams.Page, after: activityParams.After);
 
             var stravaRides = allActivities.Where(sa => sa.device_watts && !existingIDs.Contains(sa.id));
 
@@ -87,7 +86,7 @@ namespace SmartWatts.Server.Controllers
 
             foreach(Activity activity in activities)
             {
-                var stravaDataStreams = await _stravaAccess.GetDataStreamForActivity(activity, user, "watts");
+                var stravaDataStreams = await _stravaAccess.GetDataStreamForActivity(activity, activityParams.User, "watts");
                 if (activity.IsPeloton && DateTime.Compare(activity.Date, new DateTime(2022, 3, 18)) < 0)
                 {
                     PelotonUtilities.AddMissingDataPointsWithCorrection(stravaDataStreams, -30);
@@ -97,20 +96,14 @@ namespace SmartWatts.Server.Controllers
                 {
                     PelotonUtilities.AddMissingDataPoints(stravaDataStreams);
                 }
-                PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(stravaDataStreams, user.FTP);
+                PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(stravaDataStreams, activityParams.User.FTP);
 
                 powerData.StravaRideID = activity.StravaRideID;
-                powerData.FTPAtTimeOfRide = user.FTP;
+                powerData.FTPAtTimeOfRide = activityParams.User.FTP;
 
                 newPowerData.Add(powerData);
 
                 activity.PowerData = powerData;
-                if (DateTime.Compare(activity.Date, DateTime.Now.AddDays(-365 + 50)) > 0)
-                {
-                    activity.PowerHistory = PowerUtilities.GetPowerHistory(activity, activities);
-                    activity.Intensity = PowerUtilities.GetRideIntensity(activity);
-                }
-                user.Activities.Add(activity);
             }
 
             await _powerDataAccess.InsertPowerData(newPowerData);

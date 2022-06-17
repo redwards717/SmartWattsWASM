@@ -1,0 +1,46 @@
+﻿@inject AppState appState
+
+<table class="table table-sm table-bordered">
+    <tr>
+        <th>Time Frame</th>
+        <th>Volume</th>
+        <th>Intensity</th>
+        <th>@Constants.ANAEROBIC Efforts</th>
+        <th>@Constants.VO2 Efforts</th>
+        <th>@Constants.THRESHOLD Efforts</th>
+    </tr>
+    @for(int i = 0; i <= Period * 5; i += Period)
+    {
+        <tr>
+        @if(i == 0)
+        {
+            <th>@now.AddDays(-Period).ToString("dd MMMM") to Current:</th>
+            <td>@PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-Period), now)</td>
+        }
+        else
+        {
+            <th>@now.AddDays(-(i+Period)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</th>
+            <td>@PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-(i+Period)), now.AddDays(-i))</td>
+        }
+            <td>@PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, now.AddDays(-(i+Period)), now.AddDays(-i))</td>
+            <td>@PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i+Period)), now.AddDays(-i), @Constants.AnaerobicPZ.Time)</td>
+            <td>@PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i+Period)), now.AddDays(-i), @Constants.VO2PZ.Time)</td>
+            <td>@PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i+Period)), now.AddDays(-i), @Constants.ThresholdPZ.Time)</td>
+        </tr>
+    }
+    <tr>
+        <th>Avg over past 365 days</th>
+        <td>@PowerUtlities.GetAvgVolume(appState.LoggedInUser.Activities, now.AddDays(-365), now, 365/Period)</td>
+        <td>@PowerUtlities.GetAvgIntensity(appState.LoggedInUser.Activities, now.AddDays(-365), now, 365/Period)</td>
+        <td>@PowerUtlities.GetAvgSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-365), now, @Constants.AnaerobicPZ.Time, 365/Period)</td>
+        <td>@PowerUtlities.GetAvgSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-365), now, @Constants.VO2PZ.Time, 365/Period)</td>
+        <td>@PowerUtlities.GetAvgSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-365), now, @Constants.ThresholdPZ.Time, 365/Period)</td>
+    </tr>
+</table>
+
+@code {
+    [Parameter]
+    public int Period { get; set; }
+
+    DateTime now = DateTime.Now;
+}

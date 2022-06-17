@@ -8,6 +8,11 @@
             return dateTime.AddSeconds(unixTime).ToLocalTime();
         }
 
+        public static long ToUnixSeconds(this DateTime dateTime)
+        {
+            return ((DateTimeOffset)dateTime.AddDays(-1)).ToUnixTimeSeconds();
+        }
+
         public static List<int> GetActiveYears(List<Activity> activities)
         {
             var years = activities.Select(a => a.Date.Year).Distinct().ToList();
