@@ -10,6 +10,6 @@ namespace SmartWatts.Client.Services
         Task<List<Activity>> GetAllActivitiesByUser(User user);
         Task<int> SyncAllRidesFromStrava();
         Task<int> GetStravaRideCount();
-        Task<int> FindAndAddNewStravaActivities(int count, int? page = null);
+        Task<List<Activity>> FindAndAddNewStravaActivities(int count, int? page = null);
     }
 }

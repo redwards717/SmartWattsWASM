@@ -40,24 +40,40 @@ namespace SmartWatts.Client.Services
 
         public async Task<int> SyncAllRidesFromStrava()
         {
-            var count = await GetStravaRideCount();
-            var extraMsg = count >= 100 ? "this may take a few minutes" : "";
-
-            _appState.SetLoadingMsg($"Found {count} rides on Strava...{extraMsg}");
+            _appState.SetLoadingMsg($"Loading rides from Strava...");
 
             int countLoaded = 0;
-            
-            for(int i = 1; i <= (count/100) + 1; i++)
-            {
-                countLoaded += await FindAndAddNewStravaActivities(100, i);
+            bool cancel = false;
+            int i = 52;
 
-                _appState.SetLoadingMsg($"{countLoaded} / {count} rides loaded...");
+            while(cancel == false)
+            {
+                var activities = await FindAndAddNewStravaActivities(50, i);
+
+                if(activities is null || activities.Count == 0)
+                {
+                    i++;
+                    string elipsis = new string('.', i);
+                    _appState.SetLoadingMsg($"Loading rides from Strava...{elipsis}");
+                    continue;
+                }
+                else if(activities[0].Name == "CancToken")
+                {
+                    cancel = true;
+                }
+                else
+                {
+                    countLoaded += activities.Count;
+
+                    _appState.SetLoadingMsg($"{countLoaded} rides loaded - up till {activities[0].Date.Month} / {activities[0].Date.Year} done!...");
+                }
+                i++;
             }
 
-            return count;
+            return countLoaded;
         }
 
-        public async Task<int> FindAndAddNewStravaActivities(int count, int? page = null)
+        public async Task<List<Activity>> FindAndAddNewStravaActivities(int count, int? page = null)
         {
             using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/FindAndAddNew/{count}/{page}", _appState.LoggedInUser);
             if (response.IsSuccessStatusCode == false)
@@ -67,9 +83,14 @@ namespace SmartWatts.Client.Services
 
             var activities = await response.Content.ReadFromJsonAsync<List<Activity>>();
 
+            if(activities.Count > 0 && activities[0].Name == "CancToken")
+            {
+                return activities;
+            }
+
             _appState.AddUsersActivities(activities);
 
-            return activities.Count;
+            return activities;
         }
 
         public async Task<int> GetStravaRideCount()

@@ -21,7 +21,7 @@
 
         public static int GetAvgIntensity(List<Activity> activities, DateTime start, DateTime end, int periods)
         {
-            return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.Intensity.EffortIndex) / periods;
+            return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.Intensity.EffortIndex) /periods;
         }
 
         public static string GetSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime)

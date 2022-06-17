@@ -189,8 +189,8 @@ namespace SmartWatts.Server.Utilities
                 }
             }
 
-            int lowIntervalPower = activity.PowerHistory.PowerPoints[lowInterval];
-            int highIntervalPower = activity.PowerHistory.PowerPoints[highInterval];
+            int lowIntervalPower = activity.PowerHistory.PowerPoints.ContainsKey(lowInterval) ? activity.PowerHistory.PowerPoints[lowInterval] : 0;
+            int highIntervalPower = activity.PowerHistory.PowerPoints.ContainsKey(highInterval) ? activity.PowerHistory.PowerPoints[highInterval] : 0;
 
             if (lowIntervalPower == 0)
             {

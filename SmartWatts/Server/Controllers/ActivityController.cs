@@ -40,7 +40,7 @@ namespace SmartWatts.Server.Controllers
                 activity.PowerData.SustainedEfforts = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonSustainedEfforts);
 
                 // only attach extra data for year and a bit.  will grab more if user views historical data
-                if(DateTime.Compare(activity.Date, DateTime.Now.AddDays(-365 + 50)) > 0)
+                if(DateTime.Compare(activity.Date, DateTime.Now.AddDays(-365 + -50)) > 0)
                 {
                     activity.PowerHistory = PowerUtilities.GetPowerHistory(activity, activities);
                     activity.Intensity = PowerUtilities.GetRideIntensity(activity);
@@ -71,10 +71,18 @@ namespace SmartWatts.Server.Controllers
         {
             int? after = page > 0 ? 1 : null;
             var existingIDs = user.Activities.Select(a => a.StravaRideID);
-            var stravaActivities = (await _stravaAccess.GetActivities(user.StravaAccessToken, per_page:count, page:page, after:after))
-                .Where(sa => sa.device_watts && !existingIDs.Contains(sa.id));
+            var allActivities = await _stravaAccess.GetActivities(user.StravaAccessToken, per_page: count, page: page, after: after);
 
-            var activities = ConverstionUtilities.ConvertStravaActivity(stravaActivities);
+            var stravaRides = allActivities.Where(sa => sa.device_watts && !existingIDs.Contains(sa.id));
+
+            if (allActivities is null || allActivities.Count() == 0)
+            {
+                List<Activity> cancAct = new() { new Activity { Name = "CancToken" } };
+
+                return Ok(cancAct);
+            }
+
+            var activities = ConverstionUtilities.ConvertStravaActivity(stravaRides);
             List<PowerData> newPowerData = new();
 
             foreach(Activity activity in activities)
