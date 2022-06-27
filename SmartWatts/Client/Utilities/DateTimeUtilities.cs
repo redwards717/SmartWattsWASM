@@ -15,8 +15,7 @@
 
         public static List<int> GetActiveYears(List<Activity> activities)
         {
-            var years = activities.Select(a => a.Date.Year).Distinct().ToList();
-
+            var years = activities.Select(a => a.Date.Year).Distinct().OrderByDescending(y => y).ToList();
             return years;
         }
 

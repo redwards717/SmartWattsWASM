@@ -16,7 +16,8 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
             var parameters = new { id };
 
             const string sql = @"SELECT * FROM Activities
-                                    WHERE StravaUserID = @id";
+                                    WHERE StravaUserID = @id
+                                    ORDER BY Date DESC";
 
             return _db.LoadData<Activity, dynamic>(sql, parameters);
         }

@@ -1,4 +1,6 @@
 ﻿@page "/"
+@page "/ridelog/{DisplayStart}/{DisplayEnd}"
+
 
 @inject AppState appState; 
 @inject NavigationManager nav;
@@ -14,20 +16,32 @@
 }
 else
 {
-    @foreach(int year in years)
-    {
-        <button class="btn btn-confirm">@year</button>
-    }
+    <p>
+        @foreach(int year in years)
+        {
+            <button class="btn @(year == selectedYear ? "btn-primary" : "btn-outline-primary")" @onclick="e => SelectYear(year)">@year</button>
+        }
+    </p>
+    <p>
+        @foreach(int month in Enum.GetValues(typeof(Constants.Months)))
+        {
+                <button class="btn @(month == selectedMonth ? "btn-primary" : "btn-outline-primary")" @onclick="e => SelectMonth(month)">@Enum.GetName(typeof(Constants.Months), month)</button>
+        }
+    </p>
 
-    <RideLog End="displayEnd" Start="displayStart"></RideLog>
+    <RideLog End="DisplayEnd" Start="DisplayStart"></RideLog>
 }
 </div>
 
 @code{
+    [Parameter]
+    public DateTime DisplayStart { get; set; }
+    [Parameter]
+    public DateTime DisplayEnd { get; set; }
+
     List<int> years = new();
     int selectedYear = DateTime.Today.Year;
-    DateTime displayStart;
-    DateTime displayEnd;
+    int selectedMonth = DateTime.Today.Month;
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,24 +71,15 @@ else
 
                 appState.SetUser(user);
 
+                var newCount = await activityService.InitialDataLoadForExistingUSers();
 
-                appState.LoaderOn("Scanning for new activities...");
-
-                var allActivities = await activityService.GetAllActivitiesByUser(user);
-
-                ActivityParams activityParams = new()
+                if(newCount > 1)
                 {
-                    User = user,
-                    PerPage = 100,
-                    Page = 1,
-                    After = DateTime.Now.AddDays(-30).ToUnixSeconds()
-                };
-
-                var newCount = await activityService.SyncRidesFromStrava(activityParams, false);
-
-                if(newCount > 0)
+                    toastService.ShowSuccess($"{newCount} new Activitys loaded in from Strava");
+                }
+                else if(newCount == 1)
                 {
-                    toastService.ShowSuccess($"{newCount} new Activity(s) loaded in from Strava");
+                    toastService.ShowSuccess($"new ride: {appState.LoggedInUser.Activities.Last().Name} loaded in from Strava");
                 }
 
             }
@@ -94,8 +99,25 @@ else
     {
         years = DateTimeUtilities.GetActiveYears(appState.LoggedInUser.Activities);
 
-        displayEnd = DateTime.Now;
-        displayStart = DateTime.Now.AddDays(-30);
+        DisplayEnd = DateTime.Now;
+        DisplayStart = DateTime.Now.AddDays(-30);
+    }
+
+    private void SelectYear(int year)
+    {
+        selectedYear = year;
+        DisplayEnd = new DateTime(year, selectedMonth, DateTime.DaysInMonth(year, selectedMonth));
+        DisplayStart = new DateTime(year, selectedMonth, 1);
+        StateHasChanged();
+    }
+
+    private void SelectMonth(int month)
+    {
+        selectedMonth = month;
+        DisplayEnd = new DateTime(selectedYear, month, DateTime.DaysInMonth(selectedYear, month));
+        DisplayStart = new DateTime(selectedYear, month, 1);
+        StateHasChanged();
+
     }
 }
 

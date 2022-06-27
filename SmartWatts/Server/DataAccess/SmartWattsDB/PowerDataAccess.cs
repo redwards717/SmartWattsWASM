@@ -17,6 +17,13 @@
             return (await _db.LoadData<PowerData, Activity>(sql, activity)).FirstOrDefault();
         }
 
+        public async Task<List<PowerData>> GetAllPowerData()
+        {
+            const string sql = "SELECT * FROM PowerData"; // need to add stravauserid to powerdata so this pulls all for just a user;
+
+            return await _db.LoadData<PowerData, dynamic>(sql, null);
+        }
+
         public Task InsertPowerData(PowerData powerData)
         {
             const string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints, JsonSustainedEfforts, FTPAtTimeOfRide)

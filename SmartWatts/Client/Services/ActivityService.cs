@@ -1,4 +1,5 @@
-﻿using SmartWatts.Shared.DBModels;
+﻿using SmartWatts.Shared.APIParams;
+using SmartWatts.Shared.DBModels;
 using System.Net.NetworkInformation;
 
 namespace SmartWatts.Client.Services
@@ -12,6 +13,27 @@ namespace SmartWatts.Client.Services
         {
             _http = http;
             _appState = appState;
+        }
+
+        public async Task<int> InitialDataLoadForExistingUSers()
+        {
+            _appState.LoaderOn("Scanning for new activities...");
+
+            await GetAllActivitiesByUser(_appState.LoggedInUser);
+
+            ActivityParams activityParams = new()
+            {
+                User = _appState.LoggedInUser,
+                PerPage = 100,
+                Page = 1,
+                After = DateTime.Now.AddDays(-30).ToUnixSeconds()
+            };
+
+            var newCount = await SyncRidesFromStrava(activityParams, false);
+
+            AttachViewingData(400);
+
+            return newCount;
         }
 
         public async Task<int> SyncRidesFromStrava(ActivityParams activityParams, bool multiplePages = true)
@@ -42,8 +64,6 @@ namespace SmartWatts.Client.Services
                 }
                 activityParams.Page++;
             } while (cancel == false);
-
-            AttachObjects(365 + 45);
 
             return countLoaded;
         }
@@ -104,9 +124,9 @@ namespace SmartWatts.Client.Services
             return activities;
         }
 
-        private void AttachObjects(int daysBack)
+        public void AttachViewingData(int daysBack)
         {
-            foreach (Activity activity in _appState.LoggedInUser.Activities.Where(a => a.Date <= DateTime.Now.AddDays(-daysBack)))
+            foreach (Activity activity in _appState.LoggedInUser.Activities.Where(a => a.Date >= DateTime.Now.AddDays(-daysBack)))
             {
                 activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
                 activity.Intensity = PowerUtlities.GetRideIntensity(activity);

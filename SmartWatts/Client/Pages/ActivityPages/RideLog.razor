@@ -3,6 +3,7 @@
 @foreach(DateTime date in dates)
 {
     var activities = GetActivitesForDay(date);
+
     <DaySummary Day="date" Activites="activities"></DaySummary>
 }
 
@@ -18,6 +19,7 @@
 
     protected override void OnParametersSet()
     {
+        dates = new();
         var daysInRange = (End - Start).TotalDays;
 
         for(int i = 0; i <= daysInRange; i++)
@@ -31,11 +33,6 @@
     private List<Activity> GetActivitesForDay(DateTime day)
     {
         var activities = appState.LoggedInUser.Activities.Where(ua => ua.Date.DayOfYear == day.DayOfYear && ua.Date.Year == day.Year).OrderBy(ua => ua.Date).ToList();
-        //foreach(Activity activity in activities)   // moved this to initial data grab
-        //{
-        //    activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, appState.UsersActivities);
-        //    activity.Intensity = PowerUtlities.GetRideIntensity(activity);
-        //}
         return activities;
     }
 }

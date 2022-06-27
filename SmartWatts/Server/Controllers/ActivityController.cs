@@ -1,4 +1,5 @@
 ﻿using SmartWatts.Client.Utilities;
+using SmartWatts.Shared.APIParams;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SmartWatts.Server.Controllers
@@ -33,18 +34,13 @@ namespace SmartWatts.Server.Controllers
         public async Task<IActionResult> GetAllActivitiesByUser([FromHeader] string id)
         {
             var activities = await _activityAccess.GetActivitiesByStravaUserID(id);
+            var powerData = await _powerDataAccess.GetAllPowerData();
+
             foreach (Activity activity in activities)
             {
-                activity.PowerData = await _powerDataAccess.GetPowerDataForActivity(activity);
+                activity.PowerData = powerData.Find(pd => pd.StravaRideID == activity.StravaRideID);
                 activity.PowerData.PowerPoints = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonPowerPoints);
                 activity.PowerData.SustainedEfforts = JsonSerializer.Deserialize<Dictionary<int, int>>(activity.PowerData.JsonSustainedEfforts);
-
-                // only attach extra data for year and a bit.  will grab more if user views historical data
-                if(DateTime.Compare(activity.Date, DateTime.Now.AddDays(-365 + -50)) > 0)
-                {
-                    activity.PowerHistory = PowerUtilities.GetPowerHistory(activity, activities);
-                    activity.Intensity = PowerUtilities.GetRideIntensity(activity);
-                }
             }
             return Ok(activities);
         }

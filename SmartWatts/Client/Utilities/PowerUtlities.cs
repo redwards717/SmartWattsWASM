@@ -2,21 +2,21 @@
 {
     public static class PowerUtlities
     {
-        public static string GetVolumeInTime(List<Activity> activities, DateTime start, DateTime end)
+        public static int GetVolumeInTime(List<Activity> activities, DateTime start, DateTime end)
         {
             int time = activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
-            return DateTimeUtilities.ConvertSecToReadable(time, false);
+            return time;
         }
 
-        public static string GetAvgVolume(List<Activity> activities, DateTime start, DateTime end, int periods)
+        public static int GetAvgVolume(List<Activity> activities, DateTime start, DateTime end, int periods)
         {
             int time = activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
-            return DateTimeUtilities.ConvertSecToReadable(time / periods, false);
+            return time / periods;
         }
 
         public static int GetIntensityForTimeframe(List<Activity> activities, DateTime start, DateTime end)
         {
-            return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.Intensity.EffortIndex);
+            return activities.Where(a => a.Date >= start && a.Date <= end && a.Intensity.EffortIndex > 1).Sum(a => a.Intensity.EffortIndex);
         }
 
         public static int GetAvgIntensity(List<Activity> activities, DateTime start, DateTime end, int periods)
@@ -24,7 +24,7 @@
             return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.Intensity.EffortIndex) /periods;
         }
 
-        public static string GetSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime)
+        public static int GetSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime)
         {
             var efforts = activities.Where(a => a.Date >= start && a.Date <= end).Select(a => a.PowerData.SustainedEfforts);
             int time = 0;
@@ -34,10 +34,10 @@
                 time += effort[effortTime];
             }
 
-            return time > 0 ? DateTimeUtilities.ConvertSecToReadable(time) : "0s";
+            return time;
         }
 
-        public static string GetAvgSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime, int periods)
+        public static int GetAvgSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime, int periods)
         {
             var efforts = activities.Where(a => a.Date >= start && a.Date <= end).Select(a => a.PowerData.SustainedEfforts);
             int time = 0;
@@ -47,7 +47,19 @@
                 time += effort[effortTime];
             }
 
-            return time > 0 ? DateTimeUtilities.ConvertSecToReadable(time / periods) : "0s";
+            return time / periods;
+        }
+
+        public static VolumeAverages GetAllAverages(List<Activity> activities, DateTime start, DateTime end, int periods)
+        {
+            return new VolumeAverages()
+            {
+                Time = GetAvgVolume(activities, start, end, periods),
+                Intensity = GetAvgIntensity(activities, start, end, periods),
+                Anaerobic = GetAvgSustainedEfforts(activities, start, end, Constants.AnaerobicPZ.Time, periods),
+                VO2 = GetAvgSustainedEfforts(activities, start, end, Constants.VO2PZ.Time, periods),
+                Threshold = GetAvgSustainedEfforts(activities, start, end, Constants.ThresholdPZ.Time, periods)
+            };
         }
 
         public static Intensity GetRideIntensity(Activity activity)
@@ -170,8 +182,8 @@
                 }
             }
 
-            int lowIntervalPower = activity.PowerHistory.PowerPoints[lowInterval];
-            int highIntervalPower = activity.PowerHistory.PowerPoints[highInterval];
+            int lowIntervalPower = activity.PowerHistory.PowerPoints.ContainsKey(lowInterval) ? activity.PowerHistory.PowerPoints[lowInterval] : 0;
+            int highIntervalPower = activity.PowerHistory.PowerPoints.ContainsKey(highInterval) ? activity.PowerHistory.PowerPoints[highInterval] : 0;
 
             if(lowIntervalPower == 0)
             {
@@ -185,7 +197,7 @@
             double powerAdj = percentIntoInterval * powerIntervalDiff;
 
             double powerCompForExactTime = lowIntervalPower - powerAdj;
-            return (int)powerCompForExactTime;
+            return (int)powerCompForExactTime;      
         }
 
         private static Intensity DefaultToMaxIntensity()

@@ -53,19 +53,7 @@
 
             if(user.StravaUserID > 0)
             {
-                appState.LoaderOn("Scanning for new activities...");
-
-                await activityService.GetAllActivitiesByUser(user);
-
-                ActivityParams activityParams = new()
-                {
-                    User = user,
-                    PerPage = 100,
-                    Page = 1,
-                    After = DateTime.Now.AddDays(-30).ToUnixSeconds()
-                };
-
-                var newCount = await activityService.SyncRidesFromStrava(activityParams, false);
+                var newCount = await activityService.InitialDataLoadForExistingUSers();
 
                 if(newCount > 0)
                 {
