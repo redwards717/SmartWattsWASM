@@ -68,9 +68,13 @@ else
 
                 var newCount = await activityService.InitialDataLoadForExistingUsers();
 
-                if(newCount > 1)
+                if(newCount == 2)
                 {
-                    toastService.ShowSuccess($"{newCount} new Activitys loaded in from Strava");
+                    toastService.ShowSuccess($"{appState.LoggedInUser.Activities.Last().Name} loaded in from strava +{newCount - 1} additional new activity loaded in from Strava");
+                }
+                else if (newCount > 2)
+                {
+                    toastService.ShowSuccess($"{appState.LoggedInUser.Activities.Last().Name} loaded in from strava +{newCount - 1} additional new activities loaded in from Strava");
                 }
                 else if(newCount == 1)
                 {

@@ -62,6 +62,8 @@ namespace SmartWatts.Client.Services
 
                     _appState.SetLoadingMsg($"{countLoaded} rides loaded - up till {activities[0].Date:MMM} / {activities[0].Date.Year} done!...");
                 }
+
+                //put logic to check for updated FTP
                 activityParams.Page++;
             } while (cancel == false);
 
