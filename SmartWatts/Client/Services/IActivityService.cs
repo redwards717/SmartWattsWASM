@@ -10,6 +10,7 @@ namespace SmartWatts.Client.Services
         Task<int> GetStravaRideCount();
         Task<List<Activity>> FindAndAddNewStravaActivities(ActivityParams activityParams);
         void AttachViewingData(int daysBack);
-        Task<int> InitialDataLoadForExistingUSers();
+        Task<int> InitialDataLoadForExistingUsers();
+        void AttachViewingDataByYear(int year);
     }
 }

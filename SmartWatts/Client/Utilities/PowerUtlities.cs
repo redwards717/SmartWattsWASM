@@ -4,8 +4,7 @@
     {
         public static int GetVolumeInTime(List<Activity> activities, DateTime start, DateTime end)
         {
-            int time = activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
-            return time;
+            return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
         }
 
         public static int GetAvgVolume(List<Activity> activities, DateTime start, DateTime end, int periods)

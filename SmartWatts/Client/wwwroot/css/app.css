@@ -80,3 +80,7 @@ a, .btn-link {
     box-shadow: 6px 3px 3px var(--secondary-color-light);
     border-radius: 10px;
 }
+
+.pointer{
+    cursor: pointer;
+}

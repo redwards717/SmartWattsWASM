@@ -1,4 +1,5 @@
 ﻿@inject AppState appState
+@inject NavigationManager nav
 
 <table class="table table-sm table-bordered">
     <tr>
@@ -19,30 +20,24 @@
             VO2 = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i + Period)), now.AddDays(-i), @Constants.VO2PZ.Time),
             Threshold = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i + Period)), now.AddDays(-i), @Constants.ThresholdPZ.Time)
         };
-        if(i == 0)
-        {
-        currentVolume.Time = PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-Period), now);
-        <tr style="border-color:@GetCurrentPeriodColor(currentVolume)">
-            <th>@now.AddDays(-Period).ToString("dd MMMM") to Current:</th>
-            <td style="color:@(currentVolume.Time >= averages.Time ? "green" : "red")">@DateTimeUtilities.ConvertSecToReadable(currentVolume.Time, false)</td>
-            <td style="color:@(currentVolume.Intensity >= averages.Intensity ? "green" : "red")">@currentVolume.Intensity</td>
-            <td style="color:@(currentVolume.Anaerobic >= averages.Anaerobic ? "green" : "red")">@(currentVolume.Anaerobic > 0 ? DateTimeUtilities.ConvertSecToReadable(currentVolume.Anaerobic) : "0s")</td>
-            <td style="color:@(currentVolume.VO2 >= averages.VO2 ? "green" : "red")">@(currentVolume.VO2 > 0 ? DateTimeUtilities.ConvertSecToReadable(currentVolume.VO2) : "0s")</td>
-            <td style="color:@(currentVolume.Threshold >= averages.Threshold ? "green" : "red")">@(currentVolume.Threshold > 0 ? DateTimeUtilities.ConvertSecToReadable(currentVolume.Threshold) : "0s")</td>
-        </tr>
-        }
-        else
-        {
         currentVolume.Time = PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-(i+Period)), now.AddDays(-i));
-        <tr>
-            <th>@now.AddDays(-(i+Period)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</th>
+        DateTime start = now.AddDays(-(i + Period));
+        DateTime end = now.AddDays(-i);
+        <tr class="pointer" style="background:@GetCurrentPeriodColor(currentVolume)" @onclick='e => GoToRides(start, end)'>
+            @if(i==0)
+            {
+                <th>@now.AddDays(-Period).ToString("dd MMMM") to Current:</th>
+            }
+            else
+            {        
+                <th>@now.AddDays(-(i+Period)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</th>
+            }
             <td style="color:@(currentVolume.Time >= averages.Time ? "green" : "red")">@DateTimeUtilities.ConvertSecToReadable(currentVolume.Time, false)</td>
             <td style="color:@(currentVolume.Intensity >= averages.Intensity ? "green" : "red")">@currentVolume.Intensity</td>
             <td style="color:@(currentVolume.Anaerobic >= averages.Anaerobic ? "green" : "red")">@(currentVolume.Anaerobic > 0 ? DateTimeUtilities.ConvertSecToReadable(currentVolume.Anaerobic) : "0s")</td>
             <td style="color:@(currentVolume.VO2 >= averages.VO2 ? "green" : "red")">@(currentVolume.VO2 > 0 ? DateTimeUtilities.ConvertSecToReadable(currentVolume.VO2) : "0s")</td>
             <td style="color:@(currentVolume.Threshold >= averages.Threshold ? "green" : "red")">@(currentVolume.Threshold > 0 ? DateTimeUtilities.ConvertSecToReadable(currentVolume.Threshold) : "0s")</td>
-        </tr>
-        }        
+        </tr>    
     }
     <tr>
         <th>Avg over past 365 days</th>
@@ -76,6 +71,13 @@
         noAboveAvg += current.VO2 >= averages.VO2 ? 1 : 0;
         noAboveAvg += current.Threshold >= averages.Threshold ? 1 : 0;
 
-        return noAboveAvg >= 3 ? "green" : "red";
+        return noAboveAvg >= 3 ? "lightgreen" : "lightgrey";
+    }
+
+    private void GoToRides(DateTime start, DateTime end)
+    {
+        var normalizedStart = start.Date.ToUnixSeconds();
+        var normalizedEnd = end.Date.AddDays(1).AddTicks(-1).ToUnixSeconds();
+        nav.NavigateTo($"ridelog/{normalizedStart}/{normalizedEnd}");
     }
 }

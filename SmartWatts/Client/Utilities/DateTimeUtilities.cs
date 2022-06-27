@@ -8,9 +8,15 @@
             return dateTime.AddSeconds(unixTime).ToLocalTime();
         }
 
+        public static DateTime UnixToDateTime(string unixTime)
+        {
+            DateTime dateTime = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            return dateTime.AddSeconds(Convert.ToDouble(unixTime)).ToLocalTime();
+        }
+
         public static long ToUnixSeconds(this DateTime dateTime)
         {
-            return ((DateTimeOffset)dateTime.AddDays(-1)).ToUnixTimeSeconds();
+            return ((DateTimeOffset)dateTime).ToUnixTimeSeconds();
         }
 
         public static List<int> GetActiveYears(List<Activity> activities)

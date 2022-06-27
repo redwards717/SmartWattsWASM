@@ -15,7 +15,7 @@ namespace SmartWatts.Client.Services
             _appState = appState;
         }
 
-        public async Task<int> InitialDataLoadForExistingUSers()
+        public async Task<int> InitialDataLoadForExistingUsers()
         {
             _appState.LoaderOn("Scanning for new activities...");
 
@@ -127,6 +127,23 @@ namespace SmartWatts.Client.Services
         public void AttachViewingData(int daysBack)
         {
             foreach (Activity activity in _appState.LoggedInUser.Activities.Where(a => a.Date >= DateTime.Now.AddDays(-daysBack)))
+            {
+                activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
+                activity.Intensity = PowerUtlities.GetRideIntensity(activity);
+            }
+        }
+
+        public void AttachViewingDataByRange(DateTime start, DateTime end)
+        {
+
+        }
+
+        public void AttachViewingDataByYear(int year)
+        {
+            var activities = _appState.LoggedInUser.Activities.Where(a => a.Date.Year == year
+                                                                        && (a.Intensity is null || a.PowerHistory is null));
+
+            foreach(Activity activity in activities)
             {
                 activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
                 activity.Intensity = PowerUtlities.GetRideIntensity(activity);

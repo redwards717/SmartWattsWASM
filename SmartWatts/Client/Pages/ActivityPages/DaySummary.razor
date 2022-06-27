@@ -1,7 +1,7 @@
 ﻿@inject AppState appState
 
 <h5>@Day.ToString("dddd, dd MMMM")</h5>
-@if(highestIntensity is not null)
+@if(Activites.Count > 0)
 {   
     <div class="day-wrapper" style="border: 2px solid @highestIntensity.Color; box-shadow: 5px 10px 10px @highestIntensity.Color;">
         <h4>@DateTimeUtilities.ConvertSecToReadable(Activites.Sum(a => a.MovingTime), false)</h4>

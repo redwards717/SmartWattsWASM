@@ -1,4 +1,5 @@
-﻿@inject AppState appState
+﻿@page "/ridelog/{StartStr}/{EndStr}"
+@inject AppState appState
 
 @foreach(DateTime date in dates)
 {
@@ -15,10 +16,22 @@
     [Parameter]
     public DateTime Start { get; set; }
 
+    [Parameter]
+    public string StartStr { get; set; }
+
+    [Parameter]
+    public string EndStr { get; set; }
+
     List<DateTime> dates = new();
 
     protected override void OnParametersSet()
     {
+        if(String.IsNullOrWhiteSpace(StartStr) == false &&  String.IsNullOrWhiteSpace(EndStr) == false)
+        {
+            End = DateTimeUtilities.UnixToDateTime(EndStr);
+            Start = DateTimeUtilities.UnixToDateTime(StartStr);
+        }
+
         dates = new();
         var daysInRange = (End - Start).TotalDays;
 
