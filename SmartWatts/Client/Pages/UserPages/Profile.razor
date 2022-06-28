@@ -35,16 +35,26 @@
     {
         <h4 class="text-danger">You are Linked to Strava!</h4>
         @if(appState.LoggedInUser.Activities is not null && appState.LoggedInUser.Activities.Count() > 0)
-        {            
-            <div class="sync-container">
-                <p>Looks for strava rides from the last ride synced, in this case anything beyond @mostRecentActivity.ToShortDateString()</p>
-                <button class="btn btn-strava" @onclick=HandleSyncNew>Sync New Rides</button>
-            </div>
+        {   
+        <div class="sync-container">
+            <h6>Sync New Rides</h6>
+            <hr />
+            <p>Looks for strava rides from the last ride synced, in this case anything beyond @mostRecentActivity.ToShortDateString()</p>
+            <button class="btn btn-strava" @onclick=HandleSyncNew>Sync New Rides</button>
+        </div>
         }
         <div class="sync-container">
-            <p>Use this to initially pull in all your rides from Strava or to pull in missing rides, its a long process.</p>
+            <h6>Sync All Rides</h6>
+            <hr />
+            <p>Use this to initially pull in all your rides from Strava or to pull in missing rides, it's a LONG process.</p>
             <p>If the sync cuts off use the button above to resume from where the last ride was loaded in</p>
             <button class="btn btn-strava" @onclick=HandleSyncAll>Sync All Rides</button>
+        </div>
+        <div class="sync-container">
+            <h6>Sync One Year of rides</h6>
+            <hr />
+            <p>yada yada description...</p>
+            <button class="btn btn-strava">Sync One Year</button>
         </div>
     }
     else if(FTP == 0)
