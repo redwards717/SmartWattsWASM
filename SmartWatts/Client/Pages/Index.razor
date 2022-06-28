@@ -8,9 +8,10 @@
 @inject IToastService toastService;
 
 <div class="container-fluid">
-@if(appState.LoggedInUser is null || appState.LoggedInUser.Activities is null)
+@if(appState.LoggedInUser is null || appState.LoggedInUser.Activities.Count < 1)
 {
     <h3>No Rides to Display</h3>
+    <a href="profile">Go to your profile to start loading in rides</a>
 }
 else
 {

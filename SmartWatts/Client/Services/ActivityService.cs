@@ -21,6 +21,11 @@ namespace SmartWatts.Client.Services
 
             await GetAllActivitiesByUser(_appState.LoggedInUser);
 
+            if(_appState.LoggedInUser.Activities.Count < 1)
+            {
+                return 0;
+            }
+
             ActivityParams activityParams = new()
             {
                 User = _appState.LoggedInUser,
@@ -49,7 +54,7 @@ namespace SmartWatts.Client.Services
                 {
                     activityParams.Page++;
                     string elipsis = new string('.', (int)activityParams.Page);
-                    _appState.SetLoadingMsg($"Loading rides from Strava...{elipsis}");
+                    _appState.SetLoadingMsg($"Loading rides from Strava...{elipsis}", false);
                     continue;
                 }
                 else if (activities[0].Name == "CancToken")
@@ -60,10 +65,15 @@ namespace SmartWatts.Client.Services
                 {
                     countLoaded += activities.Count;
 
+                    var newFTP = await CheckForNewFTP(_appState.LoggedInUser);
                     _appState.SetLoadingMsg($"{countLoaded} rides loaded - up till {activities[0].Date:MMM} / {activities[0].Date.Year} done!...");
+                    if(newFTP > 0)
+                    {
+                        _appState.SetLoadingMsg($"FTP updated to from {_appState.LoggedInUser.FTP} to {newFTP}", false);
+                        _appState.LoggedInUser.FTP = newFTP;
+                    }
                 }
 
-                //put logic to check for updated FTP
                 activityParams.Page++;
             } while (cancel == false);
 
@@ -135,11 +145,6 @@ namespace SmartWatts.Client.Services
             }
         }
 
-        public void AttachViewingDataByRange(DateTime start, DateTime end)
-        {
-
-        }
-
         public void AttachViewingDataByYear(int year)
         {
             var activities = _appState.LoggedInUser.Activities.Where(a => a.Date.Year == year
@@ -150,6 +155,19 @@ namespace SmartWatts.Client.Services
                 activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
                 activity.Intensity = PowerUtlities.GetRideIntensity(activity);
             }
+        }
+
+        private async Task<int> CheckForNewFTP(User user)
+        {
+            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/User/CheckForFtpChange", user);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+            var newFtp = Int32.Parse(await response.Content.ReadAsStringAsync());
+
+            return newFtp;
         }
     }
 }

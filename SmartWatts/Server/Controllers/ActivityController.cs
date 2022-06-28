@@ -34,7 +34,7 @@ namespace SmartWatts.Server.Controllers
         public async Task<IActionResult> GetAllActivitiesByUser([FromHeader] string id)
         {
             var activities = await _activityAccess.GetActivitiesByStravaUserID(id);
-            var powerData = await _powerDataAccess.GetAllPowerData();
+            var powerData = await _powerDataAccess.GetAllPowerDataByUser(id);
 
             foreach (Activity activity in activities)
             {

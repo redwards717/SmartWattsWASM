@@ -19,6 +19,7 @@ namespace SmartWatts.Client
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IStravaService, StravaService>();
             builder.Services.AddScoped<IActivityService, ActivityService>();
+            builder.Services.AddScoped<IFTPHistoryService, FTPHistoryService>();
 
             builder.Services.AddSingleton<AppState>();
 

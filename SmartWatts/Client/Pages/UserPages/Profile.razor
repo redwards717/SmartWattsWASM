@@ -3,6 +3,7 @@
 @inject AppState appState; 
 @inject IStravaService stravaService;
 @inject IActivityService activityService;
+@inject IFTPHistoryService ftpHistoryService;
 @inject IUserService userService;
 @inject IToastService toastService;
 @inject NavigationManager nav;
@@ -10,19 +11,55 @@
 <div class="container-fluid">
 
     <h4>Account: @appState.LoggedInUser.Email</h4>
-    
+
+    @if (String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken))
+    {
+        <p class="text-danger">Next Step: Link to Strava</p>
+    }
+    else if (FTP < 1)
+    {
+        <p class="text-danger">Next Step: Add your initial FTP </p>
+    }
+    else if(appState.LoggedInUser.Activities is null || appState.LoggedInUser.Activities.Count < 1)
+    {
+        <p class="text-danger">Next Step: Pull in rides from Strava</p>
+    }
+    else
+    {
+        <p>@appState.LoggedInUser.Activities.Count rides loaded in from Strava <br />
+            Most Recent Loaded Ride:  @appState.LoggedInUser.Activities.Last().Name (@appState.LoggedInUser.Activities.Last().Date.ToShortDateString())</p>
+    }
+
     <h3>Power Settings</h3>
 
     <div class="ftp-wrapper">
-        <p>
-            <label for="ftp">FTP: </label>
-            <input id="ftp" type="number" maxlength="3" @bind-value=FTP/>
-            <button class="btn btn-outline-primary" @onclick=SetFTP>Set FTP</button>
-        </p>
-        <p>
-            FTP will be calculated after enough data has been loaded,
-            <br />it can always be manually set here as well.
-        </p>
+        <div class="row">
+            <div class="col-6">
+                @if(FTP < 1)
+                {
+                    <p class="text-danger font-italic">*please add your initial FTP from when you started using a power meter on Strava, after 45 days of data is uploaded the system will calculate your FTP automatically</p>
+                }
+                <p>
+                    <label for="ftp">FTP: </label>
+                    <input id="ftp" type="number" maxlength="3" @bind-value=FTP/>
+                    <button class="btn btn-outline-primary" @onclick=SetFTP>Set FTP</button>
+                </p>
+                <p>
+                    FTP will be calculated after enough data has been loaded,
+                    <br />it can always be manually set here as well.
+                </p>
+            </div>
+            <div class="col-6">
+                <span>FTP History</span>
+                <hr />
+                <ul>
+                    @foreach(FTPHistory ftp in ftpHistories)
+                    {
+                        <li>@(ftp.Date.ToUnixSeconds() <= 1 ? "Initial FTP" : ftp.Date.ToShortDateString()) : @ftp.FTP</li>
+                    }
+                </ul>
+            </div>
+        </div>
     </div>
 
     @if(FTP > 0)
@@ -31,9 +68,12 @@
     }
 
     <h3 class="strava-title">Strava Intigration</h3>
-    @if (String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken) == false && FTP > 0)
+    @if(String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken) == false)
     {
         <h4 class="text-danger">You are Linked to Strava!</h4>
+    }
+    @if (String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken) == false && FTP > 0)
+    {
         @if(appState.LoggedInUser.Activities is not null && appState.LoggedInUser.Activities.Count() > 0)
         {   
         <div class="sync-container">
@@ -44,24 +84,22 @@
         </div>
         }
         <div class="sync-container">
-            <h6>Sync All Rides</h6>
-            <hr />
-            <p>Use this to initially pull in all your rides from Strava or to pull in missing rides, it's a LONG process.</p>
-            <p>If the sync cuts off use the button above to resume from where the last ride was loaded in</p>
-            <button class="btn btn-strava" @onclick=HandleSyncAll>Sync All Rides</button>
-        </div>
-        <div class="sync-container">
             <h6>Sync One Year of rides</h6>
             <hr />
-            <p>yada yada description...</p>
-            <button class="btn btn-strava">Sync One Year</button>
+            <p>This just grabs a years worth of data, which is enough to get you started. <br />
+                Only thing missing will be the ability to see historic data <br />
+                If the sync cuts off use the 'Sync New Rides' button above to resume from where the last ride was loaded in</p>
+            <button class="btn btn-strava" @onclick=HandleSyncOneYear>Sync One Year</button>
         </div>
+      @*  <div class="sync-container">
+            <h6>Sync All Rides</h6>
+            <hr />
+            <p>Use this to sync all your rides from Strava, it's a LONG process.<br />
+                If the sync cuts off use the 'Sync New Rides' button above to resume from where the last ride was loaded in</p>
+            <button class="btn btn-strava" @onclick=HandleSyncAll>Sync All Rides</button>
+        </div>*@
     }
-    else if(FTP == 0)
-    {
-        <p class="text-danger font-italic">*please add your initial FTP from when you started using a power meter on Strava, after 45 days of data is uploaded the system will calculate your FTP automatically</p>
-        <button class="btn btn-strava" disabled>Link to Stava</button>
-    }else
+    else if(String.IsNullOrWhiteSpace(appState.LoggedInUser.StravaAccessToken))
     {
         <button class="btn btn-strava" disabled @onclick="RedirectToAuth">Link to Stava</button>
     }
@@ -73,11 +111,13 @@
 @code {
     int FTP;
     DateTime mostRecentActivity = new();
+    List<FTPHistory> ftpHistories = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         FTP = appState.LoggedInUser.FTP;
-        mostRecentActivity = appState.LoggedInUser.Activities.Max(a => a.Date);
+        mostRecentActivity = appState.LoggedInUser.Activities.Count > 0 ? appState.LoggedInUser.Activities.Max(a => a.Date) : mostRecentActivity;
+        ftpHistories = await ftpHistoryService.GetFTPHistoriesByUser();
     }
 
     private void RedirectToAuth()
@@ -109,7 +149,7 @@
             ActivityParams activityParams = new ActivityParams()
             {
                 User = appState.LoggedInUser,
-                PerPage = 50,
+                PerPage = 30,
                 Page = 1,
                 After = 1,
             };
@@ -144,10 +184,45 @@
             ActivityParams activityParams = new ActivityParams()
             {
                 User = appState.LoggedInUser,
-                PerPage = 50,
+                PerPage = 30,
                 Page = 1,
                 After = mostRecentActivity.ToUnixSeconds(),
             };
+
+            var countLoaded = await activityService.SyncRidesFromStrava(activityParams);
+
+            if(countLoaded == 0)
+            {
+                toastService.ShowInfo("No new activities found to load");
+            }
+            else
+            {
+                toastService.ShowSuccess($"done loading in {countLoaded} Activity(s) from Strava");
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError($"There was an error syncing data from Strava - {ex.Message}");
+        }
+        finally
+        {
+            appState.LoaderOff();
+        }
+    }
+
+    private async Task HandleSyncOneYear()
+    {
+        try
+        {
+            ActivityParams activityParams = new ActivityParams()
+            {
+                User = appState.LoggedInUser,
+                PerPage = 30,
+                Page = 1,
+                After = DateTime.Now.AddDays(-410).ToUnixSeconds(),
+            };
+
+            appState.LoaderOn($"Looking for Strava activities...");
 
             var countLoaded = await activityService.SyncRidesFromStrava(activityParams);
 
@@ -174,8 +249,17 @@
     {
         try
         {   
+            FTPHistory newHistory = new()
+            {
+                StravaUserID = appState.LoggedInUser.StravaUserID,
+                Date = appState.LoggedInUser.FTP >= 1 ? DateTime.Now : DateTimeUtilities.UnixToDateTime(1),
+                FTP = FTP
+            };
+
             appState.LoggedInUser.FTP = FTP;
             await userService.UpdateUser(appState.LoggedInUser);
+
+            await ftpHistoryService.InsertFTPHistory(newHistory);
 
             toastService.ShowSuccess($"FTP updated to {FTP}");
         }

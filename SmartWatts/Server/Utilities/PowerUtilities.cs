@@ -166,6 +166,42 @@ namespace SmartWatts.Server.Utilities
             return Constants.Intensities.Find(i => comp >= i.LowBand && comp <= i.HighBand);
         }
 
+        public static int GetFTP(IEnumerable<Activity> activities)
+        {
+            FTPCalculations calc_7point5 = new() { IntervalTime = 450, Multiplier = Constants.FTP_MULTIPLIER_450, BestEfforts = new() };
+            FTPCalculations calc_20 = new() { IntervalTime = 1200, Multiplier = Constants.FTP_MULTIPLIER_1200, BestEfforts = new() };
+            FTPCalculations calc_45 = new() { IntervalTime = 2700, Multiplier = Constants.FTP_MULTIPLIER_2700, BestEfforts = new() };
+
+            foreach(Activity activity in activities)
+            {
+                GetBestEfforts(activity, calc_7point5);
+                GetBestEfforts(activity, calc_20);
+                GetBestEfforts(activity, calc_45);
+            }
+
+            calc_7point5.GetBestFTP();
+            calc_20.GetBestFTP();
+            calc_45.GetBestFTP();
+
+            return new[] { calc_7point5.BestFTP, calc_20.BestFTP, calc_45.BestFTP }.Max();
+        }
+
+        private static void GetBestEfforts(Activity activity, FTPCalculations calc)
+        {
+            int intervalPower = activity.PowerData.PowerPoints.ContainsKey(calc.IntervalTime) ? activity.PowerData.PowerPoints[calc.IntervalTime] : 0;
+
+
+            if(calc.BestEfforts.Count < 5 || intervalPower > calc.BestEfforts.Min())
+            {
+                calc.BestEfforts.Add(intervalPower);
+            }
+
+            if(calc.BestEfforts.Count > 5)
+            {
+                calc.BestEfforts.Remove(calc.BestEfforts.Min());
+            }
+        }
+
         private static Intensity DefaultToMaxIntensity()
         {
             var max = Constants.Intensities.Max(i => i.EffortIndex);

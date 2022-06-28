@@ -15,5 +15,6 @@ namespace SmartWatts.Shared.DBModels
         public Dictionary<int, int> SustainedEfforts { get; set; }
         public string JsonSustainedEfforts { get; set; }
         public int FTPAtTimeOfRide { get; set; }
+        public int StravaUserID { get; set; }
     }
 }

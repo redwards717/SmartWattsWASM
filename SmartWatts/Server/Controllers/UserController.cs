@@ -7,10 +7,12 @@ namespace SmartWatts.Server.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserAccess _user;
+        private readonly IFTPHistoryAccess _fTPHistory;
 
-        public UserController(IUserAccess user)
+        public UserController(IUserAccess user, IFTPHistoryAccess fTPHistory)
         {
             _user = user;
+            _fTPHistory = fTPHistory;
         }
 
         [HttpGet]
@@ -54,6 +56,27 @@ namespace SmartWatts.Server.Controllers
         {
             await _user.UpdateUser(user);
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("CheckForFtpChange")]
+        public async Task<IActionResult> CheckForNewFtpChange(User user)
+        {
+            var mostRecentDate = user.Activities.Max(a => a.Date);
+            var recentActivities = user.Activities.Where(a => a.Date >= mostRecentDate.AddDays(-42));
+
+            var ftpForPeriod = PowerUtilities.GetFTP(recentActivities);
+            if(user.FTP <= ftpForPeriod - 3 || user.FTP >= ftpForPeriod + 3)
+            {
+                user.FTP = ftpForPeriod;
+                await _user.UpdateUser(user);
+                await _fTPHistory.InsertFTPHistory(new FTPHistory() { StravaUserID = user.StravaUserID, Date = mostRecentDate, FTP = ftpForPeriod });
+                return Ok(ftpForPeriod);
+            }
+            else
+            {
+                return Ok(0);
+            }
         }
     }
 }

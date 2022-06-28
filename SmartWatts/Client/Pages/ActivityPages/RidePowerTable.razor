@@ -1,28 +1,28 @@
 ﻿<table>
-    	<tr>
-			<th></th>
-			@foreach (var pp in Activity.PowerData.PowerPoints)
-			{
-				<th>@DateTimeUtilities.ConvertSecToReadable(pp.Key)</th>
-			}
-		</tr>
-		<tr>
-			<td class="row-title">This Ride</td>
-			@foreach (var pp in Activity.PowerData.PowerPoints)
-			{
-				Intensity intensity = PowerUtlities.GetEffortIntensity(pp, Activity.PowerHistory);
-				<td style="background-color:@intensity.Color">
-					<span style="color:@intensity.FontColor">@pp.Value</span>
-				</td>
-			}
-		</tr>
-		<tr>
-			<td class="row-title">@Constants.POWER_HISTORY_PERIOD Day</td>
-			@foreach (var pp in Activity.PowerHistory.PowerPoints.SkipLast(1))
-			{
-				<td>@pp.Value</td>
-			}
-		</tr>
+    <tr>
+		<th></th>
+		@foreach (var pp in Activity.PowerData.PowerPoints)
+		{
+			<th>@DateTimeUtilities.ConvertSecToReadable(pp.Key)</th>
+		}
+	</tr>
+	<tr>
+		<td class="row-title">This Ride</td>
+		@foreach (var pp in Activity.PowerData.PowerPoints)
+		{
+			Intensity intensity = PowerUtlities.GetEffortIntensity(pp, Activity.PowerHistory);
+			<td style="background-color:@intensity.Color">
+				<span style="color:@intensity.FontColor">@pp.Value</span>
+			</td>
+		}
+	</tr>
+	<tr>
+		<td class="row-title">@Constants.POWER_HISTORY_PERIOD Day</td>
+		@foreach (var pp in Activity.PowerHistory.PowerPoints.SkipLast(1))
+		{
+			<td>@pp.Value</td>
+		}
+	</tr>
 </table>
 
 @code {

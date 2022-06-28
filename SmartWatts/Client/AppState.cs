@@ -37,9 +37,9 @@
             NotifyStateChanged();
         }
 
-        public void SetLoadingMsg(string msg)
+        public void SetLoadingMsg(string msg, bool overwrite = true)
         {
-            LoadingMsg = msg;
+            LoadingMsg = overwrite ? msg : LoadingMsg + "\n" + msg;
             NotifyStateChanged();
         }
         public void LoaderOff()
