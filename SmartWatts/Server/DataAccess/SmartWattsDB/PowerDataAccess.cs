@@ -27,13 +27,13 @@
             return _db.LoadData<PowerData, dynamic>(sql, parameters);
         }
 
-        public Task InsertPowerData(PowerData powerData)
-        {
-            const string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints, JsonSustainedEfforts, FTPAtTimeOfRide, StravaUserID)
-                            VALUES(@StravaRideID, @JsonPowerPoints, @JsonSustainedEfforts, @FTPAtTimeOfRide, @StravaUserID)";
+        //public Task InsertPowerData(PowerData powerData)
+        //{
+        //    const string sql = @"INSERT INTO PowerData(StravaRideID, JsonPowerPoints, JsonSustainedEfforts, FTPAtTimeOfRide, StravaUserID)
+        //                    VALUES(@StravaRideID, @JsonPowerPoints, @JsonSustainedEfforts, @FTPAtTimeOfRide, @StravaUserID)";
 
-            return _db.SaveData(sql, powerData);
-        }
+        //    return _db.SaveData(sql, powerData);
+        //}
 
         public Task InsertPowerData(List<PowerData> powerData)
         {

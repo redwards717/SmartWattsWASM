@@ -45,21 +45,21 @@ namespace SmartWatts.Server.Controllers
             return Ok(activities);
         }
 
-        [HttpPost]
-        [Route("{id}/AddPower")]
-        public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody] List<StravaDataStream> sdss)
-        {
-            var activity = await _activityAccess.GetActivityByStravaRideID(id);
-            var user = await _userAccess.GetUserByStravaId(activity.StravaUserID.ToString());
+        //[HttpPost]
+        //[Route("{id}/AddPower")]
+        //public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody] List<StravaDataStream> sdss)
+        //{
+        //    var activity = await _activityAccess.GetActivityByStravaRideID(id);
+        //    var user = await _userAccess.GetUserByStravaId(activity.StravaUserID.ToString());
 
-            PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(sdss, user.FTP);
+        //    PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(sdss, user.FTP);
 
-            powerData.StravaRideID = activity.StravaRideID;
-            powerData.FTPAtTimeOfRide = user.FTP;
+        //    powerData.StravaRideID = activity.StravaRideID;
+        //    powerData.FTPAtTimeOfRide = user.FTP;
 
-            await _powerDataAccess.InsertPowerData(powerData);
-            return Ok(powerData);
-        }
+        //    await _powerDataAccess.InsertPowerData(powerData);
+        //    return Ok(powerData);
+        //}
 
         [HttpPost]
         [Route("FindAndAddNew")]
@@ -96,6 +96,7 @@ namespace SmartWatts.Server.Controllers
 
                 powerData.StravaRideID = activity.StravaRideID;
                 powerData.FTPAtTimeOfRide = activityParams.User.FTP;
+                powerData.StravaUserID = activity.StravaUserID;
 
                 newPowerData.Add(powerData);
 

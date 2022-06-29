@@ -27,7 +27,7 @@
     else
     {
         <p>@appState.LoggedInUser.Activities.Count rides loaded in from Strava <br />
-            Most Recent Loaded Ride:  @appState.LoggedInUser.Activities.Last().Name (@appState.LoggedInUser.Activities.Last().Date.ToShortDateString())</p>
+            Most Recent Loaded Ride:  @appState.LoggedInUser.Activities.Find(a => a.Date == mostRecentActivity).Name (@mostRecentActivity.ToShortDateString())</p>
     }
 
     <h3>Power Settings</h3>

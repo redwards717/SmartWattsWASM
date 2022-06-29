@@ -58,6 +58,7 @@
         if(Activites is not null && Activites.Count > 0)
         {
             highestAvgWeightedWatts = Activites.Max(a => a.WeightedAvgWatts);
+            // errors here when loading in inital rides, looks like Activity.Intensity is null
             var highestEffort = Activites.Max(a => a.Intensity.EffortIndex);
             highestIntensity = Activites.Find(a => highestEffort == a.Intensity.EffortIndex).Intensity;
         }

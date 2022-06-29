@@ -69,7 +69,7 @@ namespace SmartWatts.Client.Services
                     _appState.SetLoadingMsg($"{countLoaded} rides loaded - up till {activities[0].Date:MMM} / {activities[0].Date.Year} done!...");
                     if(newFTP > 0)
                     {
-                        _appState.SetLoadingMsg($"FTP updated to from {_appState.LoggedInUser.FTP} to {newFTP}", false);
+                        _appState.SetLoadingMsg($"FTP updated from {_appState.LoggedInUser.FTP} to {newFTP}", false);
                         _appState.LoggedInUser.FTP = newFTP;
                     }
                 }
@@ -96,6 +96,8 @@ namespace SmartWatts.Client.Services
             }
 
             _appState.AddUsersActivities(activities);
+
+            AttachViewingData(400);
 
             return activities;
         }
@@ -138,7 +140,7 @@ namespace SmartWatts.Client.Services
 
         public void AttachViewingData(int daysBack)
         {
-            foreach (Activity activity in _appState.LoggedInUser.Activities.Where(a => a.Date >= DateTime.Now.AddDays(-daysBack)))
+            foreach (Activity activity in _appState.LoggedInUser.Activities.Where(a => a.Date >= DateTime.Now.AddDays(-daysBack) && (a.PowerHistory is null || a.Intensity is null)))
             {
                 activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
                 activity.Intensity = PowerUtlities.GetRideIntensity(activity);
