@@ -1,0 +1,78 @@
+﻿<div class="table-wrapper">
+    <table class="table table-sm">
+        <tr>
+            <th></th>
+            <th>42 Days</th>
+            <th></th>
+            <th>90 Days</th>
+            <th></th>
+            <th>365 Days</th>
+        </tr>
+        @foreach (int pp in Constants.PowerPoints)
+        {
+            int power42 = @GetPower(pp, 42);
+            int power90 = @GetPower(pp, 90);
+            int power365 = @GetPower(pp, 365);
+            double decay365to90 = GetDecay(pp, power90, power365);
+            double decay90to42 = GetDecay(pp, power42, power90);
+
+            <tr>
+                <th>@DateTimeUtilities.ConvertSecToReadable(pp, true)</th>
+                <td>@power42</td>
+                <td><span class="@GetIcon(decay90to42)" style="color:@GetColor(decay90to42)"></span>@String.Format("{0:0.0}", decay90to42)</td>
+                <td>@power90</td>
+                <td><span class="@GetIcon(decay365to90)" style="color:@GetColor(decay365to90)"></span>@String.Format("{0:0.0}", decay365to90)</td>
+                <td>@power365</td>
+            </tr>
+        
+        }
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public List<PowerHistory> PowerHistory { get; set; }
+
+    [Parameter]
+    public List<int> Differences { get; set; }
+
+    private int GetPower(int pp, int lookBackDays)
+    {
+        var ph = PowerHistory.Find(ph => ph.LookbackDays == lookBackDays);
+        return ph.PowerPoints.ContainsKey(pp) ? ph.PowerPoints[pp] : 0;
+    }
+
+    private double GetDecay(int pp, int shortPower, int longPower)
+    {
+        if(shortPower == 0)
+        {
+            return 100;
+        }
+        return ((longPower / (double)shortPower) * 100) - 100;
+    }
+
+    private string GetIcon(double decay)
+    {
+        return decay == 0 ? "oi oi-thumb-up" : "oi oi-arrow-thick-bottom";
+    }
+
+    private string GetColor(double decay)
+    {
+        if(decay <= 3)
+        {
+            return "green";
+        }
+        else if(decay <= 6)
+        {
+            return "#F1F100";
+        }
+        else if(decay <= 10)
+        {
+            return "orange";
+        }
+        else
+        {
+            return "red";
+        }
+    }
+}

@@ -170,33 +170,39 @@ namespace SmartWatts.Server.Utilities
         {
             FTPCalculations calc_7point5 = new() { IntervalTime = 450, Multiplier = Constants.FTP_MULTIPLIER_450, BestEfforts = new() };
             FTPCalculations calc_20 = new() { IntervalTime = 1200, Multiplier = Constants.FTP_MULTIPLIER_1200, BestEfforts = new() };
+            FTPCalculations calc_30 = new() { IntervalTime = 1800, Multiplier = Constants.FTP_MULTIPLIER_1800, BestEfforts = new() };
             FTPCalculations calc_45 = new() { IntervalTime = 2700, Multiplier = Constants.FTP_MULTIPLIER_2700, BestEfforts = new() };
+            FTPCalculations calc_60 = new() { IntervalTime = 3600, Multiplier = Constants.FTP_MULTIPLIER_3600, BestEfforts = new() };
 
             foreach(Activity activity in activities)
             {
-                GetBestEfforts(activity, calc_7point5);
-                GetBestEfforts(activity, calc_20);
-                GetBestEfforts(activity, calc_45);
+                GetBestEfforts(activity, calc_7point5, 5);
+                GetBestEfforts(activity, calc_20, 5);
+                GetBestEfforts(activity, calc_30, 5);
+                GetBestEfforts(activity, calc_45, 5);
+                GetBestEfforts(activity, calc_60, 5);
             }
 
             calc_7point5.GetBestFTP();
             calc_20.GetBestFTP();
+            calc_30.GetBestFTP();
             calc_45.GetBestFTP();
+            calc_60.GetBestFTP();
 
-            return new[] { calc_7point5.BestFTP, calc_20.BestFTP, calc_45.BestFTP }.Max();
+            return new[] { calc_7point5.BestFTP, calc_20.BestFTP, calc_30.BestFTP, calc_45.BestFTP, calc_60.BestFTP }.Max();
         }
 
-        private static void GetBestEfforts(Activity activity, FTPCalculations calc)
+        private static void GetBestEfforts(Activity activity, FTPCalculations calc, int numberOfEfforts)
         {
             int intervalPower = activity.PowerData.PowerPoints.ContainsKey(calc.IntervalTime) ? activity.PowerData.PowerPoints[calc.IntervalTime] : 0;
 
 
-            if(calc.BestEfforts.Count < 5 || intervalPower > calc.BestEfforts.Min())
+            if(calc.BestEfforts.Count < numberOfEfforts || intervalPower > calc.BestEfforts.Min())
             {
                 calc.BestEfforts.Add(intervalPower);
             }
 
-            if(calc.BestEfforts.Count > 5)
+            if(calc.BestEfforts.Count > numberOfEfforts)
             {
                 calc.BestEfforts.Remove(calc.BestEfforts.Min());
             }

@@ -18,12 +18,19 @@ namespace SmartWatts.Shared
         public const string VO2 = "VO2";
         public const string THRESHOLD = "Threshold";
 
-        public const double FTP_MULTIPLIER_450 = .85;
+        public const double FTP_MULTIPLIER_450 = .825;
         public const double FTP_MULTIPLIER_1200 = .925;
-        public const double FTP_MULTIPLIER_2700 = 1;
+        public const double FTP_MULTIPLIER_1800 = .95;
+        public const double FTP_MULTIPLIER_2700 = .995;
+        public const double FTP_MULTIPLIER_3600 = 1.005;
 
-        public static List<int> PowerPoints { get; } = new List<int>(){
+        public static List<int> PowerPoints { get; } = new(){
             5, 15, 30, 45, 60, 90, 60 * 2, 60 * 3, 60 * 5, (60 * 7) + 30, 60 * 10, 60 * 15, 60 * 20, 60 * 30, 60 * 45, 60 * 60, 60 * 90, 60 * 60 * 2, 60 * 60 * 3, 60 * 60 * 4, 60 * 60 * 5, 60 * 60 * 8, 60 * 60 * 24
+        };
+
+        public static List<int> PowerProgressionDays { get; } = new()
+        {
+            42, 90, 365
         };
 
         public const int POWER_HISTORY_PERIOD = 42;

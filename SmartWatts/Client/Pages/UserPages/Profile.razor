@@ -33,36 +33,40 @@
     <h3>Power Settings</h3>
 
     <div class="ftp-wrapper">
-        <div class="row">
-            <div class="col-6">
-                @if(FTP < 1)
+        @if(appState.LoggedInUser.FTP <= 99)
+        {
+            <p class="text-danger font-italic">*please set your initial FTP from @DateTime.Now.AddDays(-410).ToString("MMMM yyyy") <br />
+                Just take a guess! @DateTime.Now.AddDays(-410).ToString("MMMM yyyy") is when the app will start gathering data <br />
+                After several activities are loaded the app will start to recalibrate zones auctomatically</p>
+                    
+            <p>
+                <label for="ftp">FTP as of @DateTime.Now.AddDays(-410).ToString("MMMM yyyy") :</label>
+                <input if="ftp" type="number" maxlength="3" @bind-value=FTP @bind-value:event="onchange">
+            </p>
+            <button class="btn btn-outline-primary" @onclick=SetFTP>Set Initial FTP</button>
+        }
+        else
+        {
+            <p>FTP: @FTP</p>
+            <p class="text-danger font-italic">*FTP automatically updates as more rides are loaded <br />
+                If you feel your ftp is low do a Max 20 to 60 minute effort! The numbers won't lie!</p>
+            <button class="btn @(showFTPHistory ? "btn-primary" : "btn-outline-primary")" @onclick="e => showFTPHistory = !showFTPHistory">
+            @(showFTPHistory ? "Hide FTP History" : "Show FTP History")</button>
+            @if (showFTPHistory)
+            {              
+            <p>FTP History</p>
+            <hr />
+            <ul>
+                @foreach(FTPHistory ftp in ftpHistories)
                 {
-                    <p class="text-danger font-italic">*please add your initial FTP from when you started using a power meter on Strava, after 45 days of data is uploaded the system will calculate your FTP automatically</p>
+                    <li>@(ftp.Date.ToUnixSeconds() <= 1 ? "Initial FTP" : ftp.Date.ToShortDateString()) : @ftp.FTP</li>
                 }
-                <p>
-                    <label for="ftp">FTP: </label>
-                    <input id="ftp" type="number" maxlength="3" @bind-value=FTP/>
-                    <button class="btn btn-outline-primary" @onclick=SetFTP>Set FTP</button>
-                </p>
-                <p>
-                    FTP will be calculated after enough data has been loaded,
-                    <br />it can always be manually set here as well.
-                </p>
-            </div>
-            <div class="col-6">
-                <span>FTP History</span>
-                <hr />
-                <ul>
-                    @foreach(FTPHistory ftp in ftpHistories)
-                    {
-                        <li>@(ftp.Date.ToUnixSeconds() <= 1 ? "Initial FTP" : ftp.Date.ToShortDateString()) : @ftp.FTP</li>
-                    }
-                </ul>
-            </div>
-        </div>
+            </ul>
+            }
+        }
     </div>
 
-    @if(FTP > 0)
+    @if(FTP > 99)
     {
         <PowerZones FTP="FTP"></PowerZones>
     }
@@ -86,9 +90,9 @@
         <div class="sync-container">
             <h6>Sync One Year of rides</h6>
             <hr />
-            <p>This just grabs a years worth of data, which is enough to get you started. <br />
-                Only thing missing will be the ability to see historic data <br />
-                If the sync cuts off use the 'Sync New Rides' button above to resume from where the last ride was loaded in</p>
+            <p>This grabs roughly a years worth of data, which is enough to get you started. <br />
+                If the sync cuts off you will see a 'Sync New Rides Button' which will pick up where left off</p>
+                You will have the ability to pull in All rides for historical purposes at a later point <br />
             <button class="btn btn-strava" @onclick=HandleSyncOneYear>Sync One Year</button>
         </div>
       @*  <div class="sync-container">
@@ -103,8 +107,6 @@
     {
         <button class="btn btn-strava" disabled @onclick="RedirectToAuth">Link to Stava</button>
     }
-
-
 </div>
 
 
@@ -112,6 +114,7 @@
     int FTP;
     DateTime mostRecentActivity = new();
     List<FTPHistory> ftpHistories = new();
+    bool showFTPHistory;
 
     protected override async Task OnInitializedAsync()
     {
@@ -219,7 +222,8 @@
                 User = appState.LoggedInUser,
                 PerPage = 30,
                 Page = 1,
-                After = DateTime.Now.AddDays(-410).ToUnixSeconds(),
+                //After = DateTime.Now.AddDays(-410).ToUnixSeconds(),
+                After = DateTime.Now.AddDays(-110).ToUnixSeconds(),
             };
 
             appState.LoaderOn($"Looking for Strava activities...");
@@ -259,6 +263,7 @@
             appState.LoggedInUser.FTP = FTP;
             await userService.UpdateUser(appState.LoggedInUser);
 
+            ftpHistories.Add(newHistory);
             await ftpHistoryService.InsertFTPHistory(newHistory);
 
             toastService.ShowSuccess($"FTP updated to {FTP}");

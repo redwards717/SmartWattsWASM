@@ -1,7 +1,60 @@
 ﻿@page "/powerprogression"
+@inject AppState appState
+@inject NavigationManager nav
 
-<h3>PowerProgression</h3>
+@if(currentPH.Count > 0)
+{
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6">
+            <h4>Current Power Profile</h4>
+            <PowerProgressionTable PowerHistory="currentPH" Differences="differences"></PowerProgressionTable>
+        </div>
+        <div class="col-6">
+            <p class="pointer">Power Before <span @onclick=GoToLastRide>@mostRecentActivity.Name</span></p>
+            <PowerProgressionTable PowerHistory="previousPH" Differences=@(new List<int>())></PowerProgressionTable>
+        </div>
+    </div>
+</div>
+}
 
 @code {
+    List<PowerHistory> currentPH = new();
+    List<PowerHistory> previousPH = new();
+    Activity mostRecentActivity;
 
+    List<int> differences = new();
+
+    protected override void OnInitialized()
+    {
+        foreach(int daysBack in Constants.PowerProgressionDays)
+        {
+            appState.OrderActivitiesByDate();
+            mostRecentActivity = appState.LoggedInUser.Activities[^1];
+            currentPH.Add(PowerUtlities.GetPowerHistoryForProgression(mostRecentActivity, appState.LoggedInUser.Activities, daysBack));
+            previousPH.Add(PowerUtlities.GetPowerHistoryForProgression(appState.LoggedInUser.Activities[^2], appState.LoggedInUser.Activities, daysBack));
+
+            GetDifference();
+        }
+    }
+
+    private void GetDifference()
+    {
+        var current = currentPH.Find(ph => ph.LookbackDays == 42);
+        var prev = previousPH.Find(ph => ph.LookbackDays == 42);
+        foreach(int pp in Constants.PowerPoints)
+        {
+            if(current.PowerPoints[pp] == prev.PowerPoints[pp])
+            {
+                differences.Add(pp);
+            }
+        }
+    }
+
+    private void GoToLastRide()
+    {
+        var start = mostRecentActivity.Date.Date.ToUnixSeconds();
+        var end = mostRecentActivity.Date.Date.AddDays(1).AddMilliseconds(-1).ToUnixSeconds();
+        nav.NavigateTo($"/ridelog/{start}/{end}");
+    }
 }

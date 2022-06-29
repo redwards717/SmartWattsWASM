@@ -6,6 +6,7 @@
         public bool Loading { get; set; }
         public string LoadingMsg { get; set; } = "Loading...";
         public event Action OnChange;
+
         public void SetUser(User user)
         {
             LoggedInUser = user;
@@ -28,6 +29,11 @@
         {
             LoggedInUser.Activities.Add(activity);
             NotifyStateChanged();
+        }
+
+        public void OrderActivitiesByDate()
+        {
+            LoggedInUser.Activities.Sort((x, y) => x.Date.CompareTo(y.Date));
         }
 
         public void LoaderOn(string msg)
