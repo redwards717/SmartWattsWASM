@@ -1,4 +1,6 @@
 ﻿.table-wrapper {
-    border: 1px solid black;
+    border: 1px solid blue;
     padding: 10px;
+    background-color: aliceblue;
+    box-shadow: 3px 6px blue;
 }

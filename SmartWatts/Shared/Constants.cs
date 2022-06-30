@@ -18,7 +18,7 @@ namespace SmartWatts.Shared
         public const string VO2 = "VO2";
         public const string THRESHOLD = "Threshold";
 
-        public const double FTP_MULTIPLIER_450 = .825;
+        public const double FTP_MULTIPLIER_600 = .85;
         public const double FTP_MULTIPLIER_1200 = .925;
         public const double FTP_MULTIPLIER_1800 = .95;
         public const double FTP_MULTIPLIER_2700 = .995;

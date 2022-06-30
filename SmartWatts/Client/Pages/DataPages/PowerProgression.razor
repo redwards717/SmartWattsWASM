@@ -7,11 +7,11 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-6">
-            <h4>Current Power Profile</h4>
+            <h5>Current Power Profile</h5>
             <PowerProgressionTable PowerHistory="currentPH" Differences="differences"></PowerProgressionTable>
         </div>
         <div class="col-6">
-            <p class="pointer">Power Before <span @onclick=GoToLastRide>@mostRecentActivity.Name</span></p>
+            <h5 class="pointer">Power Before: <span @onclick=GoToLastRide>@mostRecentActivity.Name</span></h5>
             <PowerProgressionTable PowerHistory="previousPH" Differences=@(new List<int>())></PowerProgressionTable>
         </div>
     </div>
