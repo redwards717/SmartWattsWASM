@@ -1,0 +1,187 @@
+﻿@inject AppState appState
+@inject NavigationManager nav
+
+<div class="row container-fluid">
+	<div class="col-1"></div>
+	<div class="col-6">
+		<div>
+			@foreach (var year in yearsToDisplay)
+			{
+				<span class="@(year == selectedYear ? "month-year-selected" : "month-year")" @onclick="e => ChangeYear(year)">@year</span>
+			}
+		</div>
+		<h4>
+			<span class="oi oi-arrow-circle-left left-arrow" @onclick="e => ChangeMonth(-1)"></span>
+			@((Constants.Months)selectedMonth) - @selectedYear
+			<span class="oi oi-arrow-circle-right right-arrow"  @onclick="e => ChangeMonth(1)"></span>
+		</h4>
+		<div class="grid-container">
+			@foreach (var day in Constants.DaysOfTheWeek)
+			{
+				<div class="grid-header">@day</div>
+			}
+			@for (int i = daysBefore; i >= 1; i--)
+			{
+				<div class="grid-item"></div>
+			}
+			@foreach (var i in Enumerable.Range(1, daysInMonth))
+			{
+				<div class="grid-item-in-month" style="background-color: @GetIntensity(i)"
+						@onmouseover="e => ShowRides(i)" @onmouseout="e => dayHoverOn = false" @onclick="e => GoToRides(i)">
+					<span>@i</span>
+					<p><b>@GetDurationForDay(i)</b></p>
+				@if (dayHoverOn && i == dayHovered && hoveredRides != null)
+				{
+					<div class="day-hover">
+					@foreach (var activity in hoveredRides)
+					{
+						<p>
+							@activity.Name - @DateTimeUtilities.ConvertSecToReadable(activity.MovingTime, false)
+						</p>
+					}
+					</div>
+				}
+				</div>
+			}
+
+			@for (int i = 1; i <= daysAfter; i++)
+			{
+				<div class="grid-item"></div>
+			}
+		</div>
+	</div>
+	<div class="col-4 month-summary">
+		<h5>@((Constants.Months)selectedMonth)</h5>
+		<hr />
+		<ul>
+			<li>@GetVolumeForMonth()</li>
+			<li>Itensity: @PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, selectedMonth, selectedMonth)</li>
+			<li>@Constants.ANAEROBIC Time: @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities,Constants.AnaerobicPZ.Time, selectedMonth, selectedMonth)</li>
+			<li>@Constants.VO2 Time: @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities,Constants.VO2PZ.Time, selectedMonth, selectedMonth)</li>
+			<li>@Constants.THRESHOLD Time: @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities,Constants.ThresholdPZ.Time, selectedMonth, selectedMonth)</li>
+		</ul>
+	</div>
+	<div class="col-1"></div>
+</div>
+
+@code {
+	List<int> yearsToDisplay = new List<int>();
+	int selectedYear;
+	int selectedMonth;
+	bool dayHoverOn = false;
+	int dayHovered;
+	List<Activity> hoveredRides;
+
+	DateTime firstDay;
+	DateTime lastDay;
+
+	int daysBefore;
+	int daysAfter;
+
+	int daysInMonth;
+
+	protected override void OnInitialized()
+	{
+		var currentDate = DateTime.Now;
+		selectedYear = currentDate.Year;
+		selectedMonth = currentDate.Month;
+
+		yearsToDisplay = DateTimeUtilities.GetActiveYears(appState.LoggedInUser.Activities);
+
+		RenderCalendar(selectedYear, selectedMonth);
+	}
+
+	private void RenderCalendar(int year, int month)
+	{
+		firstDay = new DateTime(year, month, 1);
+		lastDay = firstDay.AddMonths(1).AddSeconds(-1);
+
+		var firstDayDayOfWeek = (int)firstDay.DayOfWeek;
+		var lastDayDayOfWeek = (int)lastDay.DayOfWeek;
+
+		daysBefore = (firstDayDayOfWeek == 0 ? 7 : firstDayDayOfWeek) - 1;
+		daysAfter = -((lastDayDayOfWeek == 0 ? 7 : lastDayDayOfWeek) - 7);
+
+		daysInMonth = DateTime.DaysInMonth(year, month);
+	}
+
+	private string GetIntensity(int day)
+	{
+		var activities = GetActivitiesForTheDay(day);
+
+		if (activities == null || activities.Count() == 0)
+		{
+			return "white";
+		}
+
+		var topIntensity = activities.Max(a => a.Intensity.EffortIndex);
+		return Constants.Intensities.Find(i => i.EffortIndex == topIntensity).Color;
+	}
+
+	private string GetDurationForDay(int day)
+	{
+		var activities = GetActivitiesForTheDay(day);
+		var sum = activities.Sum(a => a.MovingTime);
+
+		return DateTimeUtilities.ConvertSecToReadable(sum, false);
+	}
+
+	private List<Activity> GetActivitiesForTheDay(int day)
+	{
+		return appState.LoggedInUser.Activities.Where(a => a.Date.Month == selectedMonth && a.Date.Year == selectedYear && a.Date.Day == day).ToList();
+	}
+
+	private void ShowRides(int day)
+	{
+		hoveredRides = new();
+		dayHovered = day;
+		dayHoverOn = true;
+		hoveredRides = appState.LoggedInUser.Activities.Where(a => a.Date.Month == selectedMonth
+												&& a.Date.Year == selectedYear
+												&& a.Date.Day == day).ToList();
+	}
+
+	private void GoToRides(int day)
+	{
+		var start = new DateTime(selectedYear, selectedMonth, day);
+		var end = start.AddDays(1).AddMilliseconds(-1);
+
+		nav.NavigateTo($"/ridelog/{start.ToUnixSeconds()}/{end.ToUnixSeconds()}");
+	}
+
+	private string GetVolumeForMonth()
+	{
+		var secs = PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, selectedYear, selectedMonth);
+		return DateTimeUtilities.ConvertSecToReadable(secs, false);
+	}
+
+	private void ChangeYear(int year)
+	{
+		selectedYear = year;
+
+		RenderCalendar(selectedYear, selectedMonth);
+	}
+
+	private void ChangeMonth(int change)
+	{
+		var prevMon = selectedMonth;
+
+		var newMonth = prevMon + change;
+		if (newMonth == 0)
+		{
+			selectedMonth = 12;
+			selectedYear--;
+		}
+		else if (newMonth == 13)
+		{
+			selectedMonth = 1;
+			selectedYear++;
+		}
+		else
+		{
+			selectedMonth = newMonth;
+		}
+
+		RenderCalendar(selectedYear, selectedMonth);
+	}
+}

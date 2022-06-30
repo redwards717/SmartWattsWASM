@@ -115,16 +115,10 @@ namespace SmartWatts.Shared
             },
         };
 
-        public enum Weeks
+        public static List<string> DaysOfTheWeek { get; } = new List<string>()
         {
-            Monday = 1,
-            Tuesday,
-            Wednesday,
-            Thursday,
-            Friday,
-            Saturday,
-            Sunday,
-        }
+            "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+        };
 
         public enum Months
         {

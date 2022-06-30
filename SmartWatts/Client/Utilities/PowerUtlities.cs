@@ -7,6 +7,12 @@
             return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
         }
 
+        public static int GetVolumeInTime(List<Activity> activities, int year, int month = 0)
+        {
+            var activitiesInRange = month == 0 ? activities.Where(a => a.Date.Year == year) : activities.Where(a => a.Date.Year == year && a.Date.Month == month);
+            return activitiesInRange.Sum(a => a.MovingTime);
+        }
+
         public static int GetAvgVolume(List<Activity> activities, DateTime start, DateTime end, int periods)
         {
             int time = activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
@@ -16,6 +22,12 @@
         public static int GetIntensityForTimeframe(List<Activity> activities, DateTime start, DateTime end)
         {
             return activities.Where(a => a.Date >= start && a.Date <= end && a.Intensity.EffortIndex > 1).Sum(a => a.Intensity.EffortIndex);
+        }
+
+        public static int GetIntensityForTimeframe(List<Activity> activities, int year, int month = 0)
+        {
+            var activitiesInRange = month == 0 ? activities.Where(a => a.Date.Year == year && a.Intensity.EffortIndex > 1) : activities.Where(a => a.Date.Year == year && a.Date.Month == month && a.Intensity.EffortIndex > 1);
+            return activitiesInRange.Sum(a => a.Intensity.EffortIndex);
         }
 
         public static int GetAvgIntensity(List<Activity> activities, DateTime start, DateTime end, int periods)
@@ -29,6 +41,20 @@
             int time = 0;
 
             foreach(var effort in efforts)
+            {
+                time += effort[effortTime];
+            }
+
+            return time;
+        }
+
+        public static int GetSustainedEfforts(List<Activity> activities, int effortTime, int year, int month = 0)
+        {
+            var activitiesInRange = month == 0 ? activities.Where(a => a.Date.Year == year) : activities.Where(a => a.Date.Year == year && a.Date.Month == month);
+            var efforts = activitiesInRange.Where(a => a.Date.Year == year && a.Date.Month <= month).Select(a => a.PowerData.SustainedEfforts);
+            int time = 0;
+
+            foreach (var effort in efforts)
             {
                 time += effort[effortTime];
             }
@@ -59,6 +85,11 @@
                 VO2 = GetAvgSustainedEfforts(activities, start, end, Constants.VO2PZ.Time, periods),
                 Threshold = GetAvgSustainedEfforts(activities, start, end, Constants.ThresholdPZ.Time, periods)
             };
+        }
+
+        public static int GetActivityCount(List<Activity> activities, int year, int month = 0)
+        {
+            return month == 0 ? activities.Count(a => a.Date.Year == year) : activities.Count(a => a.Date.Year == year && a.Date.Month == month);
         }
 
         public static Intensity GetRideIntensity(Activity activity)
@@ -164,12 +195,12 @@
             };
         }
 
-        public static PowerHistory GetPowerHistoryForProgression(Activity activity, List<Activity> activites, int lookbackDays = Constants.POWER_HISTORY_PERIOD)
+        public static PowerHistory GetPowerHistoryForProgression(DateTime lookBackFrom, List<Activity> activites, int lookbackDays = Constants.POWER_HISTORY_PERIOD)
         {
-            DateTime endDate = activity.Date.AddMinutes(+5);
+            DateTime endDate = lookBackFrom.Date;
             DateTime startDate = endDate.AddDays(-lookbackDays);
 
-            var ridesInRange = activites.Where(a => a.Date >= startDate && a.Date <= endDate);
+            var activitiesInRange = activites.Where(a => a.Date >= startDate && a.Date <= endDate);
 
             Dictionary<int, List<int>> bestPower = new();
 
@@ -178,11 +209,11 @@
                 bestPower.Add(pp, new List<int>() { 0, 0, 0 });
             }
 
-            foreach (Activity r in ridesInRange)
+            foreach (Activity a in activitiesInRange)
             {
                 foreach (var pp in bestPower)
                 {
-                    var powerPoint = r.PowerData.PowerPoints.FirstOrDefault(pc => pc.Key == pp.Key);
+                    var powerPoint = a.PowerData.PowerPoints.FirstOrDefault(pc => pc.Key == pp.Key);
                     if (powerPoint.Value > pp.Value.Min())
                     {
                         pp.Value.Remove(pp.Value.Min());
@@ -204,6 +235,29 @@
                 LookbackDays = lookbackDays,
                 PowerPoints = bestPowerAvg
             };
+        }
+
+        public static int GetSinglePowerPoint(List<Activity> activity, int pp, int year, int month = 0)
+        {
+            List<int> bestEfforts = new() { 0,0,0};
+            var activitiesInRange = activity.Where(a => a.Date.Year == year);
+
+            if(month >= 1)
+            {
+                activitiesInRange = activitiesInRange.Where(a => a.Date.Month == month);
+            }
+
+            foreach(Activity a in activitiesInRange)
+            {
+                var powerPoint = a.PowerData.PowerPoints.FirstOrDefault(pc => pc.Key == pp);
+                if (powerPoint.Value > bestEfforts.Min())
+                {
+                    bestEfforts.Remove(bestEfforts.Min());
+                    bestEfforts.Add(powerPoint.Value);
+                }
+            }
+
+            return (int)bestEfforts.Average();
         }
 
         private static int GetWeightedAvgBenchmark(Activity activity)

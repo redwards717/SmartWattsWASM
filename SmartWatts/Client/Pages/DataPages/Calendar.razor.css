@@ -1,0 +1,62 @@
+﻿.grid-container {
+    display: grid;
+    grid-template-columns: repeat(7, 100px);
+    grid-template-rows: repeat(7, 100px);
+    padding: 5px;
+}
+
+.grid-item {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    background-color: darkgray;
+}
+
+.grid-item-in-month {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    cursor: pointer;
+}
+
+.month-year-selected {
+    color: purple;
+    font-size: 16px;
+}
+
+.month-year {
+    color: blue;
+    text-decoration: underline;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.right-arrow {
+    cursor: pointer;
+}
+
+.left-arrow {
+    cursor: pointer;
+}
+
+.week-totals {
+    position: relative;
+    top: 30%;
+    right: 90%;
+}
+
+.one-week-total {
+    height: 70px;
+}
+
+.day-hover {
+    position: absolute;
+    border: solid 1px;
+    background-color: lightblue;
+}
+
+.month-summary{
+    background-color: aliceblue;
+    border: solid 1px blue;
+    border-radius: 5px;
+    box-shadow: 6px 3px blue;
+    padding: 20px;
+}

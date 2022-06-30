@@ -1,4 +1,42 @@
 ﻿.table-wrapper {
-    border: 1px solid black;
+    border: 1px solid blue;
+    box-shadow: 3px 6px blue;
     padding: 10px;
+    background-color: aliceblue;
+}
+
+.increase {
+    animation-name: blink-green;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+.decrease {
+    animation-name: blink-red;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+.no-change {
+    opacity: .2;
+}
+
+@keyframes blink-green {
+    from {
+        background-color: #98FE7F;
+    }
+
+    to {
+        background-color: #8EFD73;
+    }
+}
+
+@keyframes blink-red {
+    from {
+        background-color: #FFA294;
+    }
+
+    to {
+        background-color: #FE907F;
+    }
 }

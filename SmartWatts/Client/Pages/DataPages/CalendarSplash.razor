@@ -2,6 +2,28 @@
 
 <VolumeSummary></VolumeSummary>
 
+<hr />
+<div class="tabs">
+	@foreach (var tab in tabs)
+	{
+		<span class="@(activeTab == tab ? "btn btn-primary" : "btn btn-outline-primary")" @onclick="e => activeTab = tab">@tab</span>
+	}
+</div>
+
+@if (activeTab == "Calendar")
+{
+	<Calendar></Calendar>
+}
+else if (activeTab == "Table")
+{
+	<HistoricPowerTable></HistoricPowerTable>
+}
+
+<Legend></Legend>
+
 @code {
+    string activeTab = "Calendar";
+	List<string> tabs = new List<string>() { "Calendar", "Table" };
+
 
 }

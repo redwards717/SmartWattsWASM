@@ -1,0 +1,115 @@
+﻿@inject AppState appState
+
+<div class="container-fluid row">
+	<div class="col-1"></div>
+		<div class="col-10">
+			<div class="pp-checkboxes">
+				@foreach (var pp in Constants.PowerPoints)
+				{
+					bool Checked = false;
+					@if (powerPointsSelected.Contains(pp))
+					{
+						Checked = true;
+					}
+					<input type="checkbox" id="@pp" checked="@Checked" @onchange="e => PowerPointClicked(pp, e)"/>
+					<label for="@pp">@DateTimeUtilities.ConvertSecToReadable(pp, true)</label>
+				}
+			</div>
+			<table class="table table-sm">
+				<tr>
+					<th>Year</th>
+					<th>Rides</th>
+					<th>Total Time</th>
+					<th>Weekly Avg</th>
+					@foreach (var pp in powerPointsSelected)
+					{
+						<th>@DateTimeUtilities.ConvertSecToReadable(pp, true)</th>
+					}
+				</tr>
+				@foreach (var year in yearsToDisplay)
+				{
+					<tr class="pointer" @onclick="e => SelectYear(year)" style="background-color:@(selectedYear == year ? "yellow" : "lightgrey")">
+						<td>@year</td>
+						<td>@GetActivityCount(year)</td>
+						<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year)), false)</td>
+						<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year) / 52, false)</td>
+						@foreach (var pp in powerPointsSelected)
+						{
+							<td>@GetSinglePowerPointAvg(pp, year)</td>
+						}
+					</tr>
+					@if (selectedYear == year)
+					{
+						@foreach (var month in Enum.GetNames(typeof(Constants.Months)))
+						{
+						<tr class="month-row">
+							<td>@month</td>
+							<td>@GetActivityCount(year, month)</td>
+							<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year, month), false)</td>
+							<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year, month), false)</td>
+							@foreach (var pp in powerPointsSelected)
+							{
+								<td>@GetSinglePowerPointAvg(pp, year, month)</td>
+							}
+						</tr>
+						}
+					}
+				}
+			</table>
+		</div>
+	<div class="col-1"></div>
+</div>
+
+
+
+@code {
+	List<int> yearsToDisplay;
+	int selectedYear = 0;
+	List<int> powerPointsSelected = new List<int>() { 5, 60, 60 * 5, 60 * 20 };
+
+	protected override void OnInitialized()
+	{
+		yearsToDisplay = DateTimeUtilities.GetActiveYears(appState.LoggedInUser.Activities);
+	}
+
+	private void SelectYear(int year)
+	{
+		selectedYear = selectedYear == year ? 0 : year;
+	}
+
+	private void PowerPointClicked(int powerPoint, EventArgs e)
+	{
+		if (powerPointsSelected.Contains(powerPoint))
+		{
+			powerPointsSelected.Remove(powerPoint);
+		}
+		else
+		{
+			powerPointsSelected.Add(powerPoint);
+		}
+
+		powerPointsSelected.Sort();
+		StateHasChanged();
+	}
+
+	private int GetSinglePowerPointAvg(int pp, int year, string month = null)
+	{
+		var monthInt = month == null ? 0 : (int)Enum.Parse(typeof(Constants.Months), month);
+
+		return PowerUtlities.GetSinglePowerPoint(appState.LoggedInUser.Activities, pp, year, monthInt);
+	}
+
+	private int GetActivityCount(int year, string month = null)
+	{
+		var monthInt = month == null ? 0 : (int)Enum.Parse(typeof(Constants.Months), month);
+
+		return PowerUtlities.GetActivityCount(appState.LoggedInUser.Activities, year, monthInt);
+	}
+
+	private int GetTotalVolume(int year, string month = null)
+	{
+		var monthInt = month == null ? 0 : (int)Enum.Parse(typeof(Constants.Months), month);
+
+		return PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, year, monthInt);
+	}
+}

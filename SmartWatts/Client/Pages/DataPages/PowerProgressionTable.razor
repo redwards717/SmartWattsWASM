@@ -16,7 +16,7 @@
             double decay365to90 = GetDecay(pp, power90, power365);
             double decay90to42 = GetDecay(pp, power42, power90);
 
-            <tr>
+            <tr class="@GetChanges(pp)">
                 <th>@DateTimeUtilities.ConvertSecToReadable(pp, true)</th>
                 <td>@power42</td>
                 <td><span class="@GetIcon(decay90to42)" style="color:@GetColor(decay90to42)"></span>@String.Format("{0:0.0}", decay90to42)</td>
@@ -34,7 +34,10 @@
     public List<PowerHistory> PowerHistory { get; set; }
 
     [Parameter]
-    public List<int> Differences { get; set; }
+    public List<KeyValuePair<int, string>> Differences { get; set; }
+
+    [Parameter]
+    public bool Current { get; set; }
 
     private int GetPower(int pp, int lookBackDays)
     {
@@ -73,6 +76,24 @@
         else
         {
             return "red";
+        }
+    }
+
+    private string GetChanges(int pp)
+    {
+        string change = Differences.Find(d => d.Key == pp).Value;
+
+        if(change == "up")
+        {
+            return "increase";
+        }
+        else if(change == "down")
+        {
+            return "decrease";
+        }
+        else
+        {
+            return Current ? "" : "no-change";
         }
     }
 }

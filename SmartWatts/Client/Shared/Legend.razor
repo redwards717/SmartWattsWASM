@@ -1,0 +1,26 @@
+﻿<div class="legend">
+	<h5>Legend</h5>
+	@if (legend)
+	{
+		<span class="oi oi-collapse-down legend-collapse" @onclick="CollapseExpand"></span>
+		<hr />
+		@foreach (var intensity in Constants.Intensities)
+		{
+			<div class="legend-color-square" style="background-color: @intensity.Color"></div>
+			<span class="legend-description">@intensity.Description</span>
+		}
+	}
+	else
+	{
+		<span class="oi oi-collapse-up legend-collapse" @onclick="CollapseExpand"></span>
+	}
+</div>
+
+@code {
+	bool legend = false;
+
+	private void CollapseExpand()
+	{
+		legend = !legend;
+	}
+}

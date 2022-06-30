@@ -7,12 +7,20 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-6">
-            <h4>Current Power Profile</h4>
-            <PowerProgressionTable PowerHistory="currentPH" Differences="differences"></PowerProgressionTable>
+            <div class="title">
+                <h4>Current Power Profile</h4>
+            </div>
+            <PowerProgressionTable PowerHistory="currentPH" Differences="differences" Current="true"></PowerProgressionTable>
         </div>
         <div class="col-6">
-            <p class="pointer">Power Before <span @onclick=GoToLastRide>@mostRecentActivity.Name</span></p>
-            <PowerProgressionTable PowerHistory="previousPH" Differences=@(new List<int>())></PowerProgressionTable>
+            <div class="title">
+                <h4>
+                    Power Profile
+                    <input type="number" max="365" min="1" width="3" value=daysBack placeholder=1 @onchange="@((args) => { daysBack = Int32.Parse(args.Value.ToString()); GetPreviousHistory(); })">
+                    @(daysBack == 1 ? "Day" : "Days") Back <span class="pointer" @onclick=GoToRides>(@(ridesAgo == 1 ? $"{ridesAgo} ride" : $"{ridesAgo} rides") since)</span>
+                </h4>
+            </div>
+            <PowerProgressionTable PowerHistory="previousPH" Differences="differences" Current="false"></PowerProgressionTable>
         </div>
     </div>
 </div>
@@ -21,21 +29,36 @@
 @code {
     List<PowerHistory> currentPH = new();
     List<PowerHistory> previousPH = new();
-    Activity mostRecentActivity;
+    int daysBack = 1;
+    int ridesAgo;
+    DateTime now = DateTime.Now;
 
-    List<int> differences = new();
+    List<KeyValuePair<int, string>> differences = new();
 
     protected override void OnInitialized()
     {
-        foreach(int daysBack in Constants.PowerProgressionDays)
-        {
-            appState.OrderActivitiesByDate();
-            mostRecentActivity = appState.LoggedInUser.Activities[^1];
-            currentPH.Add(PowerUtlities.GetPowerHistoryForProgression(mostRecentActivity, appState.LoggedInUser.Activities, daysBack));
-            previousPH.Add(PowerUtlities.GetPowerHistoryForProgression(appState.LoggedInUser.Activities[^2], appState.LoggedInUser.Activities, daysBack));
+        ridesAgo = appState.LoggedInUser.Activities.Count(a => a.Date >= now.AddDays(-daysBack));
 
-            GetDifference();
+        foreach(int daysOfHistory in Constants.PowerProgressionDays)
+        {
+            currentPH.Add(PowerUtlities.GetPowerHistoryForProgression(now.AddDays(1), appState.LoggedInUser.Activities, daysOfHistory));
+            previousPH.Add(PowerUtlities.GetPowerHistoryForProgression(now.AddDays(-daysBack), appState.LoggedInUser.Activities, daysOfHistory));
         }
+
+        GetDifference();
+    }
+
+    private void GetPreviousHistory()
+    {
+        ridesAgo = appState.LoggedInUser.Activities.Count(a => a.Date >= now.AddDays(-daysBack));
+        previousPH.Clear();
+
+        foreach (int daysOfHistory in Constants.PowerProgressionDays)
+        {
+            previousPH.Add(PowerUtlities.GetPowerHistoryForProgression(now.AddDays(-daysBack), appState.LoggedInUser.Activities, daysOfHistory));
+        }
+
+        GetDifference();
     }
 
     private void GetDifference()
@@ -44,17 +67,21 @@
         var prev = previousPH.Find(ph => ph.LookbackDays == 42);
         foreach(int pp in Constants.PowerPoints)
         {
-            if(current.PowerPoints[pp] == prev.PowerPoints[pp])
+            if(current.PowerPoints[pp] > prev.PowerPoints[pp])
             {
-                differences.Add(pp);
+                differences.Add(new(pp, "up"));
+            }
+            else if (current.PowerPoints[pp] < prev.PowerPoints[pp])
+            {
+                differences.Add(new(pp, "down"));
             }
         }
     }
 
-    private void GoToLastRide()
+    private void GoToRides()
     {
-        var start = mostRecentActivity.Date.Date.ToUnixSeconds();
-        var end = mostRecentActivity.Date.Date.AddDays(1).AddMilliseconds(-1).ToUnixSeconds();
+        var start = now.AddDays(-daysBack).ToUnixSeconds();
+        var end = now.ToUnixSeconds();
         nav.NavigateTo($"/ridelog/{start}/{end}");
     }
 }

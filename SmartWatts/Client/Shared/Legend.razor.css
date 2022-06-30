@@ -1,0 +1,35 @@
+﻿
+.legend {
+    position: fixed;
+    bottom: 5%;
+    right: 2%;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    background-color: lightblue;
+    padding: 10px 35px 0px 10px;
+}
+
+.legend-color-square {
+    width: 20px;
+    height: 20px;
+}
+
+.legend-description {
+    position: relative;
+    bottom: 21px;
+    left: 23px;
+    font-size: 12px;
+}
+
+.legend-collapse {
+    position: relative;
+    left: 10%;
+    cursor: pointer;
+    float: right;
+}
+
+.legend h5 {
+    display: inline-block;
+}
+
