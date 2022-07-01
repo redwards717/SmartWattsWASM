@@ -168,7 +168,7 @@ namespace SmartWatts.Server.Utilities
 
         public static int GetFTP(IEnumerable<Activity> activities)
         {
-            FTPCalculations calc_7point5 = new() { IntervalTime = 450, Multiplier = Constants.FTP_MULTIPLIER_450, BestEfforts = new() };
+            FTPCalculations calc_10 = new() { IntervalTime = 450, Multiplier = Constants.FTP_MULTIPLIER_600, BestEfforts = new() };
             FTPCalculations calc_20 = new() { IntervalTime = 1200, Multiplier = Constants.FTP_MULTIPLIER_1200, BestEfforts = new() };
             FTPCalculations calc_30 = new() { IntervalTime = 1800, Multiplier = Constants.FTP_MULTIPLIER_1800, BestEfforts = new() };
             FTPCalculations calc_45 = new() { IntervalTime = 2700, Multiplier = Constants.FTP_MULTIPLIER_2700, BestEfforts = new() };
@@ -176,20 +176,20 @@ namespace SmartWatts.Server.Utilities
 
             foreach(Activity activity in activities)
             {
-                GetBestEfforts(activity, calc_7point5, 5);
+                GetBestEfforts(activity, calc_10, 5);
                 GetBestEfforts(activity, calc_20, 5);
                 GetBestEfforts(activity, calc_30, 5);
                 GetBestEfforts(activity, calc_45, 5);
                 GetBestEfforts(activity, calc_60, 5);
             }
 
-            calc_7point5.GetBestFTP();
+            calc_10.GetBestFTP();
             calc_20.GetBestFTP();
             calc_30.GetBestFTP();
             calc_45.GetBestFTP();
             calc_60.GetBestFTP();
 
-            return new[] { calc_7point5.BestFTP, calc_20.BestFTP, calc_30.BestFTP, calc_45.BestFTP, calc_60.BestFTP }.Max();
+            return new[] { calc_10.BestFTP, calc_20.BestFTP, calc_30.BestFTP, calc_45.BestFTP, calc_60.BestFTP }.Max();
         }
 
         private static void GetBestEfforts(Activity activity, FTPCalculations calc, int numberOfEfforts)

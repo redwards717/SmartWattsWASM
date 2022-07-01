@@ -3,7 +3,7 @@
 
 <div class="row container-fluid">
 	<div class="col-1"></div>
-	<div class="col-6">
+	<div class="col-7">
 		<div>
 			@foreach (var year in yearsToDisplay)
 			{
@@ -50,15 +50,15 @@
 			}
 		</div>
 	</div>
-	<div class="col-4 month-summary">
+	<div class="col-3 month-summary"> @* fix the css on this section*@
 		<h5>@((Constants.Months)selectedMonth)</h5>
 		<hr />
 		<ul>
 			<li>@GetVolumeForMonth()</li>
-			<li>Itensity: @PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, selectedMonth, selectedMonth)</li>
-			<li>@Constants.ANAEROBIC Time: @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities,Constants.AnaerobicPZ.Time, selectedMonth, selectedMonth)</li>
-			<li>@Constants.VO2 Time: @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities,Constants.VO2PZ.Time, selectedMonth, selectedMonth)</li>
-			<li>@Constants.THRESHOLD Time: @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities,Constants.ThresholdPZ.Time, selectedMonth, selectedMonth)</li>
+			<li>Itensity: @PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, selectedYear, selectedMonth)</li>
+			<li>@Constants.ANAEROBIC Time: @GetSustainedEfforts(Constants.AnaerobicPZ.Time)</li>
+			<li>@Constants.VO2 Time: @GetSustainedEfforts(Constants.VO2PZ.Time)</li>
+			<li>@Constants.THRESHOLD Time: @GetSustainedEfforts(Constants.ThresholdPZ.Time)</li>
 		</ul>
 	</div>
 	<div class="col-1"></div>
@@ -153,6 +153,12 @@
 	{
 		var secs = PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, selectedYear, selectedMonth);
 		return DateTimeUtilities.ConvertSecToReadable(secs, false);
+	}
+
+	private string GetSustainedEfforts(int interval)
+	{
+		var secs = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, interval, selectedYear, selectedMonth);
+		return DateTimeUtilities.ConvertSecToReadable(secs);
 	}
 
 	private void ChangeYear(int year)

@@ -31,7 +31,7 @@
 					<tr class="pointer" @onclick="e => SelectYear(year)" style="background-color:@(selectedYear == year ? "yellow" : "lightgrey")">
 						<td>@year</td>
 						<td>@GetActivityCount(year)</td>
-						<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year)), false)</td>
+						<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year), false)</td>
 						<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year) / 52, false)</td>
 						@foreach (var pp in powerPointsSelected)
 						{

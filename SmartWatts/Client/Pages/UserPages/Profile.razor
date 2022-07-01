@@ -49,7 +49,7 @@
         {
             <p>FTP: @FTP</p>
             <p class="text-danger font-italic">*FTP automatically updates as more rides are loaded <br />
-                If you feel your ftp is low do a Max 20 to 60 minute effort! The numbers won't lie!</p>
+                If you feel your ftp is low do a Max 10 to 60 minute effort! The numbers won't lie!</p>
             <button class="btn @(showFTPHistory ? "btn-primary" : "btn-outline-primary")" @onclick="e => showFTPHistory = !showFTPHistory">
             @(showFTPHistory ? "Hide FTP History" : "Show FTP History")</button>
             @if (showFTPHistory)
@@ -222,8 +222,8 @@
                 User = appState.LoggedInUser,
                 PerPage = 30,
                 Page = 1,
-                //After = DateTime.Now.AddDays(-410).ToUnixSeconds(),
-                After = DateTime.Now.AddDays(-110).ToUnixSeconds(),
+                After = DateTime.Now.AddDays(-410).ToUnixSeconds(),
+                //After = DateTime.Now.AddDays(-110).ToUnixSeconds(),  grabbing less data here for testing purposes
             };
 
             appState.LoaderOn($"Looking for Strava activities...");

@@ -58,5 +58,8 @@
     border: solid 1px blue;
     border-radius: 5px;
     box-shadow: 6px 3px blue;
+    width: fit-content;
     padding: 20px;
+    margin-top: 150px;
+    height: 200px;
 }
