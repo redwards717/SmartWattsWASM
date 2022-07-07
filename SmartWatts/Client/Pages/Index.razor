@@ -74,19 +74,24 @@ else
                     await userService.RefreshUserToken(user);
                 }
 
-                var newCount = await activityService.InitialDataLoadForExistingUsers();
+                var newData = await activityService.InitialDataLoadForExistingUsers();
 
-                if(newCount == 2)
-                {
-                    toastService.ShowSuccess($"{appState.LoggedInUser.Activities.Last().Name} loaded in from strava +{newCount - 1} additional new activity loaded in from Strava");
+                if(newData.Item1 == 2)
+                {  
+                    toastService.ShowSuccess($"{appState.LoggedInUser.Activities.Last().Name} loaded in from strava +{newData.Item1 - 1} additional new activity loaded in from Strava");
                 }
-                else if (newCount > 2)
+                else if (newData.Item1 > 2)
                 {
-                    toastService.ShowSuccess($"{appState.LoggedInUser.Activities.Last().Name} loaded in from strava +{newCount - 1} additional new activities loaded in from Strava");
+                    toastService.ShowSuccess($"{appState.LoggedInUser.Activities.Last().Name} loaded in from strava +{newData.Item1 - 1} additional new activities loaded in from Strava");
                 }
-                else if(newCount == 1)
+                else if(newData.Item1 == 1)
                 {
                     toastService.ShowSuccess($"new ride: {appState.LoggedInUser.Activities.Last().Name} loaded in from Strava");
+                }
+
+                if(newData.Item2 >= 1)
+                {
+                    toastService.ShowSuccess($"FTP Updated to {newData.Item2}");
                 }
 
             }

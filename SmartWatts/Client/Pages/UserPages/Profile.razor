@@ -159,13 +159,18 @@
 
             var countLoaded = await activityService.SyncRidesFromStrava(activityParams);
 
-            if(countLoaded == 0)
+            if(countLoaded.Item1 == 0)
             {
                 toastService.ShowInfo("No new activities found to load");
             }
             else
             {
                 toastService.ShowSuccess($"done loading in {countLoaded} Activity(s) from Strava");
+            }
+
+            if(countLoaded.Item2 >= 0)
+            {
+                toastService.ShowSuccess($"FTP Updated to {countLoaded.Item2}");
             }
         }
         catch (Exception ex)
@@ -194,13 +199,18 @@
 
             var countLoaded = await activityService.SyncRidesFromStrava(activityParams);
 
-            if(countLoaded == 0)
+            if(countLoaded.Item1 == 0)
             {
                 toastService.ShowInfo("No new activities found to load");
             }
             else
             {
                 toastService.ShowSuccess($"done loading in {countLoaded} Activity(s) from Strava");
+            }
+
+            if(countLoaded.Item2 >= 0)
+            {
+                toastService.ShowSuccess($"FTP Updated to {countLoaded.Item2}");
             }
         }
         catch (Exception ex)
@@ -230,13 +240,18 @@
 
             var countLoaded = await activityService.SyncRidesFromStrava(activityParams);
 
-            if(countLoaded == 0)
+            if(countLoaded.Item1 == 0)
             {
                 toastService.ShowInfo("No new activities found to load");
             }
             else
             {
                 toastService.ShowSuccess($"done loading in {countLoaded} Activity(s) from Strava");
+            }
+
+            if(countLoaded.Item2 >= 0)
+            {
+                toastService.ShowSuccess($"FTP Updated to {countLoaded.Item2}");
             }
         }
         catch (Exception ex)

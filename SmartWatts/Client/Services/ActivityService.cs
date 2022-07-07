@@ -15,7 +15,7 @@ namespace SmartWatts.Client.Services
             _appState = appState;
         }
 
-        public async Task<int> InitialDataLoadForExistingUsers()
+        public async Task<(int, int)> InitialDataLoadForExistingUsers()
         {
             _appState.LoaderOn("Scanning for new activities...");
 
@@ -23,7 +23,7 @@ namespace SmartWatts.Client.Services
 
             if(_appState.LoggedInUser.Activities.Count < 1)
             {
-                return 0;
+                return (0,0);
             }
 
             ActivityParams activityParams = new()
@@ -34,16 +34,17 @@ namespace SmartWatts.Client.Services
                 After = DateTime.Now.AddDays(-30).ToUnixSeconds()
             };
 
-            var newCount = await SyncRidesFromStrava(activityParams, false);
+            var newData = await SyncRidesFromStrava(activityParams, false);
 
             AttachViewingData(400);
 
-            return newCount;
+            return newData;
         }
 
-        public async Task<int> SyncRidesFromStrava(ActivityParams activityParams, bool multiplePages = true)
+        public async Task<(int, int)> SyncRidesFromStrava(ActivityParams activityParams, bool multiplePages = true)
         {
             int countLoaded = 0;
+            int newFTP = 0;
             bool cancel = !multiplePages;
 
             do
@@ -65,11 +66,11 @@ namespace SmartWatts.Client.Services
                 {
                     countLoaded += activities.Count;
 
-                    var newFTP = await CheckForNewFTP(_appState.LoggedInUser);
+                    newFTP = await CheckForNewFTP(_appState.LoggedInUser);
                     _appState.SetLoadingMsg($"{countLoaded} rides loaded - up till {activities[0].Date:MMM} / {activities[0].Date.Year} done!...");
                     if(newFTP > 0)
                     {
-                        _appState.SetLoadingMsg($"FTP updated from {_appState.LoggedInUser.FTP} to {newFTP}", false);
+                        _appState.SetLoadingMsg(Environment.NewLine + $"FTP updated from {_appState.LoggedInUser.FTP} to {newFTP}", false);
                         _appState.LoggedInUser.FTP = newFTP;
                     }
                 }
@@ -77,7 +78,7 @@ namespace SmartWatts.Client.Services
                 activityParams.Page++;
             } while (cancel == false);
 
-            return countLoaded;
+            return (countLoaded, newFTP);
         }
 
         public async Task<List<Activity>> FindAndAddNewStravaActivities(ActivityParams activityParams)
