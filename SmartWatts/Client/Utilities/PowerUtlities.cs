@@ -143,7 +143,7 @@
             int historicalEffort = powerHistory.PowerPoints.FirstOrDefault(pp => powerPoint.Key == pp.Key).Value;
             if(historicalEffort == 0)
             {
-                return Constants.Intensities.Find(i => i.EffortIndex == 0);
+                return DefaultToMaxIntensity();
             }
 
             double comp = (double)powerPoint.Value / historicalEffort;

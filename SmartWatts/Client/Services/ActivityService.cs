@@ -54,7 +54,7 @@ namespace SmartWatts.Client.Services
                 {
                     activityParams.Page++;
                     string elipsis = new string('.', (int)activityParams.Page);
-                    _appState.SetLoadingMsg($"Loading rides from Strava...{elipsis}", false);
+                    _appState.SetLoadingMsg($"Loading rides from Strava..{elipsis}");
                     continue;
                 }
                 else if (activities[0].Name == "CancToken")

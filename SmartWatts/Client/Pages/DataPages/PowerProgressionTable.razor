@@ -13,8 +13,15 @@
             int power42 = @GetPower(pp, 42);
             int power90 = @GetPower(pp, 90);
             int power365 = @GetPower(pp, 365);
+
+            if(power365 == 0)
+            {
+                continue;
+            }
+
             double decay365to90 = GetDecay(pp, power90, power365);
             double decay90to42 = GetDecay(pp, power42, power90);
+
 
             <tr class="@GetChanges(pp)">
                 <th>@DateTimeUtilities.ConvertSecToReadable(pp, true)</th>

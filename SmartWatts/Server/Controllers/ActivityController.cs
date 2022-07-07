@@ -65,10 +65,10 @@ namespace SmartWatts.Server.Controllers
         [Route("FindAndAddNew")]
         public async Task<IActionResult> FindAndAddNew(ActivityParams activityParams)
         {
-            var existingIDs = activityParams.User.Activities.Select(a => a.StravaRideID);
+            var existingIDs = activityParams.User.Activities?.Select(a => a.StravaRideID);
             var allActivities = await _stravaAccess.GetActivities(activityParams.User.StravaAccessToken, per_page: activityParams.PerPage, page: activityParams.Page, after: activityParams.After);
 
-            var stravaRides = allActivities.Where(sa => sa.device_watts && !existingIDs.Contains(sa.id));
+            var stravaRides = allActivities.Where(sa => sa.device_watts && !existingIDs.Contains(sa.id) && sa.moving_time > 250);
 
             if (allActivities is null || allActivities.Count() == 0)
             {
@@ -85,12 +85,12 @@ namespace SmartWatts.Server.Controllers
                 var stravaDataStreams = await _stravaAccess.GetDataStreamForActivity(activity, activityParams.User, "watts");
                 if (activity.IsPeloton && DateTime.Compare(activity.Date, new DateTime(2022, 3, 18)) < 0)
                 {
-                    PelotonUtilities.AddMissingDataPointsWithCorrection(stravaDataStreams, -30);
+                    PelotonUtilities.AddMissingDataPoints(activity, stravaDataStreams, -30);
                     PelotonUtilities.NormalizePowerMetaData(activity, -30);
                 }
                 else if(activity.IsPeloton)
                 {
-                    PelotonUtilities.AddMissingDataPoints(stravaDataStreams);
+                    PelotonUtilities.AddMissingDataPoints(activity, stravaDataStreams);
                 }
                 PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(stravaDataStreams, activityParams.User.FTP);
 

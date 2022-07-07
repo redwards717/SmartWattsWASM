@@ -16,8 +16,12 @@
                     Type = sa.type,
                     IsRace = sa.workout_type == 11,
                     IsPeloton = (sa.name.Contains("Ride with") && sa.name.Contains(" min "))
+                            || (sa.name.Contains("RIde with") && sa.name.Contains(" min "))
                             || (sa.name.Contains("Just Ride") && sa.name.Contains(" min "))
-                            || (sa.name.Contains("Scenic Ride") && sa.name.Contains(" min ")),
+                            || (sa.name.Contains("Scenic Ride") && sa.name.Contains(" min "))
+                            || (sa.name.Contains("Ministry of Sound:") && sa.name.Contains(" min "))
+                            || (sa.name.Contains(" Mood Ride: ") && sa.name.Contains(" min "))
+                            || (sa.name.Contains(" Ride: ") && sa.name.Contains(" min AFO")),
                     HasWatts = sa.device_watts,
                     MovingTime = sa.moving_time,
                     Distance = sa.distance,
