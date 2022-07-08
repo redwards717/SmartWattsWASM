@@ -1,6 +1,8 @@
 #pragma warning disable AsyncFixer01 // Unnecessary async/await usage
 #pragma warning disable RCS1102 // Make class static.
 
+using SmartWatts.Client.Services.Interfaces;
+
 namespace SmartWatts.Client
 {
     public class Program

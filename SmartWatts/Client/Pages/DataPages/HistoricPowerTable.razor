@@ -96,20 +96,20 @@
 	{
 		var monthInt = month == null ? 0 : (int)Enum.Parse(typeof(Constants.Months), month);
 
-		return PowerUtlities.GetSinglePowerPoint(appState.LoggedInUser.Activities, pp, year, monthInt);
+		return PowerCurveUtilities.GetSinglePowerPoint(appState.LoggedInUser.Activities, pp, year, monthInt);
 	}
 
 	private int GetActivityCount(int year, string month = null)
 	{
 		var monthInt = month == null ? 0 : (int)Enum.Parse(typeof(Constants.Months), month);
 
-		return PowerUtlities.GetActivityCount(appState.LoggedInUser.Activities, year, monthInt);
+		return VolumeUtilities.GetActivityCount(appState.LoggedInUser.Activities, year, monthInt);
 	}
 
 	private int GetTotalVolume(int year, string month = null)
 	{
 		var monthInt = month == null ? 0 : (int)Enum.Parse(typeof(Constants.Months), month);
 
-		return PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, year, monthInt);
+		return VolumeUtilities.GetVolumeInTime(appState.LoggedInUser.Activities, year, monthInt);
 	}
 }

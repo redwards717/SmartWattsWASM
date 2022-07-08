@@ -15,12 +15,12 @@
         VolumeAverages currentVolume = new()
         {
             Time = 0,
-            Intensity = @PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i)),
-            Anaerobic = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.AnaerobicPZ.Time),
-            VO2 = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.VO2PZ.Time),
-            Threshold = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.ThresholdPZ.Time)
+            Intensity = IntensityUtilities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i)),
+            Anaerobic = VolumeUtilities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.AnaerobicPZ.Time),
+            VO2 = VolumeUtilities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.VO2PZ.Time),
+            Threshold = VolumeUtilities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.ThresholdPZ.Time)
         };
-        currentVolume.Time = PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i+Period)), BaseDate.AddDays(-i));
+        currentVolume.Time = VolumeUtilities.GetVolumeInTime(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i+Period)), BaseDate.AddDays(-i));
         DateTime start = BaseDate.AddDays(-(i + Period));
         DateTime end = BaseDate.AddDays(-i);
         <tr class="pointer" style="background:@GetCurrentPeriodColor(currentVolume)" @onclick='e => GoToRides(start, end)'>
@@ -63,7 +63,7 @@
 
     protected override void OnParametersSet()
     {
-        averages = PowerUtlities.GetAllAverages(appState.LoggedInUser.Activities, BaseDate.AddDays(-365), BaseDate, 365/Period);
+        averages = VolumeUtilities.GetAllAverages(appState.LoggedInUser.Activities, BaseDate.AddDays(-365), BaseDate, 365/Period);
     }
 
     private string GetCurrentPeriodColor(VolumeAverages current)

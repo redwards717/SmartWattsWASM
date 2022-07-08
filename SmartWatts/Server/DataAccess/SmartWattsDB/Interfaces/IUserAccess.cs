@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SmartWatts.Server.DataAccess.SmartWattsDB
+namespace SmartWatts.Server.DataAccess.SmartWattsDB.Interfaces
 {
     public interface IUserAccess
     {

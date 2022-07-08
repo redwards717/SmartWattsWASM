@@ -7,7 +7,7 @@
         <span>
             @DateTimeUtilities.ConvertSecToReadable(Activity.MovingTime) | Avg Watts: @(Convert.ToInt32(Activity.AvgWatts))
             | Weighted: @(Convert.ToInt32(Activity.WeightedAvgWatts))
-            <span class="intensity-perc" style="background: @PowerUtlities.GetIntensityFromEffortPercent(ridePercentEffort).Color; color: @PowerUtlities.GetIntensityFromEffortPercent(ridePercentEffort).FontColor;">
+            <span class="intensity-perc" style="background: @IntensityUtilities.GetIntensityFromEffortPercent(ridePercentEffort).Color; color: @IntensityUtilities.GetIntensityFromEffortPercent(ridePercentEffort).FontColor;">
                 @ridePercentEffort%
             </span>
             (Benchmark: @Activity.WeightedAvgBenchmark)

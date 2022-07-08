@@ -1,4 +1,5 @@
-﻿using JsonSerializer = System.Text.Json.JsonSerializer;
+﻿using SmartWatts.Server.DataAccess.SmartWattsDB.Interfaces;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SmartWatts.Server.Controllers
 {
@@ -9,14 +10,12 @@ namespace SmartWatts.Server.Controllers
         private readonly IActivityAccess _activityAccess;
         private readonly IPowerDataAccess _powerDataAccess;
         private readonly IStravaAccess _stravaAccess;
-        private readonly IUserAccess _userAccess;
 
-        public ActivityController(IActivityAccess activityAccess, IPowerDataAccess powerDataAccess, IStravaAccess stravaAccess, IUserAccess userAccess)
+        public ActivityController(IActivityAccess activityAccess, IPowerDataAccess powerDataAccess, IStravaAccess stravaAccess)
         {
             _activityAccess = activityAccess;
             _powerDataAccess = powerDataAccess;
             _stravaAccess = stravaAccess;
-            _userAccess = userAccess;
         }
 
         [HttpPost]
@@ -52,7 +51,8 @@ namespace SmartWatts.Server.Controllers
 
             var stravaRides = allActivities.Where(sa => sa.device_watts && !existingIDs.Contains(sa.id) && sa.moving_time > 250);
 
-            if (allActivities is null || allActivities.Count() == 0)
+            //linter suggested change from 'allActivities.Count() == 0' to '!allActivities.Any()' for performance
+            if (allActivities is null || !allActivities.Any())
             {
                 List<Activity> cancAct = new() { new Activity { Name = "CancToken" } };
 

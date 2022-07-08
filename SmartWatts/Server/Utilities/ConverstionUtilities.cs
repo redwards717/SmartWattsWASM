@@ -5,6 +5,7 @@
         public static List<Activity> ConvertStravaActivity(IEnumerable<StravaActivity> stravaActivities)
         {
             List<Activity> activities = new();
+
             foreach (StravaActivity sa in stravaActivities)
             {
                 activities.Add(new Activity()
@@ -15,13 +16,7 @@
                     Date = sa.start_date_local,
                     Type = sa.type,
                     IsRace = sa.workout_type == 11,
-                    IsPeloton = (sa.name.Contains("Ride with") && sa.name.Contains(" min "))
-                            || (sa.name.Contains("RIde with") && sa.name.Contains(" min "))
-                            || (sa.name.Contains("Just Ride") && sa.name.Contains(" min "))
-                            || (sa.name.Contains("Scenic Ride") && sa.name.Contains(" min "))
-                            || (sa.name.Contains("Ministry of Sound:") && sa.name.Contains(" min "))
-                            || (sa.name.Contains(" Mood Ride: ") && sa.name.Contains(" min "))
-                            || (sa.name.Contains(" Ride: ") && sa.name.Contains(" min AFO")),
+                    IsPeloton = PelotonUtilities.DetermineIsPeloton(sa),
                     HasWatts = sa.device_watts,
                     MovingTime = sa.moving_time,
                     Distance = sa.distance,

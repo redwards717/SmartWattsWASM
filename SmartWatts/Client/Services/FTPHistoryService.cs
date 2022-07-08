@@ -1,4 +1,5 @@
-﻿using SmartWatts.Shared.DBModels;
+﻿using SmartWatts.Client.Services.Interfaces;
+using SmartWatts.Shared.DBModels;
 
 namespace SmartWatts.Client.Services
 {
@@ -20,7 +21,7 @@ namespace SmartWatts.Client.Services
             request.Headers.Add("id", _appState.LoggedInUser.StravaUserID.ToString());
 
             using HttpResponseMessage response = await _http.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }
@@ -31,7 +32,7 @@ namespace SmartWatts.Client.Services
         public async Task InsertFTPHistory(FTPHistory fTPHistory)
 {
             using HttpResponseMessage response = await _http.PostAsJsonAsync("api/FTPHistory/Add", fTPHistory);
-            if (response.IsSuccessStatusCode == false)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SmartWatts.Client.Services
+namespace SmartWatts.Client.Services.Interfaces
 {
     public interface IUserService
     {

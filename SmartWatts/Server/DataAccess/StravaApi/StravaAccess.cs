@@ -15,8 +15,10 @@ namespace SmartWatts.Server.DataAccess.StravaApi
 
         public async Task<IEnumerable<StravaActivity>> GetActivities(string token, long? before = null, long? after = null, int? page = null, int? per_page = null)
         {
-            UriBuilder uriBuilder = new("https://www.strava.com/api/v3/athlete/activities");
-            uriBuilder.Port = -1;
+            UriBuilder uriBuilder = new("https://www.strava.com/api/v3/athlete/activities")
+            {
+                Port = -1
+            };
 
             var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
             if (before is not null)
@@ -41,7 +43,7 @@ namespace SmartWatts.Server.DataAccess.StravaApi
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             using HttpResponseMessage response = await _http.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }
@@ -52,8 +54,10 @@ namespace SmartWatts.Server.DataAccess.StravaApi
 
         public async Task<List<StravaDataStream>> GetDataStreamForActivity(Activity activity, User user, string data)
         {
-            UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/activities/{activity.StravaRideID}/streams");
-            uriBuilder.Port = -1;
+            UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/activities/{activity.StravaRideID}/streams")
+            {
+                Port = -1
+            };
 
             var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
             paramValues.Add("keys", data); // other options [time,distance,latlng,altitude,velocity_smooth,heartrate,cadance,watts,temp,moving,grade_smooth]
@@ -65,7 +69,7 @@ namespace SmartWatts.Server.DataAccess.StravaApi
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.StravaAccessToken);
 
             using HttpResponseMessage response = await _http.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }
@@ -77,14 +81,16 @@ namespace SmartWatts.Server.DataAccess.StravaApi
 
         public async Task<AthleteStats> GetAthleteStats(string token, string stravaUserId)
         {
-            UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/athletes/{stravaUserId}/stats");
-            uriBuilder.Port = -1;
+            UriBuilder uriBuilder = new($"https://www.strava.com/api/v3/athletes/{stravaUserId}/stats")
+            {
+                Port = -1
+            };
 
             using HttpRequestMessage request = new(new HttpMethod("GET"), uriBuilder.ToString());
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             using HttpResponseMessage response = await _http.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }

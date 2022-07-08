@@ -1,4 +1,4 @@
-﻿namespace SmartWatts.Client.Services
+﻿namespace SmartWatts.Client.Services.Interfaces
 {
     public interface IFTPHistoryService
     {

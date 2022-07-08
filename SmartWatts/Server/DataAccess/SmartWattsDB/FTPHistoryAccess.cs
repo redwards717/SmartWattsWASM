@@ -1,4 +1,6 @@
-﻿namespace SmartWatts.Server.DataAccess.SmartWattsDB
+﻿using SmartWatts.Server.DataAccess.SmartWattsDB.Interfaces;
+
+namespace SmartWatts.Server.DataAccess.SmartWattsDB
 {
     public class FTPHistoryAccess : IFTPHistoryAccess
     {

@@ -1,4 +1,5 @@
-﻿using SmartWatts.Shared.DBModels;
+﻿using SmartWatts.Client.Services.Interfaces;
+using SmartWatts.Shared.DBModels;
 
 namespace SmartWatts.Client.Services
 {

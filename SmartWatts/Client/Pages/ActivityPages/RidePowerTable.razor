@@ -10,7 +10,7 @@
 		<td class="row-title">This Ride</td>
 		@foreach (var pp in Activity.PowerData.PowerPoints)
 		{
-			Intensity intensity = PowerUtlities.GetEffortIntensity(pp, Activity.PowerHistory);
+			Intensity intensity = IntensityUtilities.GetEffortIntensity(pp, Activity.PowerHistory);
 			<td style="background-color:@intensity.Color">
 				<span style="color:@intensity.FontColor">@pp.Value</span>
 			</td>

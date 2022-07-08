@@ -1,4 +1,6 @@
-﻿namespace SmartWatts.Server.Controllers
+﻿using SmartWatts.Server.DataAccess.SmartWattsDB.Interfaces;
+
+namespace SmartWatts.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

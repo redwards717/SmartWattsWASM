@@ -41,8 +41,8 @@
 
         foreach(int daysOfHistory in Constants.PowerProgressionDays)
         {
-            currentPH.Add(PowerUtlities.GetPowerHistoryForProgression(now.AddDays(1), appState.LoggedInUser.Activities, daysOfHistory));
-            previousPH.Add(PowerUtlities.GetPowerHistoryForProgression(now.AddDays(-daysBack), appState.LoggedInUser.Activities, daysOfHistory));
+            currentPH.Add(PowerCurveUtilities.GetPowerHistoryForProgression(now.AddDays(1), appState.LoggedInUser.Activities, daysOfHistory));
+            previousPH.Add(PowerCurveUtilities.GetPowerHistoryForProgression(now.AddDays(-daysBack), appState.LoggedInUser.Activities, daysOfHistory));
         }
 
         GetDifference();
@@ -55,7 +55,7 @@
 
         foreach (int daysOfHistory in Constants.PowerProgressionDays)
         {
-            previousPH.Add(PowerUtlities.GetPowerHistoryForProgression(now.AddDays(-daysBack), appState.LoggedInUser.Activities, daysOfHistory));
+            previousPH.Add(PowerCurveUtilities.GetPowerHistoryForProgression(now.AddDays(-daysBack), appState.LoggedInUser.Activities, daysOfHistory));
         }
 
         GetDifference();

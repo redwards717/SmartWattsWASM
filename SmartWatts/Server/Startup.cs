@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartWatts.Server.DataAccess;
-using SmartWatts.Server.DataAccess.SmartWattsDB;
+using SmartWatts.Server.DataAccess.SmartWattsDB.Interfaces;
 using System;
 using System.Linq;
 using System.Net.Http;

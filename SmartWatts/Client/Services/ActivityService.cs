@@ -1,4 +1,6 @@
-﻿namespace SmartWatts.Client.Services
+﻿using SmartWatts.Client.Services.Interfaces;
+
+namespace SmartWatts.Client.Services
 {
     public class ActivityService : IActivityService
     {
@@ -50,7 +52,7 @@
                 if (activities is null || activities.Count == 0)
                 {
                     activityParams.Page++;
-                    string elipsis = new string('.', (int)activityParams.Page);
+                    string elipsis = new('.', (int)activityParams.Page);
                     _appState.SetLoadingMsg($"Loading rides from Strava..{elipsis}");
                     continue;
                 }
@@ -72,7 +74,7 @@
                 }
 
                 activityParams.Page++;
-            } while (cancel == false);
+            } while (!cancel);
 
             return (countLoaded, newFTP);
         }
@@ -80,7 +82,7 @@
         public async Task<List<Activity>> FindAndAddNewStravaActivities(ActivityParams activityParams)
         {
             using HttpResponseMessage response = await _http.PostAsJsonAsync("api/Activity/FindAndAddNew", activityParams);
-            if (response.IsSuccessStatusCode == false)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }
@@ -107,13 +109,13 @@
             request.Headers.Add("token", _appState.LoggedInUser.StravaAccessToken);
 
             using HttpResponseMessage response = await _http.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }
 
             var count = await response.Content.ReadAsStringAsync();
-            return Int32.Parse(count);
+            return int.Parse(count);
         }
 
         public async Task<List<Activity>> GetAllActivitiesByUser(User user)
@@ -123,7 +125,7 @@
             request.Headers.Add("id", user.StravaUserID.ToString());
 
             using HttpResponseMessage response = await _http.SendAsync(request);
-            if (response.IsSuccessStatusCode == false)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }
@@ -139,8 +141,8 @@
         {
             foreach (Activity activity in _appState.LoggedInUser.Activities.Where(a => a.Date >= DateTime.Now.AddDays(-daysBack) && (a.PowerHistory is null || a.Intensity is null)))
             {
-                activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
-                activity.Intensity = PowerUtlities.GetRideIntensity(activity);
+                activity.PowerHistory = PowerCurveUtilities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
+                activity.Intensity = IntensityUtilities.GetRideIntensity(activity);
             }
         }
 
@@ -151,15 +153,15 @@
 
             foreach(Activity activity in activities)
             {
-                activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
-                activity.Intensity = PowerUtlities.GetRideIntensity(activity);
+                activity.PowerHistory = PowerCurveUtilities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
+                activity.Intensity = IntensityUtilities.GetRideIntensity(activity);
             }
         }
 
         public async Task ToggleIsRace(Activity activity)
         {
-            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/SetRace", activity);
-            if (response.IsSuccessStatusCode == false)
+            using HttpResponseMessage response = await _http.PostAsJsonAsync("api/Activity/SetRace", activity);
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }
@@ -167,15 +169,13 @@
 
         private async Task<int> CheckForNewFTP(User user)
         {
-            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/User/CheckForFtpChange", user);
-            if (response.IsSuccessStatusCode == false)
+            using HttpResponseMessage response = await _http.PostAsJsonAsync("api/User/CheckForFtpChange", user);
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(response.ReasonPhrase);
             }
 
-            var newFtp = Int32.Parse(await response.Content.ReadAsStringAsync());
-
-            return newFtp;
+            return int.Parse(await response.Content.ReadAsStringAsync());
         }
     }
 }

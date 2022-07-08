@@ -1,7 +1,6 @@
-﻿
-using SmartWatts.Shared.DBModels;
+﻿using SmartWatts.Shared.DBModels;
 
-namespace SmartWatts.Client.Services
+namespace SmartWatts.Client.Services.Interfaces
 {
     public interface IActivityService
     {

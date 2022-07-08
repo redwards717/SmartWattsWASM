@@ -1,4 +1,6 @@
-﻿namespace SmartWatts.Client.Services
+﻿using SmartWatts.Client.Services.Interfaces;
+
+namespace SmartWatts.Client.Services
 {
     public class UserService : IUserService
     {

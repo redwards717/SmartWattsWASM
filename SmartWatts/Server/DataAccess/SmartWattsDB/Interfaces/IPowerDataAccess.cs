@@ -1,6 +1,6 @@
 ﻿using SmartWatts.Shared.DBModels;
 
-namespace SmartWatts.Server.DataAccess.SmartWattsDB
+namespace SmartWatts.Server.DataAccess.SmartWattsDB.Interfaces
 {
     public interface IPowerDataAccess
     {

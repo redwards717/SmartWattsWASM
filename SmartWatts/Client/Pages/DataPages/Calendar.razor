@@ -55,7 +55,7 @@
 		<hr />
 		<ul>
 			<li>@GetVolumeForMonth()</li>
-			<li>Itensity: @PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, selectedYear, selectedMonth)</li>
+			<li>Itensity: @IntensityUtilities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, selectedYear, selectedMonth)</li>
 			<li>@Constants.ANAEROBIC Time: @GetSustainedEfforts(Constants.AnaerobicPZ.Time)</li>
 			<li>@Constants.VO2 Time: @GetSustainedEfforts(Constants.VO2PZ.Time)</li>
 			<li>@Constants.THRESHOLD Time: @GetSustainedEfforts(Constants.ThresholdPZ.Time)</li>
@@ -151,13 +151,13 @@
 
 	private string GetVolumeForMonth()
 	{
-		var secs = PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, selectedYear, selectedMonth);
+		var secs = VolumeUtilities.GetVolumeInTime(appState.LoggedInUser.Activities, selectedYear, selectedMonth);
 		return DateTimeUtilities.ConvertSecToReadable(secs, false);
 	}
 
 	private string GetSustainedEfforts(int interval)
 	{
-		var secs = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, interval, selectedYear, selectedMonth);
+		var secs = VolumeUtilities.GetSustainedEfforts(appState.LoggedInUser.Activities, interval, selectedYear, selectedMonth);
 		return DateTimeUtilities.ConvertSecToReadable(secs);
 	}
 
