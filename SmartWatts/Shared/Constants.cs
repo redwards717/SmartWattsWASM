@@ -23,6 +23,10 @@ namespace SmartWatts.Shared
         public const double FTP_MULTIPLIER_1800 = .95;
         public const double FTP_MULTIPLIER_2700 = .995;
         public const double FTP_MULTIPLIER_3600 = 1.005;
+        public static List<int> FTPCalculationIntervals { get; } = new()
+        {
+            600, 1200, 1800, 2700, 3600
+        };
 
         public static List<int> PowerPoints { get; } = new(){
             5, 15, 30, 45, 60, 90, 60 * 2, 60 * 3, 60 * 5, (60 * 7) + 30, 60 * 10, 60 * 15, 60 * 20, 60 * 30, 60 * 45, 60 * 60, 60 * 90, 60 * 60 * 2, 60 * 60 * 3, 60 * 60 * 4, 60 * 60 * 5, 60 * 60 * 8, 60 * 60 * 24
@@ -32,6 +36,7 @@ namespace SmartWatts.Shared
         {
             42, 90, 365
         };
+
 
         public const int POWER_HISTORY_PERIOD = 42;
 

@@ -1,8 +1,4 @@
-﻿using SmartWatts.Shared.APIParams;
-using SmartWatts.Shared.DBModels;
-using System.Net.NetworkInformation;
-
-namespace SmartWatts.Client.Services
+﻿namespace SmartWatts.Client.Services
 {
     public class ActivityService : IActivityService
     {
@@ -83,7 +79,7 @@ namespace SmartWatts.Client.Services
 
         public async Task<List<Activity>> FindAndAddNewStravaActivities(ActivityParams activityParams)
         {
-            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/FindAndAddNew", activityParams);
+            using HttpResponseMessage response = await _http.PostAsJsonAsync("api/Activity/FindAndAddNew", activityParams);
             if (response.IsSuccessStatusCode == false)
             {
                 throw new Exception(response.ReasonPhrase);
@@ -157,6 +153,15 @@ namespace SmartWatts.Client.Services
             {
                 activity.PowerHistory = PowerUtlities.GetPowerHistory(activity, _appState.LoggedInUser.Activities);
                 activity.Intensity = PowerUtlities.GetRideIntensity(activity);
+            }
+        }
+
+        public async Task ToggleIsRace(Activity activity)
+        {
+            using HttpResponseMessage response = await _http.PostAsJsonAsync($"api/Activity/SetRace", activity);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new Exception(response.ReasonPhrase);
             }
         }
 

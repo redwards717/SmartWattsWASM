@@ -12,5 +12,6 @@ namespace SmartWatts.Client.Services
         void AttachViewingData(int daysBack);
         Task<(int, int)> InitialDataLoadForExistingUsers();
         void AttachViewingDataByYear(int year);
+        Task ToggleIsRace(Activity activity);
     }
 }

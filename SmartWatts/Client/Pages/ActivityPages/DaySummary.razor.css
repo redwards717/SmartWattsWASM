@@ -32,35 +32,8 @@ h5:after {
     width: fit-content;
 }
 
-.detailed-wrapper {
-    border-radius: 5px;
-    padding: 5px;
-    margin: 5px;
-    width: fit-content;
-}
-
 .day-wrapper {
     width: fit-content;
     margin: 10px 10px 25px 10px;
     padding: 10px;
-}
-
-.intensity-perc {
-    border-radius: 50%;
-    padding: 2px 2px 2px 4px;
-    margin: 2px;
-}
-
-.data-container{
-    display: flex;
-}
-
-.power-table{
-    flex: 5;
-}
-
-.sustained-efforts{
-    flex: 1;
-    margin-left: 10px;
-    max-width: 175px;
 }

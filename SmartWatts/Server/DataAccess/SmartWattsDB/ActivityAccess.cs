@@ -60,5 +60,14 @@ namespace SmartWatts.Server.DataAccess.SmartWattsDB
 
             return _db.SaveData(sql, activities);
         }
+
+        public Task SetIsRace(Activity activity)
+        {
+            const string sql = @"UPDATE Activities
+                                    SET IsRace = @IsRace
+                                    WHERE StravaRideID = @StravaRideID";
+
+            return _db.SaveData(sql, activity);
+        }
     }
 }

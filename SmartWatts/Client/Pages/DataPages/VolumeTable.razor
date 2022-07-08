@@ -10,27 +10,27 @@
         <th>@Constants.VO2 Efforts</th>
         <th>@Constants.THRESHOLD Efforts</th>
     </tr>
-    @for(int i = 0; i <= Period * 5; i += Period)
+    @for(int i = 0; i < Period * Rows; i += Period)
     {
         VolumeAverages currentVolume = new()
         {
             Time = 0,
-            Intensity = @PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, now.AddDays(-(i + Period)), now.AddDays(-i)),
-            Anaerobic = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i + Period)), now.AddDays(-i), @Constants.AnaerobicPZ.Time),
-            VO2 = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i + Period)), now.AddDays(-i), @Constants.VO2PZ.Time),
-            Threshold = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, now.AddDays(-(i + Period)), now.AddDays(-i), @Constants.ThresholdPZ.Time)
+            Intensity = @PowerUtlities.GetIntensityForTimeframe(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i)),
+            Anaerobic = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.AnaerobicPZ.Time),
+            VO2 = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.VO2PZ.Time),
+            Threshold = @PowerUtlities.GetSustainedEfforts(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i + Period)), BaseDate.AddDays(-i), @Constants.ThresholdPZ.Time)
         };
-        currentVolume.Time = PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, now.AddDays(-(i+Period)), now.AddDays(-i));
-        DateTime start = now.AddDays(-(i + Period));
-        DateTime end = now.AddDays(-i);
+        currentVolume.Time = PowerUtlities.GetVolumeInTime(appState.LoggedInUser.Activities, BaseDate.AddDays(-(i+Period)), BaseDate.AddDays(-i));
+        DateTime start = BaseDate.AddDays(-(i + Period));
+        DateTime end = BaseDate.AddDays(-i);
         <tr class="pointer" style="background:@GetCurrentPeriodColor(currentVolume)" @onclick='e => GoToRides(start, end)'>
             @if(i==0)
             {
-                <th>@now.AddDays(-Period).ToString("dd MMMM") to Current:</th>
+                <th>@BaseDate.AddDays(-Period).ToString("dd MMMM") to Current:</th>
             }
             else
             {        
-                <th>@now.AddDays(-(i+Period)).ToString("dd MMMM") to @now.AddDays(-i).ToString("dd MMMM"):</th>
+                <th>@BaseDate.AddDays(-(i+Period)).ToString("dd MMMM") to @BaseDate.AddDays(-i).ToString("dd MMMM"):</th>
             }
             <td style="color:@(currentVolume.Time >= averages.Time ? "green" : "red")">@DateTimeUtilities.ConvertSecToReadable(currentVolume.Time, false)</td>
             <td style="color:@(currentVolume.Intensity >= averages.Intensity ? "green" : "red")">@currentVolume.Intensity</td>
@@ -53,13 +53,17 @@
     [Parameter]
     public int Period { get; set; }
 
-    VolumeAverages averages = new();
+    [Parameter]
+    public int Rows { get; set; }
 
-    DateTime now = DateTime.Now;
+    [Parameter]
+    public DateTime BaseDate { get; set; }
+
+    VolumeAverages averages = new();
 
     protected override void OnParametersSet()
     {
-        averages = PowerUtlities.GetAllAverages(appState.LoggedInUser.Activities, now.AddDays(-365), now, 365/Period);
+        averages = PowerUtlities.GetAllAverages(appState.LoggedInUser.Activities, BaseDate.AddDays(-365), BaseDate, 365/Period);
     }
 
     private string GetCurrentPeriodColor(VolumeAverages current)

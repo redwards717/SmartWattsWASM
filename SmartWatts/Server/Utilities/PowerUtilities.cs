@@ -168,7 +168,7 @@ namespace SmartWatts.Server.Utilities
 
         public static int GetFTP(IEnumerable<Activity> activities)
         {
-            FTPCalculations calc_10 = new() { IntervalTime = 450, Multiplier = Constants.FTP_MULTIPLIER_600, BestEfforts = new() };
+            FTPCalculations calc_10 = new() { IntervalTime = 600, Multiplier = Constants.FTP_MULTIPLIER_600, BestEfforts = new() };
             FTPCalculations calc_20 = new() { IntervalTime = 1200, Multiplier = Constants.FTP_MULTIPLIER_1200, BestEfforts = new() };
             FTPCalculations calc_30 = new() { IntervalTime = 1800, Multiplier = Constants.FTP_MULTIPLIER_1800, BestEfforts = new() };
             FTPCalculations calc_45 = new() { IntervalTime = 2700, Multiplier = Constants.FTP_MULTIPLIER_2700, BestEfforts = new() };

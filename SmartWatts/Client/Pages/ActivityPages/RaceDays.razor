@@ -1,0 +1,47 @@
+﻿@page "/racedays"
+@inject AppState appState
+
+<div class="container-fluid">
+    @if(raceDays is null || raceDays.Count() < 1)
+    {
+        <h4>No races to display!</h4>
+        <h6>Go do a race, or set some of your existing activites as a Race!</h6>
+    }
+    else
+    {   
+        @foreach(DateTime date in raceDays)
+        {
+            var activities = GetActivitesForDay(date);
+            <DaySummary Day="date" Activites="activities"></DaySummary>
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-8">
+                    <h5>Previous 3 Day Periods:</h5>
+                    <VolumeTable Period=3 Rows="2" BaseDate="date.Date"></VolumeTable>
+                    <h5>Previous 7 Day Periods:</h5>
+                    <VolumeTable Period=7 Rows="2" BaseDate="date.Date"></VolumeTable>
+                    <h5>Previous 30 Day Periods:</h5>
+                    <VolumeTable Period=30 Rows="2" BaseDate="date.Date"></VolumeTable>
+                </div>
+                <div class="col-3"></div>
+            </div>
+        } 
+    }
+</div>
+
+
+@code {
+    IEnumerable<DateTime> raceDays;
+
+    protected override void OnInitialized()
+    {
+        raceDays = appState.LoggedInUser.Activities.Where(a => a.IsRace).Select(a => a.Date);
+    }
+
+    private List<Activity> GetActivitesForDay(DateTime day)
+    {
+        var activities = appState.LoggedInUser.Activities.Where(ua => ua.Date.DayOfYear == day.DayOfYear && ua.Date.Year == day.Year).OrderBy(ua => ua.Date).ToList();
+        return activities;
+    }
+
+}

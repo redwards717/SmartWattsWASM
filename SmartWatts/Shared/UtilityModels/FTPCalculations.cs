@@ -25,5 +25,20 @@ namespace SmartWatts.Shared.UtilityModels
 
             BestFTP = BestEfforts.Max() * Multiplier > ftp ? (int)(BestEfforts.Max() * Multiplier) : ftp;
         }
+
+        public int GetFTPCalcFor5()
+        {
+            return (int)(BestEfforts.Average() * (Multiplier + .05));
+        }
+
+        public int GetFTPCalcFor3()
+        {
+            return (int)(BestEfforts.OrderByDescending(x => x).Take(3).Average() * (Multiplier + .025));
+        }
+
+        public int GetFTPCalcFor1()
+        {
+            return (int)(BestEfforts.Max() * Multiplier);
+        }
     }
 }

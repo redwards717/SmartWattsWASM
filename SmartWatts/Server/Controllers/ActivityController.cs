@@ -1,6 +1,4 @@
-﻿using SmartWatts.Client.Utilities;
-using SmartWatts.Shared.APIParams;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+﻿using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SmartWatts.Server.Controllers
 {
@@ -45,22 +43,6 @@ namespace SmartWatts.Server.Controllers
             return Ok(activities);
         }
 
-        //[HttpPost]
-        //[Route("{id}/AddPower")]
-        //public async Task<IActionResult> AddStreamAsPowerData(string id, [FromBody] List<StravaDataStream> sdss)
-        //{
-        //    var activity = await _activityAccess.GetActivityByStravaRideID(id);
-        //    var user = await _userAccess.GetUserByStravaId(activity.StravaUserID.ToString());
-
-        //    PowerData powerData = PowerUtilities.CalculatePowerFromDataStream(sdss, user.FTP);
-
-        //    powerData.StravaRideID = activity.StravaRideID;
-        //    powerData.FTPAtTimeOfRide = user.FTP;
-
-        //    await _powerDataAccess.InsertPowerData(powerData);
-        //    return Ok(powerData);
-        //}
-
         [HttpPost]
         [Route("FindAndAddNew")]
         public async Task<IActionResult> FindAndAddNew(ActivityParams activityParams)
@@ -80,7 +62,7 @@ namespace SmartWatts.Server.Controllers
             var activities = ConverstionUtilities.ConvertStravaActivity(stravaRides);
             List<PowerData> newPowerData = new();
 
-            foreach(Activity activity in activities)
+            foreach (Activity activity in activities)
             {
                 var stravaDataStreams = await _stravaAccess.GetDataStreamForActivity(activity, activityParams.User, "watts");
                 if (activity.IsPeloton && DateTime.Compare(activity.Date, new DateTime(2022, 3, 18)) < 0)
@@ -88,7 +70,7 @@ namespace SmartWatts.Server.Controllers
                     PelotonUtilities.AddMissingDataPoints(activity, stravaDataStreams, -30);
                     PelotonUtilities.NormalizePowerMetaData(activity, -30);
                 }
-                else if(activity.IsPeloton)
+                else if (activity.IsPeloton)
                 {
                     PelotonUtilities.AddMissingDataPoints(activity, stravaDataStreams);
                 }
@@ -111,10 +93,18 @@ namespace SmartWatts.Server.Controllers
 
         [HttpGet]
         [Route("StravaRideCount")]
-        public async Task<IActionResult> GetStravaRideCount([FromHeader] string token, [FromHeader]string stravaUserID)
+        public async Task<IActionResult> GetStravaRideCount([FromHeader] string token, [FromHeader] string stravaUserID)
         {
             var athleteStats = await _stravaAccess.GetAthleteStats(token, stravaUserID);
             return Ok(athleteStats.all_ride_totals.count);
+        }
+
+        [HttpPost]
+        [Route("SetRace")]
+        public async Task<IActionResult> SetIsRace(Activity activity)
+        {
+            await _activityAccess.SetIsRace(activity);
+            return Ok();
         }
     }
 }

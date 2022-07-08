@@ -1,0 +1,57 @@
+﻿@inject IActivityService activityService
+@inject IToastService toastService
+
+<div class="detailed-wrapper" style="border: 2px solid @Activity.Intensity.Color">
+        <button class="race-button @(Activity.IsRace ? "btn-success" : "")" @onclick="e => ToggleRace(Activity)">@(Activity.IsRace ? "RACE" : "set as race?")</button>
+        <h4> @Activity.Name <a class="btn btn-strava btn-sm" target="_blank" rel="noopener noreferrer" href=@($"https://www.strava.com/activities/{Activity.StravaRideID}")>See On Strava</a></h4>
+        <span>
+            @DateTimeUtilities.ConvertSecToReadable(Activity.MovingTime) | Avg Watts: @(Convert.ToInt32(Activity.AvgWatts))
+            | Weighted: @(Convert.ToInt32(Activity.WeightedAvgWatts))
+            <span class="intensity-perc" style="background: @PowerUtlities.GetIntensityFromEffortPercent(ridePercentEffort).Color; color: @PowerUtlities.GetIntensityFromEffortPercent(ridePercentEffort).FontColor;">
+                @ridePercentEffort%
+            </span>
+            (Benchmark: @Activity.WeightedAvgBenchmark)
+        </span>
+        <div class="data-container">
+            <div class="power-table">
+                <RidePowerTable Activity="Activity"></RidePowerTable>
+            </div>
+            <div class="sustained-efforts">
+                <RideSustainedEfforts Activity="Activity"></RideSustainedEfforts>
+            </div>
+        </div>
+    </div>
+
+@code {
+    [Parameter]
+    public Activity Activity { get; set; }
+
+    int ridePercentEffort;
+
+    protected override void OnParametersSet()
+    {
+        ridePercentEffort = GetFullRidePercentEffort(Activity);
+    }
+
+    private async Task ToggleRace(Activity activity)
+    {
+        try
+        {
+            activity.IsRace = !activity.IsRace;
+            await activityService.ToggleIsRace(activity);
+            string msg = activity.IsRace ? $"{activity.Name} marked as a Race" : $"{activity.Name} marked as not a race";
+            toastService.ShowSuccess(msg);
+        }
+        catch(Exception ex)
+        {
+            toastService.ShowError($"error setting Race status for {activity.Name} - {ex.Message}");
+        }
+
+    }
+
+    private int GetFullRidePercentEffort(Activity activity)
+    {
+        var perc = (activity.WeightedAvgWatts / activity.WeightedAvgBenchmark) * 100;
+        return perc > 999 ? 999 : (int)perc;
+    }
+}

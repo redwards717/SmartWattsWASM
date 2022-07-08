@@ -50,18 +50,25 @@
             <p>FTP: @FTP</p>
             <p class="text-danger font-italic">*FTP automatically updates as more rides are loaded <br />
                 If you feel your ftp is low do a Max 10 to 60 minute effort! The numbers won't lie!</p>
-            <button class="btn @(showFTPHistory ? "btn-primary" : "btn-outline-primary")" @onclick="e => showFTPHistory = !showFTPHistory">
-            @(showFTPHistory ? "Hide FTP History" : "Show FTP History")</button>
-            @if (showFTPHistory)
-            {              
-            <p>FTP History</p>
-            <hr />
-            <ul>
-                @foreach(FTPHistory ftp in ftpHistories)
-                {
-                    <li>@(ftp.Date.ToUnixSeconds() <= 1 ? "Initial FTP" : ftp.Date.ToShortDateString()) : @ftp.FTP</li>
-                }
-            </ul>
+            <button class="btn @(showFTPData ? "btn-primary" : "btn-outline-primary")" @onclick="e => showFTPData = !showFTPData">
+            @(showFTPData ? "Hide FTP Data" : "Show FTP Data")</button>
+            @if (showFTPData)
+            {
+            <div class="row">
+                <div class="col-3">
+                    <p>FTP History</p>
+                    <hr />
+                    <ul>
+                        @foreach(FTPHistory ftp in ftpHistories.OrderByDescending(f => f.Date).Take(10))
+                        {
+                            <li>@(ftp.Date.ToUnixSeconds() <= 1 ? "Initial FTP" : ftp.Date.ToShortDateString()) : @ftp.FTP</li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-9">
+                    <FTPCalculationTable LastActivityDate="mostRecentActivity"></FTPCalculationTable>
+                </div>
+            </div>
             }
         }
     </div>
@@ -114,7 +121,7 @@
     int FTP;
     DateTime mostRecentActivity = new();
     List<FTPHistory> ftpHistories = new();
-    bool showFTPHistory;
+    bool showFTPData;
 
     protected override async Task OnInitializedAsync()
     {
