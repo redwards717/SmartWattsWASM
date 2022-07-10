@@ -19,6 +19,11 @@
             return ((DateTimeOffset)dateTime).ToUnixTimeSeconds();
         }
 
+        public static DateTime EndOfDay(this DateTime dateTime)
+        {
+            return dateTime.Date.AddDays(1).AddSeconds(-1);
+        }
+
         public static List<int> GetActiveYears(List<Activity> activities)
         {
             var years = activities.Select(a => a.Date.Year).Distinct().OrderByDescending(y => y).ToList();

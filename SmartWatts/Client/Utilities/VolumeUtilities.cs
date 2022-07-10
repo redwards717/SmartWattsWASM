@@ -4,7 +4,7 @@
     {
         public static int GetVolumeInTime(List<Activity> activities, DateTime start, DateTime end)
         {
-            return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
+            return activities.Where(a => a.Date >= start.EndOfDay() && a.Date <= end.EndOfDay()).Sum(a => a.MovingTime);
         }
 
         public static int GetVolumeInTime(List<Activity> activities, int year, int month = 0)
@@ -15,13 +15,13 @@
 
         public static int GetAvgVolume(List<Activity> activities, DateTime start, DateTime end, int periods)
         {
-            int time = activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.MovingTime);
+            int time = activities.Where(a => a.Date >= start.EndOfDay() && a.Date <= end.EndOfDay()).Sum(a => a.MovingTime);
             return time / periods;
         }
 
         public static int GetSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime)
         {
-            var efforts = activities.Where(a => a.Date >= start && a.Date <= end).Select(a => a.PowerData.SustainedEfforts);
+            var efforts = activities.Where(a => a.Date >= start.EndOfDay() && a.Date <= end.EndOfDay()).Select(a => a.PowerData.SustainedEfforts);
             int time = 0;
 
             foreach (var effort in efforts)
@@ -48,7 +48,7 @@
 
         public static int GetAvgSustainedEfforts(List<Activity> activities, DateTime start, DateTime end, int effortTime, int periods)
         {
-            var efforts = activities.Where(a => a.Date >= start && a.Date <= end).Select(a => a.PowerData.SustainedEfforts);
+            var efforts = activities.Where(a => a.Date >= start.EndOfDay() && a.Date <= end.EndOfDay()).Select(a => a.PowerData.SustainedEfforts);
             int time = 0;
 
             foreach (var effort in efforts)

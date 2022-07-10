@@ -20,27 +20,6 @@
             else
             {
                 <DetailedRide Activity="activity"></DetailedRide>
-               @* int ridePercentEffort = @GetFullRidePercentEffort(activity);
-                <div class="detailed-wrapper" style="border: 2px solid @activity.Intensity.Color">
-                    <button class="race-button @(activity.IsRace ? "btn-success" : "")" @onclick="e => ToggleRace(activity)">@(activity.IsRace ? "RACE" : "set as race?")</button>
-                    <h4> @activity.Name <a class="btn btn-strava btn-sm" target="_blank" rel="noopener noreferrer" href=@($"https://www.strava.com/activities/{activity.StravaRideID}")>See On Strava</a></h4>
-                    <span>
-                        @DateTimeUtilities.ConvertSecToReadable(activity.MovingTime) | Avg Watts: @(Convert.ToInt32(activity.AvgWatts))
-                        | Weighted: @(Convert.ToInt32(activity.WeightedAvgWatts))
-                        <span class="intensity-perc" style="background: @PowerUtlities.GetIntensityFromEffortPercent(ridePercentEffort).Color; color: @PowerUtlities.GetIntensityFromEffortPercent(ridePercentEffort).FontColor;">
-                            @ridePercentEffort%
-                        </span>
-                        (Benchmark: @activity.WeightedAvgBenchmark)
-                    </span>
-                    <div class="data-container">
-                        <div class="power-table">
-                            <RidePowerTable Activity="activity"></RidePowerTable>
-                        </div>
-                        <div class="sustained-efforts">
-                            <RideSustainedEfforts Activity="activity"></RideSustainedEfforts>
-                        </div>
-                    </div>
-                </div>*@
             }
         }
     </div>
@@ -67,27 +46,5 @@
             highestIntensity = Activites.Find(a => highestEffort == a.Intensity.EffortIndex).Intensity;
         }
     }
-
-    //private async Task ToggleRace(Activity activity)
-    //{
-    //    try
-    //    {
-    //        activity.IsRace = !activity.IsRace;
-    //        await activityService.ToggleIsRace(activity);
-    //        string msg = activity.IsRace ? $"{activity.Name} marked as a Race" : $"{activity.Name} marked as not a race";
-    //        toastService.ShowSuccess(msg);
-    //    }
-    //    catch(Exception ex)
-    //    {
-    //        toastService.ShowError($"error setting Race status for {activity.Name} - {ex.Message}");
-    //    }
-
-    //}
-
-    //private int GetFullRidePercentEffort(Activity activity)
-    //{
-    //    var perc = (activity.WeightedAvgWatts / activity.WeightedAvgBenchmark) * 100;
-    //    return perc > 999 ? 999 : (int)perc;
-    //}
 }
 

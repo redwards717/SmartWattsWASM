@@ -4,18 +4,39 @@
     {
         public static int GetIntensityForTimeframe(List<Activity> activities, DateTime start, DateTime end)
         {
-            return activities.Where(a => a.Date >= start && a.Date <= end && a.Intensity.EffortIndex > 1).Sum(a => a.Intensity.EffortIndex);
+            int intensitySum = 0;
+            var actInRange = activities.Where(a => a.Date >= start.EndOfDay() && a.Date <= end.EndOfDay() && a.Intensity.EffortIndex > 1);
+            var daysOfYear = actInRange.Select(a => a.Date.DayOfYear).Distinct();
+
+            foreach (int day in daysOfYear)
+            {
+                // multiple rides in a single day shouldnt hold more weight then a single longer ride. but a slight bonus for 2 equally intense rides done in one day.
+                var actForDay = actInRange.Where(a => a.Date.DayOfYear == day);
+                int maxIntensity = actForDay.Max(a => a.Intensity.EffortIndex);
+                int maxRides = actForDay.Count(a => a.Intensity.EffortIndex == maxIntensity);
+                intensitySum += maxRides > 1 ? maxIntensity + 1 : maxIntensity;
+            }
+
+            return intensitySum;
+
+            //return activities.Where(a => a.Date >= start.EndOfDay() && a.Date <= end.EndOfDay() && a.Intensity.EffortIndex > 1).Sum(a => a.Intensity.EffortIndex);
         }
 
-        public static int GetIntensityForTimeframe(List<Activity> activities, int year, int month = 0)
+        //need to update this function to match the one above which removes extra intensity for multiple rides in a single day
+        public static int GetIntensityForTimeframe(List<Activity> activities, int year, int month)
         {
-            var activitiesInRange = month == 0 ? activities.Where(a => a.Date.Year == year && a.Intensity.EffortIndex > 1) : activities.Where(a => a.Date.Year == year && a.Date.Month == month && a.Intensity.EffortIndex > 1);
-            return activitiesInRange.Sum(a => a.Intensity.EffortIndex);
+            DateTime start = new(year, month, 1);
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            DateTime end = new(year, month, daysInMonth);
+
+            return GetIntensityForTimeframe(activities, start, end.AddDays(1).AddSeconds(-1));
+            //var activitiesInRange = activities.Where(a => a.Date.Year == year && a.Date.Month == month && a.Intensity.EffortIndex > 1);
+            //return activitiesInRange.Sum(a => a.Intensity.EffortIndex);
         }
 
         public static int GetAvgIntensity(List<Activity> activities, DateTime start, DateTime end, int periods)
         {
-            return activities.Where(a => a.Date >= start && a.Date <= end).Sum(a => a.Intensity.EffortIndex) / periods;
+            return activities.Where(a => a.Date >= start.EndOfDay() && a.Date <= end.EndOfDay()).Sum(a => a.Intensity.EffortIndex) / periods;
         }
 
         public static Intensity GetRideIntensity(Activity activity)

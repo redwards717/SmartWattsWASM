@@ -63,6 +63,7 @@
 
     protected override void OnParametersSet()
     {
+        // look at normalizing dates to the beginning of the day (so look back period is consistent and not dependent on time of day of the rides)
         averages = VolumeUtilities.GetAllAverages(appState.LoggedInUser.Activities, BaseDate.AddDays(-365), BaseDate, 365/Period);
     }
 
@@ -80,8 +81,8 @@
 
     private void GoToRides(DateTime start, DateTime end)
     {
-        var normalizedStart = start.Date.ToUnixSeconds();
-        var normalizedEnd = end.Date.AddDays(1).AddTicks(-1).ToUnixSeconds();
+        var normalizedStart = start.EndOfDay().ToUnixSeconds();
+        var normalizedEnd = end.EndOfDay().ToUnixSeconds();
         nav.NavigateTo($"ridelog/{normalizedStart}/{normalizedEnd}");
     }
 }

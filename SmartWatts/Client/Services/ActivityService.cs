@@ -34,7 +34,7 @@ namespace SmartWatts.Client.Services
 
             var newData = await SyncRidesFromStrava(activityParams, false);
 
-            AttachViewingData(400);
+            AttachViewingData(730);
 
             return newData;
         }
@@ -96,7 +96,7 @@ namespace SmartWatts.Client.Services
 
             _appState.AddUsersActivities(activities);
 
-            AttachViewingData(400);
+            AttachViewingData(730);
 
             return activities;
         }
