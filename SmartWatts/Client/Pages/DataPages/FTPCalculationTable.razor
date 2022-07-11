@@ -5,21 +5,21 @@
         <th>Interval</th>
         <th>Best Efforts</th>
         <th>Based on 1</th>
+        <th>Based on 2</th>
         <th>Based on 3</th>
-        <th>Based on 5</th>
     </tr>
     @foreach (int interval in Constants.FTPCalculationIntervals)
     {
         FTPCalculations ftpCalc = ftpCalcs.Find(f => f.IntervalTime == interval);
         int calcFor1 = ftpCalc.GetFTPCalcFor1();
+        int calcFor2 = ftpCalc.GetFTPCalcFor2();
         int calcFor3 = ftpCalc.GetFTPCalcFor3();
-        int calcFor5 = ftpCalc.GetFTPCalcFor5();
         <tr>
             <td class="text-center">@DateTimeUtilities.ConvertSecToReadable(interval, false)</td>
             <td class="text-center">@String.Join(", ", @ftpCalc.BestEfforts.OrderByDescending(i => i).Select(n => n.ToString()).ToArray())</td>
             <td class="text-center" style="background-color:@(appState.LoggedInUser.FTP == calcFor1 ? "lightblue" : "")">@calcFor1</td>
+            <td class="text-center" style="background-color:@(appState.LoggedInUser.FTP == calcFor2 ? "lightblue" : "")">@calcFor2</td>
             <td class="text-center" style="background-color:@(appState.LoggedInUser.FTP == calcFor3 ? "lightblue" : "")">@calcFor3</td>
-            <td class="text-center" style="background-color:@(appState.LoggedInUser.FTP == calcFor5 ? "lightblue" : "")">@calcFor5</td>
         </tr>
     }
 </table>

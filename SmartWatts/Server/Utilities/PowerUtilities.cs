@@ -80,11 +80,11 @@ namespace SmartWatts.Server.Utilities
 
             foreach(Activity activity in activities)
             {
-                GetBestEfforts(activity, calc_10, 5);
-                GetBestEfforts(activity, calc_20, 5);
-                GetBestEfforts(activity, calc_30, 5);
-                GetBestEfforts(activity, calc_45, 5);
-                GetBestEfforts(activity, calc_60, 5);
+                GetBestEfforts(activity, calc_10, 3);
+                GetBestEfforts(activity, calc_20, 3);
+                GetBestEfforts(activity, calc_30, 3);
+                GetBestEfforts(activity, calc_45, 3);
+                GetBestEfforts(activity, calc_60, 3);
             }
 
             calc_10.GetBestFTP();

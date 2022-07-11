@@ -19,7 +19,7 @@ namespace SmartWatts.Client.Utilities
             {
                 foreach(FTPCalculations ftpCalc in ftpCalcs)
                 {
-                    GetBestEfforts(activity, ftpCalc, 5);
+                    GetBestEfforts(activity, ftpCalc, 3);
                 }
             }
 

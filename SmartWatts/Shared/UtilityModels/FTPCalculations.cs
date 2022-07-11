@@ -17,23 +17,25 @@ namespace SmartWatts.Shared.UtilityModels
         {
             int ftp = 0;
 
-            int avgOf5 = (int)(BestEfforts.Average() * (Multiplier + .05));
-            ftp = avgOf5 > ftp ? avgOf5 : ftp;
-
-            var avgOf3 = (int)(BestEfforts.OrderByDescending(x => x).Take(3).Average() * (Multiplier + .025));
+            int avgOf3 = GetFTPCalcFor3();
             ftp = avgOf3 > ftp ? avgOf3 : ftp;
 
-            BestFTP = BestEfforts.Max() * Multiplier > ftp ? (int)(BestEfforts.Max() * Multiplier) : ftp;
-        }
+            var avgOf2 = GetFTPCalcFor2();
+            ftp = avgOf2 > ftp ? avgOf2 : ftp;
 
-        public int GetFTPCalcFor5()
-        {
-            return (int)(BestEfforts.Average() * (Multiplier + .05));
+            var best1 = GetFTPCalcFor1();
+
+            BestFTP = best1 > ftp ? best1 : ftp;
         }
 
         public int GetFTPCalcFor3()
         {
-            return (int)(BestEfforts.OrderByDescending(x => x).Take(3).Average() * (Multiplier + .025));
+            return (int)(BestEfforts.Average() * (Multiplier + .04));
+        }
+
+        public int GetFTPCalcFor2()
+        {
+            return (int)(BestEfforts.OrderByDescending(x => x).Take(2).Average() * (Multiplier + .02));
         }
 
         public int GetFTPCalcFor1()
