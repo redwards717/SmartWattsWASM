@@ -9,7 +9,7 @@
         <h4>@DateTimeUtilities.ConvertSecToReadable(Activites.Sum(a => a.MovingTime), false)</h4>
         @foreach(Activity activity in Activites)
         {
-            @if(Activites.Count >= 1 && (activity.WeightedAvgWatts < (highestAvgWeightedWatts * .7) || activity.Intensity.EffortIndex <= 1))
+            @if(Activites.Count >= 1 && (activity.WeightedAvgWatts < (highestAvgWeightedWatts * .7) || activity.Intensity.EffortIndex < 1))
             {
                 <div class="brief-wrapper" style="background-color:@activity.Intensity.Color">
                     <h6> @activity.Name <a class="btn btn-strava btn-sm" target="_blank" rel="noopener noreferrer" href=@($"https://www.strava.com/activities/{activity.StravaRideID}")>See On Strava</a></h6>
