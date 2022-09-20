@@ -1,5 +1,7 @@
 ﻿@inject AppState appState
 
+@if(appState.LoggedInUser.Activities is not null && appState.LoggedInUser.Activities.Count > 0)
+{
 <table class="table table-sm table-bordered text-nowrap">
     <tr>
         <th>Interval</th>
@@ -23,6 +25,7 @@
         </tr>
     }
 </table>
+}
 
 @code {
     [Parameter]

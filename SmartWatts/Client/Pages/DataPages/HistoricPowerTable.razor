@@ -46,7 +46,7 @@
 							<td>@month</td>
 							<td>@GetActivityCount(year, month)</td>
 							<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year, month), false)</td>
-							<td>@DateTimeUtilities.ConvertSecToReadable(GetTotalVolume(year, month), false)</td>
+							<td>@DateTimeUtilities.ConvertSecToReadable((int)(GetTotalVolume(year, month) / 4.285), false)</td>
 							@foreach (var pp in powerPointsSelected)
 							{
 								<td>@GetSinglePowerPointAvg(pp, year, month)</td>
