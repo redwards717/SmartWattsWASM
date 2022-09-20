@@ -8,7 +8,7 @@
 @inject IToastService toastService;
 
 <div class="container-fluid">
-@if(appState.LoggedInUser is null || appState.LoggedInUser.Activities.Count < 1)
+@if(appState.LoggedInUser is null || appState.LoggedInUser.Activities is null || appState.LoggedInUser.Activities.Count < 1)
 {
     <h3>No Rides to Display</h3>
     <a href="profile">Go to your profile to start loading in rides</a>
@@ -62,7 +62,7 @@ else
                     return;
                 }
 
-                if(user.TokenExpiration <= DateTime.Now)
+                if(user.StravaUserID != 0 && user.TokenExpiration <= DateTime.Now)
                 {
                     await userService.RefreshUserToken(user);
                 }

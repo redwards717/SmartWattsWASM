@@ -118,9 +118,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        FTP = appState.LoggedInUser.FTP;
-        mostRecentActivity = appState.LoggedInUser.Activities.Count > 0 ? appState.LoggedInUser.Activities.Max(a => a.Date) : mostRecentActivity;
-        ftpHistories = await ftpHistoryService.GetFTPHistoriesByUser();
+        if(appState.LoggedInUser is not null)
+        {
+            FTP = appState.LoggedInUser.FTP;
+            mostRecentActivity = appState.LoggedInUser.Activities.Count > 0 ? appState.LoggedInUser.Activities.Max(a => a.Date) : mostRecentActivity;
+            ftpHistories = await ftpHistoryService.GetFTPHistoriesByUser();
+        }
     }
 
     private void RedirectToAuth()
